@@ -1,0 +1,5 @@
+build/*
+
+# Vagrant
+.vagrant
+*.log
