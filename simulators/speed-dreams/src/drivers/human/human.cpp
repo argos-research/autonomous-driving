@@ -41,6 +41,11 @@
 #include <humandriver.h>
 
 #include <gpsSensor.h>
+#include <obstacleSensors.h>
+
+static ObstacleSensors *sens;
+static tTrack	*curTrack;
+#define __SENSORS_RANGE__ 200
 
 static HumanDriver robot("human");
 
@@ -170,6 +175,7 @@ static void
 initTrack(int index, tTrack* track, void *carHandle, void **carParmHandle, tSituation *s)
 {
     robot.init_track(index, track, carHandle, carParmHandle, s);
+    curTrack = track;
 }//initTrack
 
 
@@ -186,6 +192,7 @@ void
 newrace(int index, tCarElt* car, tSituation *s)
 {
     robot.new_race(index, car, s);
+    sens = new ObstacleSensors(36, curTrack, car, s, (int) __SENSORS_RANGE__);
 }//newrace
 
 
@@ -240,6 +247,8 @@ drive_at(int index, tCarElt* car, tSituation *s)
     gps.update(car);
     vec2 myPos = gps.getPosition();
     printf("Players's position according to GPS is (%f, %f)\n", myPos.x, myPos.y);
+    sens->sensors_update(s);
+    sens->printSensors();
 
     robot.drive_at(index, car, s);
 }//drive_at
