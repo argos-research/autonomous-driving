@@ -246,9 +246,9 @@ drive_at(int index, tCarElt* car, tSituation *s)
 {
     gps.update(car);
     vec2 myPos = gps.getPosition();
-    printf("Players's position according to GPS is (%f, %f)\n", myPos.x, myPos.y);
+    //printf("Players's position according to GPS is (%f, %f)\n", myPos.x, myPos.y);
     sens->sensors_update(s);
-    sens->printSensors();
+    //sens->printSensors();
 
     robot.drive_at(index, car, s);
 }//drive_at
