@@ -109,9 +109,11 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 		/* straight line for own car */
 		double t = myc->_pos_Y - m * myc->_pos_X;
 
-		/* position sensor in front of car */
-		//sens_x = myc->_pos_X + cos(m) * (0 - myc->_dimension_x/2);
-		//sens_y = myc->_pos_Y + sin(m) * (0 - myc->_dimension_x/2);
+		/* position sensor in front of car
+		 *
+		 * midpoint between two points
+		 * ((x1 + x2) / 2, (y1 + y2) / 2)
+		 */
 		sens_x = (myc->_corner_x(0) + myc->_corner_x(1))/2;
 		sens_y = (myc->_corner_y(0) + myc->_corner_y(1))/2;
 
