@@ -23,6 +23,10 @@
 #include <robottools.h>
 #include <raceman.h>
 
+typedef struct point {
+	double x, y;
+} point;
+
 class Obstacle
 {
 	public:
@@ -68,9 +72,11 @@ class ObstacleSensors {
 		int sensorsRange;
 		double anglePerSensor;
 		double distance(double x1, double y1, double x2, double y2);
+		double distance(point p1, point p2);
 		bool is_between(double x1, double y1, double x2, double y2, double x3, double y3);
 		bool is_between(double xc1, double xc2, double xcross);
 		bool is_infront(double midx, double midy, double sensx, double sensy, double crossx, double crossy);
+		bool is_infront(point middle, point sensor, point intersection);
 
 	public:
 		void printSensors();
