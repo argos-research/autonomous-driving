@@ -75,6 +75,14 @@ bool ObstacleSensors::is_between(double xc1, double xc2, double xcross) {
 	else return false;
 }
 
+bool ObstacleSensors::is_infront(double midx, double midy, double sensx, double sensy, double crossx, double crossy) {
+	double eps = 0.1;
+	double dist1 = distance(midx, midy, sensx, sensy) + distance(sensx, sensy, crossx, crossy);
+	double dist2 = distance(midx, midy, crossx, crossy);
+	printf("%f vs. %f\n", dist1, dist2);
+	return (dist1 >= dist2 - eps && dist1 <= dist2 + eps);
+}
+
 void ObstacleSensors::sensors_update(tSituation *situation)
 {
 	double dist = 200;
@@ -149,9 +157,10 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 
 		// left
 		if (is_between(obst->_corner_x(3), obst->_corner_x(1), cross_x1)) {
-			printf("intersection at (%f, %f)\n", cross_x1, cross_y1);
+			bool ok = is_infront(myc->_pos_X, myc->_pos_Y, sens_x, sens_y, cross_x1, cross_y1);
+			printf("intersection %s us at (%f, %f)\n", ok ? "in front of" : "behind", cross_x1, cross_y1);
 			candidate = distance(sens_x, sens_y, cross_x1, cross_y1);
-			if (candidate < dist) {
+			if (candidate < dist && ok) {
 				pointx = cross_x1;
 				pointy = cross_y1;
 				dist = candidate;
@@ -160,9 +169,10 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 		}
 		// front
 		if (is_between(obst->_corner_x(1), obst->_corner_x(0), cross_x2)) {
-			printf("intersection at (%f, %f)\n", cross_x2, cross_y2);
+			bool ok = is_infront(myc->_pos_X, myc->_pos_Y, sens_x, sens_y, cross_x2, cross_y2);
+			printf("intersection %s us at (%f, %f)\n", ok ? "in front of" : "behind", cross_x2, cross_y2);
 			candidate = distance(sens_x, sens_y, cross_x2, cross_y2);
-			if (candidate < dist) {
+			if (candidate < dist && ok) {
 				pointx = cross_x2;
 				pointy = cross_y2;
 				dist = candidate;
@@ -171,9 +181,10 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 		}
 		// right
 		if (is_between(obst->_corner_x(0), obst->_corner_x(2), cross_x3)) {
-			printf("intersection at (%f, %f)\n", cross_x3, cross_y3);
+			bool ok = is_infront(myc->_pos_X, myc->_pos_Y, sens_x, sens_y, cross_x3, cross_y3);
+			printf("intersection %s us at (%f, %f)\n", ok ? "in front of" : "behind", cross_x3, cross_y3);
 			candidate = distance(sens_x, sens_y, cross_x3, cross_y3);
-			if (candidate < dist) {
+			if (candidate < dist && ok) {
 				pointx = cross_x3;
 				pointy = cross_y3;
 				dist = candidate;
@@ -182,9 +193,10 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 		}
 		// back
 		if (is_between(obst->_corner_x(2), obst->_corner_x(3), cross_x4)) {
-			printf("intersection at (%f, %f)\n", cross_x4, cross_y4);
+			bool ok = is_infront(myc->_pos_X, myc->_pos_Y, sens_x, sens_y, cross_x4, cross_y4);
+			printf("intersection %s us at (%f, %f)\n", ok ? "in front of" : "behind", cross_x4, cross_y4);
 			candidate = distance(sens_x, sens_y, cross_x4, cross_y4);
-			if (candidate < dist) {
+			if (candidate < dist && ok) {
 				pointx = cross_x4;
 				pointy = cross_y4;
 				dist = candidate;

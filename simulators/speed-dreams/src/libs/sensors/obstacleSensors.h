@@ -70,6 +70,7 @@ class ObstacleSensors {
 		double distance(double x1, double y1, double x2, double y2);
 		bool is_between(double x1, double y1, double x2, double y2, double x3, double y3);
 		bool is_between(double xc1, double xc2, double xcross);
+		bool is_infront(double midx, double midy, double sensx, double sensy, double crossx, double crossy);
 
 	public:
 		void printSensors();
