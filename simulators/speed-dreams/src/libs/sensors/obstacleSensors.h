@@ -1,19 +1,7 @@
-/***************************************************************************
-
-    file                 : ObstacleSensors.h
-    copyright            : (C) 2008 Lugi Cardamone, Daniele Loiacono, Matteo Verzola
-						   (C) 2013 Wolf-Dieter Beelitz
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
+/*
+* \author Alexander Weidinger
+* \date   2017-07-06
+*/
 #ifndef _SENSOBST_H_
 #define _SENSOBST_H_
 
@@ -22,65 +10,57 @@
 #include <car.h>
 #include <robottools.h>
 #include <raceman.h>
+#include <list>
 
 typedef struct point {
 	double x, y;
 } point;
 
-class Obstacle
-{
-	public:
-		double dist_vert;
-		double dist_horiz;
-		double dist;
-};
-
 class SingleObstacleSensor {
-	public:
-		void init(CarElt *car,double start_angle, double angle_covered,double range) ;
+public:
+	SingleObstacleSensor(tCarElt *car, double angle, double move_x, double move_y, double range);
+	~SingleObstacleSensor();
 
-		void setSingleObstacleSensor(double sens_value);
-		inline double getSingleObstacleSensorOut() { return sensor_out; }
-		inline double getSingleObstacleSensorAngleStart() { return sensor_angle_start; }
+protected:
+	tCarElt *car;
+	double angle;
+	double range;
+	double move_x;
+	double move_y;
 
-	protected:
+public:
+	double getMove_x() {
+		return move_x;
+	}
 
+	double getMove_y() {
+		return move_y;
+	}
 
-		double sensor_range; //meters
-		double sensor_angle_start;
-		double sensor_angle_covered;
-		double sensor_out;   //if = RANGE then no obstacle in range, else equals the distance from the obstacle in that direction
+	double getAngle() {
+		return angle;
+	}
 
-		tCarElt *car;
+	double getRange() {
+		return range;
+	}
 };
 
 class ObstacleSensors {
-	public:
-		ObstacleSensors(int sensors_number, tTrack* track, tCarElt* car, tSituation *situation, int range );
-		~ObstacleSensors();
+public:
+	ObstacleSensors(tTrack* track, tCarElt* car);
+	~ObstacleSensors();
 
-		double getObstacleSensorOut(int sensor_id);
+protected:
+	std::list<SingleObstacleSensor> sensors;
+	tCarElt* myc;
+	double distance(point p1, point p2);
+	bool is_between(double xc1, double xc2, double xcross);
+	bool is_infront(point middle, point sensor, point intersection);
 
-		void sensors_update(tSituation *situation);
-
-	protected:
-		SingleObstacleSensor *sensors;
-		int sensors_num;
-		Obstacle* obstacles_in_range;    //info on opponents to sense
-		Obstacle* all_obstacles;	//info on ALL opponents, no matter what their position is!
-        tCarElt* myc;
-		int sensorsRange;
-		double anglePerSensor;
-		double distance(double x1, double y1, double x2, double y2);
-		double distance(point p1, point p2);
-		bool is_between(double x1, double y1, double x2, double y2, double x3, double y3);
-		bool is_between(double xc1, double xc2, double xcross);
-		bool is_infront(double midx, double midy, double sensx, double sensy, double crossx, double crossy);
-		bool is_infront(point middle, point sensor, point intersection);
-
-	public:
-		void printSensors();
+public:
+	void addSensor(tCarElt *car, double angle, double move_x, double move_y, double range);
+	void sensors_update(tSituation *situation);
 };
-
 
 #endif
