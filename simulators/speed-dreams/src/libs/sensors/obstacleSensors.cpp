@@ -4,6 +4,7 @@
 */
 
 #define __DEBUG_OPP_SENS__
+#define __OPP_NOISE_STD__ 0.02
 
 #include "obstacleSensors.h"
 
@@ -31,21 +32,43 @@ ObstacleSensors::ObstacleSensors(tTrack* track, tCarElt* car)
 ObstacleSensors::~ObstacleSensors() {
 }
 
+/* calculate distance between two points */
 double ObstacleSensors::distance(point p1, point p2) {
 	return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
 }
 
+/* check if xcross is between xc1 and xc2 */
 bool ObstacleSensors::is_between(double xc1, double xc2, double xcross) {
 	if ((xc1 < xc2) && (xcross >= xc1) && (xcross <= xc2)) return true;
 	else if ((xc2 < xc1) && (xcross >= xc2) && (xcross <= xc1)) return true;
 	else return false;
 }
 
+/* middle <-> sensor + sensor <-> intersection = middle <-> intersection */
 bool ObstacleSensors::is_infront(point middle, point sensor, point intersection) {
 	double eps = 0.1;
 	double dist1 = distance(middle, sensor) + distance(sensor, intersection);
 	double dist2 = distance(middle, intersection);
 	return (dist1 >= dist2 - eps && dist1 <= dist2 + eps);
+}
+
+/* method taken from patch files of
+* http://cs.adelaide.edu.au/~optlog/SCR2015/index.html
+*/
+double ObstacleSensors::normRand(double avg,double std)
+{
+	double x1, x2, w, y1, y2;
+
+	do {
+		x1 = 2.0 * rand()/(double(RAND_MAX)) - 1.0;
+		x2 = 2.0 * rand()/(double(RAND_MAX)) - 1.0;
+		w = x1 * x1 + x2 * x2;
+	} while ( w >= 1.0 );
+
+	w = sqrt( (-2.0 * log( w ) ) / w );
+	y1 = x1 * w;
+	y2 = x2 * w;
+	return y1*std + avg;
 }
 
 void ObstacleSensors::sensors_update(tSituation *situation)
@@ -165,6 +188,8 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 					obstacleIntersection = i_back;
 				}
 			}
+
+			obstacleDistance *= normRand(1, __OPP_NOISE_STD__); // add noise
 
 			#ifdef __DEBUG_OPP_SENS__
 			printf("sensor #%d: %f\n", std::distance(sensors.begin(), it), obstacleDistance);
