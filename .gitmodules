@@ -1,9 +1,15 @@
 [submodule "simulators/sumo"]
 	path = simulators/sumo
 	url = https://github.com/argos-research/sumo
+
 [submodule "simulators/speed-dreams"]
 	path = simulators/speed-dreams
 	url = https://github.com/argos-research/speed-dreams
+
+[submodule "tools/SimCoupler"]
+	path = tools/SimCoupler
+	url = https://github.com/argos-research/SimCoupler
+
 [submodule "genode"]
 	path = genode
 	url = https://github.com/argos-research/genode
