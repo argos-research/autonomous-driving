@@ -1,0 +1,29 @@
+sudo: false
+language: c
+os: linux
+dist: trusty
+
+addons:
+  apt:
+    packages:
+    - cmake
+    - libsdl1.2-dev
+    - libogg-dev
+    - libvorbis-dev
+    - libexpat-dev
+    - libjpeg-dev
+    - libplib-dev
+    - libopenal-dev
+    - libenet-dev
+    - libogg0
+    - libvorbis0a
+
+script:
+- mkdir build
+- cd build
+- cmake ..
+- make -j
+
+# Missing Output storage
+# Compiling works!
+#
