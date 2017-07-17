@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+message Control {
+  float steer = 1;
+  float brakeCmd = 2;
+  float accelCmd = 3;
+  int32 gear = 4;
+}

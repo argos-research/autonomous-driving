@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+message Sensor {
+  enum SensorType {
+    GPS = 0;
+    LASER = 1;
+  }
+
+  SensorType type = 1;
+  repeated float value = 2;
+}
