@@ -1,0 +1,7 @@
+REPOSITORIES  = $(GENODE_DIR)/repos/base-focnados
+
+##
+## Kernel-specific run tool configuration
+##
+
+RUN_OPT = --include boot_dir/focnados

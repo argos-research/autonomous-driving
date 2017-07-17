@@ -10,6 +10,3 @@
 	path = tools/SimCoupler
 	url = https://github.com/argos-research/SimCoupler
 
-[submodule "genode"]
-	path = genode
-	url = https://github.com/argos-research/genode
