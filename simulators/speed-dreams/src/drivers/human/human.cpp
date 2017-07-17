@@ -41,6 +41,10 @@
 #include <humandriver.h>
 
 #include <gpsSensor.h>
+#include <obstacleSensors.h>
+
+static ObstacleSensors *sens;
+static tTrack	*curTrack;
 
 static HumanDriver robot("human");
 
@@ -170,6 +174,7 @@ static void
 initTrack(int index, tTrack* track, void *carHandle, void **carParmHandle, tSituation *s)
 {
     robot.init_track(index, track, carHandle, carParmHandle, s);
+    curTrack = track;
 }//initTrack
 
 
@@ -186,6 +191,18 @@ void
 newrace(int index, tCarElt* car, tSituation *s)
 {
     robot.new_race(index, car, s);
+    sens = new ObstacleSensors(curTrack, car);
+    /* car, angle, move_x, move_y, range */
+
+    /* (-car->_cimension_x/2, -car->dimension_y/2)
+     *      +-----R-----+
+     *      H     0     V
+     *      +-----L-----+ (car->_cimension_x/2, car->dimension_y/2)
+     */
+    sens->addSensor(car, 0, car->_dimension_x/2, 0, 20); // front
+    sens->addSensor(car, -90, 0, -car->_dimension_y/2, 20); // right
+    sens->addSensor(car, 180, -car->_dimension_x/2, 0, 20); // back
+    sens->addSensor(car, 90, 0, car->_dimension_y/2, 20); // left
 }//newrace
 
 
@@ -239,7 +256,9 @@ drive_at(int index, tCarElt* car, tSituation *s)
 {
     gps.update(car);
     vec2 myPos = gps.getPosition();
-    printf("Players's position according to GPS is (%f, %f)\n", myPos.x, myPos.y);
+    //printf("Players's position according to GPS is (%f, %f)\n", myPos.x, myPos.y);
+    sens->sensors_update(s);
+    //sens->printSensors();
 
     robot.drive_at(index, car, s);
 }//drive_at
