@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+message Specification {
+  float length = 1;
+  float width = 2;
+  float wheelRadius = 3;
+}
