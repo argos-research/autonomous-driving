@@ -16,6 +16,8 @@
 #include <google/protobuf/reflection_ops.h>
 #include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
+
+namespace protobuf {
 class ControlDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<Control> {
 } _Control_default_instance_;
 
@@ -104,12 +106,12 @@ void InitDefaults() {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] = {
-      "\n\rcontrol.proto\"J\n\007Control\022\r\n\005steer\030\001 \001("
-      "\002\022\020\n\010brakeCmd\030\002 \001(\002\022\020\n\010accelCmd\030\003 \001(\002\022\014\n"
-      "\004gear\030\004 \001(\005b\006proto3"
+      "\n\rcontrol.proto\022\010protobuf\"J\n\007Control\022\r\n\005"
+      "steer\030\001 \001(\002\022\020\n\010brakeCmd\030\002 \001(\002\022\020\n\010accelCm"
+      "d\030\003 \001(\002\022\014\n\004gear\030\004 \001(\005b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 99);
+      descriptor, 109);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "control.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&TableStruct::Shutdown);
@@ -144,7 +146,7 @@ Control::Control()
     protobuf_control_2eproto::InitDefaults();
   }
   SharedCtor();
-  // @@protoc_insertion_point(constructor:Control)
+  // @@protoc_insertion_point(constructor:protobuf.Control)
 }
 Control::Control(const Control& from)
   : ::google::protobuf::Message(),
@@ -154,7 +156,7 @@ Control::Control(const Control& from)
   ::memcpy(&steer_, &from.steer_,
     static_cast<size_t>(reinterpret_cast<char*>(&gear_) -
     reinterpret_cast<char*>(&steer_)) + sizeof(gear_));
-  // @@protoc_insertion_point(copy_constructor:Control)
+  // @@protoc_insertion_point(copy_constructor:protobuf.Control)
 }
 
 void Control::SharedCtor() {
@@ -165,7 +167,7 @@ void Control::SharedCtor() {
 }
 
 Control::~Control() {
-  // @@protoc_insertion_point(destructor:Control)
+  // @@protoc_insertion_point(destructor:protobuf.Control)
   SharedDtor();
 }
 
@@ -196,7 +198,7 @@ Control* Control::New(::google::protobuf::Arena* arena) const {
 }
 
 void Control::Clear() {
-// @@protoc_insertion_point(message_clear_start:Control)
+// @@protoc_insertion_point(message_clear_start:protobuf.Control)
   ::memset(&steer_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&gear_) -
       reinterpret_cast<char*>(&steer_)) + sizeof(gear_));
@@ -206,7 +208,7 @@ bool Control::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:Control)
+  // @@protoc_insertion_point(parse_start:protobuf.Control)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
@@ -281,17 +283,17 @@ bool Control::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:Control)
+  // @@protoc_insertion_point(parse_success:protobuf.Control)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:Control)
+  // @@protoc_insertion_point(parse_failure:protobuf.Control)
   return false;
 #undef DO_
 }
 
 void Control::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:Control)
+  // @@protoc_insertion_point(serialize_start:protobuf.Control)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -315,12 +317,12 @@ void Control::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->gear(), output);
   }
 
-  // @@protoc_insertion_point(serialize_end:Control)
+  // @@protoc_insertion_point(serialize_end:protobuf.Control)
 }
 
 ::google::protobuf::uint8* Control::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:Control)
+  // @@protoc_insertion_point(serialize_to_array_start:protobuf.Control)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -344,12 +346,12 @@ void Control::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(4, this->gear(), target);
   }
 
-  // @@protoc_insertion_point(serialize_to_array_end:Control)
+  // @@protoc_insertion_point(serialize_to_array_end:protobuf.Control)
   return target;
 }
 
 size_t Control::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:Control)
+// @@protoc_insertion_point(message_byte_size_start:protobuf.Control)
   size_t total_size = 0;
 
   // float steer = 1;
@@ -382,22 +384,22 @@ size_t Control::ByteSizeLong() const {
 }
 
 void Control::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:Control)
+// @@protoc_insertion_point(generalized_merge_from_start:protobuf.Control)
   GOOGLE_DCHECK_NE(&from, this);
   const Control* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const Control>(
           &from);
   if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:Control)
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:protobuf.Control)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:Control)
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:protobuf.Control)
     MergeFrom(*source);
   }
 }
 
 void Control::MergeFrom(const Control& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:Control)
+// @@protoc_insertion_point(class_specific_merge_from_start:protobuf.Control)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::google::protobuf::uint32 cached_has_bits = 0;
@@ -418,14 +420,14 @@ void Control::MergeFrom(const Control& from) {
 }
 
 void Control::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:Control)
+// @@protoc_insertion_point(generalized_copy_from_start:protobuf.Control)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 void Control::CopyFrom(const Control& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:Control)
+// @@protoc_insertion_point(class_specific_copy_from_start:protobuf.Control)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -460,13 +462,13 @@ void Control::clear_steer() {
   steer_ = 0;
 }
 float Control::steer() const {
-  // @@protoc_insertion_point(field_get:Control.steer)
+  // @@protoc_insertion_point(field_get:protobuf.Control.steer)
   return steer_;
 }
 void Control::set_steer(float value) {
   
   steer_ = value;
-  // @@protoc_insertion_point(field_set:Control.steer)
+  // @@protoc_insertion_point(field_set:protobuf.Control.steer)
 }
 
 // float brakeCmd = 2;
@@ -474,13 +476,13 @@ void Control::clear_brakecmd() {
   brakecmd_ = 0;
 }
 float Control::brakecmd() const {
-  // @@protoc_insertion_point(field_get:Control.brakeCmd)
+  // @@protoc_insertion_point(field_get:protobuf.Control.brakeCmd)
   return brakecmd_;
 }
 void Control::set_brakecmd(float value) {
   
   brakecmd_ = value;
-  // @@protoc_insertion_point(field_set:Control.brakeCmd)
+  // @@protoc_insertion_point(field_set:protobuf.Control.brakeCmd)
 }
 
 // float accelCmd = 3;
@@ -488,13 +490,13 @@ void Control::clear_accelcmd() {
   accelcmd_ = 0;
 }
 float Control::accelcmd() const {
-  // @@protoc_insertion_point(field_get:Control.accelCmd)
+  // @@protoc_insertion_point(field_get:protobuf.Control.accelCmd)
   return accelcmd_;
 }
 void Control::set_accelcmd(float value) {
   
   accelcmd_ = value;
-  // @@protoc_insertion_point(field_set:Control.accelCmd)
+  // @@protoc_insertion_point(field_set:protobuf.Control.accelCmd)
 }
 
 // int32 gear = 4;
@@ -502,17 +504,19 @@ void Control::clear_gear() {
   gear_ = 0;
 }
 ::google::protobuf::int32 Control::gear() const {
-  // @@protoc_insertion_point(field_get:Control.gear)
+  // @@protoc_insertion_point(field_get:protobuf.Control.gear)
   return gear_;
 }
 void Control::set_gear(::google::protobuf::int32 value) {
   
   gear_ = value;
-  // @@protoc_insertion_point(field_set:Control.gear)
+  // @@protoc_insertion_point(field_set:protobuf.Control.gear)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
 
 // @@protoc_insertion_point(namespace_scope)
+
+}  // namespace protobuf
 
 // @@protoc_insertion_point(global_scope)

@@ -16,6 +16,8 @@
 #include <google/protobuf/reflection_ops.h>
 #include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
+
+namespace protobuf {
 class SpecificationDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<Specification> {
 } _Specification_default_instance_;
 
@@ -103,12 +105,12 @@ void InitDefaults() {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] = {
-      "\n\023specification.proto\"C\n\rSpecification\022\016"
-      "\n\006length\030\001 \001(\002\022\r\n\005width\030\002 \001(\002\022\023\n\013wheelRa"
-      "dius\030\003 \001(\002b\006proto3"
+      "\n\023specification.proto\022\010protobuf\"C\n\rSpeci"
+      "fication\022\016\n\006length\030\001 \001(\002\022\r\n\005width\030\002 \001(\002\022"
+      "\023\n\013wheelRadius\030\003 \001(\002b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 98);
+      descriptor, 108);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "specification.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&TableStruct::Shutdown);
@@ -142,7 +144,7 @@ Specification::Specification()
     protobuf_specification_2eproto::InitDefaults();
   }
   SharedCtor();
-  // @@protoc_insertion_point(constructor:Specification)
+  // @@protoc_insertion_point(constructor:protobuf.Specification)
 }
 Specification::Specification(const Specification& from)
   : ::google::protobuf::Message(),
@@ -152,7 +154,7 @@ Specification::Specification(const Specification& from)
   ::memcpy(&length_, &from.length_,
     static_cast<size_t>(reinterpret_cast<char*>(&wheelradius_) -
     reinterpret_cast<char*>(&length_)) + sizeof(wheelradius_));
-  // @@protoc_insertion_point(copy_constructor:Specification)
+  // @@protoc_insertion_point(copy_constructor:protobuf.Specification)
 }
 
 void Specification::SharedCtor() {
@@ -163,7 +165,7 @@ void Specification::SharedCtor() {
 }
 
 Specification::~Specification() {
-  // @@protoc_insertion_point(destructor:Specification)
+  // @@protoc_insertion_point(destructor:protobuf.Specification)
   SharedDtor();
 }
 
@@ -194,7 +196,7 @@ Specification* Specification::New(::google::protobuf::Arena* arena) const {
 }
 
 void Specification::Clear() {
-// @@protoc_insertion_point(message_clear_start:Specification)
+// @@protoc_insertion_point(message_clear_start:protobuf.Specification)
   ::memset(&length_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&wheelradius_) -
       reinterpret_cast<char*>(&length_)) + sizeof(wheelradius_));
@@ -204,7 +206,7 @@ bool Specification::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:Specification)
+  // @@protoc_insertion_point(parse_start:protobuf.Specification)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
@@ -265,17 +267,17 @@ bool Specification::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:Specification)
+  // @@protoc_insertion_point(parse_success:protobuf.Specification)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:Specification)
+  // @@protoc_insertion_point(parse_failure:protobuf.Specification)
   return false;
 #undef DO_
 }
 
 void Specification::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:Specification)
+  // @@protoc_insertion_point(serialize_start:protobuf.Specification)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -294,12 +296,12 @@ void Specification::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteFloat(3, this->wheelradius(), output);
   }
 
-  // @@protoc_insertion_point(serialize_end:Specification)
+  // @@protoc_insertion_point(serialize_end:protobuf.Specification)
 }
 
 ::google::protobuf::uint8* Specification::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:Specification)
+  // @@protoc_insertion_point(serialize_to_array_start:protobuf.Specification)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -318,12 +320,12 @@ void Specification::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(3, this->wheelradius(), target);
   }
 
-  // @@protoc_insertion_point(serialize_to_array_end:Specification)
+  // @@protoc_insertion_point(serialize_to_array_end:protobuf.Specification)
   return target;
 }
 
 size_t Specification::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:Specification)
+// @@protoc_insertion_point(message_byte_size_start:protobuf.Specification)
   size_t total_size = 0;
 
   // float length = 1;
@@ -349,22 +351,22 @@ size_t Specification::ByteSizeLong() const {
 }
 
 void Specification::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:Specification)
+// @@protoc_insertion_point(generalized_merge_from_start:protobuf.Specification)
   GOOGLE_DCHECK_NE(&from, this);
   const Specification* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const Specification>(
           &from);
   if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:Specification)
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:protobuf.Specification)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:Specification)
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:protobuf.Specification)
     MergeFrom(*source);
   }
 }
 
 void Specification::MergeFrom(const Specification& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:Specification)
+// @@protoc_insertion_point(class_specific_merge_from_start:protobuf.Specification)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::google::protobuf::uint32 cached_has_bits = 0;
@@ -382,14 +384,14 @@ void Specification::MergeFrom(const Specification& from) {
 }
 
 void Specification::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:Specification)
+// @@protoc_insertion_point(generalized_copy_from_start:protobuf.Specification)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 void Specification::CopyFrom(const Specification& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:Specification)
+// @@protoc_insertion_point(class_specific_copy_from_start:protobuf.Specification)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -423,13 +425,13 @@ void Specification::clear_length() {
   length_ = 0;
 }
 float Specification::length() const {
-  // @@protoc_insertion_point(field_get:Specification.length)
+  // @@protoc_insertion_point(field_get:protobuf.Specification.length)
   return length_;
 }
 void Specification::set_length(float value) {
   
   length_ = value;
-  // @@protoc_insertion_point(field_set:Specification.length)
+  // @@protoc_insertion_point(field_set:protobuf.Specification.length)
 }
 
 // float width = 2;
@@ -437,13 +439,13 @@ void Specification::clear_width() {
   width_ = 0;
 }
 float Specification::width() const {
-  // @@protoc_insertion_point(field_get:Specification.width)
+  // @@protoc_insertion_point(field_get:protobuf.Specification.width)
   return width_;
 }
 void Specification::set_width(float value) {
   
   width_ = value;
-  // @@protoc_insertion_point(field_set:Specification.width)
+  // @@protoc_insertion_point(field_set:protobuf.Specification.width)
 }
 
 // float wheelRadius = 3;
@@ -451,17 +453,19 @@ void Specification::clear_wheelradius() {
   wheelradius_ = 0;
 }
 float Specification::wheelradius() const {
-  // @@protoc_insertion_point(field_get:Specification.wheelRadius)
+  // @@protoc_insertion_point(field_get:protobuf.Specification.wheelRadius)
   return wheelradius_;
 }
 void Specification::set_wheelradius(float value) {
   
   wheelradius_ = value;
-  // @@protoc_insertion_point(field_set:Specification.wheelRadius)
+  // @@protoc_insertion_point(field_set:protobuf.Specification.wheelRadius)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
 
 // @@protoc_insertion_point(namespace_scope)
+
+}  // namespace protobuf
 
 // @@protoc_insertion_point(global_scope)

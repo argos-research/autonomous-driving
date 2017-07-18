@@ -30,9 +30,13 @@
 #include <google/protobuf/extension_set.h>  // IWYU pragma: export
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
+namespace protobuf {
 class Wheel;
 class WheelDefaultTypeInternal;
 extern WheelDefaultTypeInternal _Wheel_default_instance_;
+}  // namespace protobuf
+
+namespace protobuf {
 
 namespace protobuf_wheel_2eproto {
 // Internal implementation detail -- do not call these.
@@ -50,7 +54,7 @@ void InitDefaults();
 
 // ===================================================================
 
-class Wheel : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Wheel) */ {
+class Wheel : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:protobuf.Wheel) */ {
  public:
   Wheel();
   virtual ~Wheel();
@@ -120,7 +124,7 @@ class Wheel : public ::google::protobuf::Message /* @@protoc_insertion_point(cla
   float spinvel() const;
   void set_spinvel(float value);
 
-  // @@protoc_insertion_point(class_scope:Wheel)
+  // @@protoc_insertion_point(class_scope:protobuf.Wheel)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -141,19 +145,21 @@ inline void Wheel::clear_spinvel() {
   spinvel_ = 0;
 }
 inline float Wheel::spinvel() const {
-  // @@protoc_insertion_point(field_get:Wheel.spinVel)
+  // @@protoc_insertion_point(field_get:protobuf.Wheel.spinVel)
   return spinvel_;
 }
 inline void Wheel::set_spinvel(float value) {
   
   spinvel_ = value;
-  // @@protoc_insertion_point(field_set:Wheel.spinVel)
+  // @@protoc_insertion_point(field_set:protobuf.Wheel.spinVel)
 }
 
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
 
 // @@protoc_insertion_point(namespace_scope)
 
+
+}  // namespace protobuf
 
 // @@protoc_insertion_point(global_scope)
 

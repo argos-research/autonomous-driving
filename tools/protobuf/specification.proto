@@ -1,4 +1,5 @@
 syntax = "proto3";
+package protobuf;
 
 message Specification {
   float length = 1;

@@ -16,6 +16,8 @@
 #include <google/protobuf/reflection_ops.h>
 #include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
+
+namespace protobuf {
 class WheelDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<Wheel> {
 } _Wheel_default_instance_;
 
@@ -101,11 +103,11 @@ void InitDefaults() {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] = {
-      "\n\013wheel.proto\"\030\n\005Wheel\022\017\n\007spinVel\030\001 \001(\002b"
-      "\006proto3"
+      "\n\013wheel.proto\022\010protobuf\"\030\n\005Wheel\022\017\n\007spin"
+      "Vel\030\001 \001(\002b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 47);
+      descriptor, 57);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "wheel.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&TableStruct::Shutdown);
@@ -137,7 +139,7 @@ Wheel::Wheel()
     protobuf_wheel_2eproto::InitDefaults();
   }
   SharedCtor();
-  // @@protoc_insertion_point(constructor:Wheel)
+  // @@protoc_insertion_point(constructor:protobuf.Wheel)
 }
 Wheel::Wheel(const Wheel& from)
   : ::google::protobuf::Message(),
@@ -145,7 +147,7 @@ Wheel::Wheel(const Wheel& from)
       _cached_size_(0) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   spinvel_ = from.spinvel_;
-  // @@protoc_insertion_point(copy_constructor:Wheel)
+  // @@protoc_insertion_point(copy_constructor:protobuf.Wheel)
 }
 
 void Wheel::SharedCtor() {
@@ -154,7 +156,7 @@ void Wheel::SharedCtor() {
 }
 
 Wheel::~Wheel() {
-  // @@protoc_insertion_point(destructor:Wheel)
+  // @@protoc_insertion_point(destructor:protobuf.Wheel)
   SharedDtor();
 }
 
@@ -185,7 +187,7 @@ Wheel* Wheel::New(::google::protobuf::Arena* arena) const {
 }
 
 void Wheel::Clear() {
-// @@protoc_insertion_point(message_clear_start:Wheel)
+// @@protoc_insertion_point(message_clear_start:protobuf.Wheel)
   spinvel_ = 0;
 }
 
@@ -193,7 +195,7 @@ bool Wheel::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:Wheel)
+  // @@protoc_insertion_point(parse_start:protobuf.Wheel)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
@@ -226,17 +228,17 @@ bool Wheel::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:Wheel)
+  // @@protoc_insertion_point(parse_success:protobuf.Wheel)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:Wheel)
+  // @@protoc_insertion_point(parse_failure:protobuf.Wheel)
   return false;
 #undef DO_
 }
 
 void Wheel::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:Wheel)
+  // @@protoc_insertion_point(serialize_start:protobuf.Wheel)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -245,12 +247,12 @@ void Wheel::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteFloat(1, this->spinvel(), output);
   }
 
-  // @@protoc_insertion_point(serialize_end:Wheel)
+  // @@protoc_insertion_point(serialize_end:protobuf.Wheel)
 }
 
 ::google::protobuf::uint8* Wheel::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:Wheel)
+  // @@protoc_insertion_point(serialize_to_array_start:protobuf.Wheel)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -259,12 +261,12 @@ void Wheel::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(1, this->spinvel(), target);
   }
 
-  // @@protoc_insertion_point(serialize_to_array_end:Wheel)
+  // @@protoc_insertion_point(serialize_to_array_end:protobuf.Wheel)
   return target;
 }
 
 size_t Wheel::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:Wheel)
+// @@protoc_insertion_point(message_byte_size_start:protobuf.Wheel)
   size_t total_size = 0;
 
   // float spinVel = 1;
@@ -280,22 +282,22 @@ size_t Wheel::ByteSizeLong() const {
 }
 
 void Wheel::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:Wheel)
+// @@protoc_insertion_point(generalized_merge_from_start:protobuf.Wheel)
   GOOGLE_DCHECK_NE(&from, this);
   const Wheel* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const Wheel>(
           &from);
   if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:Wheel)
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:protobuf.Wheel)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:Wheel)
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:protobuf.Wheel)
     MergeFrom(*source);
   }
 }
 
 void Wheel::MergeFrom(const Wheel& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:Wheel)
+// @@protoc_insertion_point(class_specific_merge_from_start:protobuf.Wheel)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::google::protobuf::uint32 cached_has_bits = 0;
@@ -307,14 +309,14 @@ void Wheel::MergeFrom(const Wheel& from) {
 }
 
 void Wheel::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:Wheel)
+// @@protoc_insertion_point(generalized_copy_from_start:protobuf.Wheel)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 void Wheel::CopyFrom(const Wheel& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:Wheel)
+// @@protoc_insertion_point(class_specific_copy_from_start:protobuf.Wheel)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -346,17 +348,19 @@ void Wheel::clear_spinvel() {
   spinvel_ = 0;
 }
 float Wheel::spinvel() const {
-  // @@protoc_insertion_point(field_get:Wheel.spinVel)
+  // @@protoc_insertion_point(field_get:protobuf.Wheel.spinVel)
   return spinvel_;
 }
 void Wheel::set_spinvel(float value) {
   
   spinvel_ = value;
-  // @@protoc_insertion_point(field_set:Wheel.spinVel)
+  // @@protoc_insertion_point(field_set:protobuf.Wheel.spinVel)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
 
 // @@protoc_insertion_point(namespace_scope)
+
+}  // namespace protobuf
 
 // @@protoc_insertion_point(global_scope)

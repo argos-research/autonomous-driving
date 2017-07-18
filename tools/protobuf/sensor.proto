@@ -1,4 +1,5 @@
 syntax = "proto3";
+package protobuf;
 
 message Sensor {
   enum SensorType {

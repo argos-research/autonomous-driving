@@ -1,4 +1,4 @@
-proto_cc := $(wildcard $(REP_DIR)/../protobuf/build/*.c)
+proto_cc := $(wildcard $(REP_DIR)/../protobuf/build/*.pb.cc)
 proto_h := $(REP_DIR)/../protobuf/build
 TARGET = savm
 SRC_CC = main.cpp $(proto_cc) tcp_socket.cc

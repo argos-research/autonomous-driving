@@ -30,9 +30,13 @@
 #include <google/protobuf/extension_set.h>  // IWYU pragma: export
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
+namespace protobuf {
 class Specification;
 class SpecificationDefaultTypeInternal;
 extern SpecificationDefaultTypeInternal _Specification_default_instance_;
+}  // namespace protobuf
+
+namespace protobuf {
 
 namespace protobuf_specification_2eproto {
 // Internal implementation detail -- do not call these.
@@ -50,7 +54,7 @@ void InitDefaults();
 
 // ===================================================================
 
-class Specification : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Specification) */ {
+class Specification : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:protobuf.Specification) */ {
  public:
   Specification();
   virtual ~Specification();
@@ -132,7 +136,7 @@ class Specification : public ::google::protobuf::Message /* @@protoc_insertion_p
   float wheelradius() const;
   void set_wheelradius(float value);
 
-  // @@protoc_insertion_point(class_scope:Specification)
+  // @@protoc_insertion_point(class_scope:protobuf.Specification)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -155,13 +159,13 @@ inline void Specification::clear_length() {
   length_ = 0;
 }
 inline float Specification::length() const {
-  // @@protoc_insertion_point(field_get:Specification.length)
+  // @@protoc_insertion_point(field_get:protobuf.Specification.length)
   return length_;
 }
 inline void Specification::set_length(float value) {
   
   length_ = value;
-  // @@protoc_insertion_point(field_set:Specification.length)
+  // @@protoc_insertion_point(field_set:protobuf.Specification.length)
 }
 
 // float width = 2;
@@ -169,13 +173,13 @@ inline void Specification::clear_width() {
   width_ = 0;
 }
 inline float Specification::width() const {
-  // @@protoc_insertion_point(field_get:Specification.width)
+  // @@protoc_insertion_point(field_get:protobuf.Specification.width)
   return width_;
 }
 inline void Specification::set_width(float value) {
   
   width_ = value;
-  // @@protoc_insertion_point(field_set:Specification.width)
+  // @@protoc_insertion_point(field_set:protobuf.Specification.width)
 }
 
 // float wheelRadius = 3;
@@ -183,19 +187,21 @@ inline void Specification::clear_wheelradius() {
   wheelradius_ = 0;
 }
 inline float Specification::wheelradius() const {
-  // @@protoc_insertion_point(field_get:Specification.wheelRadius)
+  // @@protoc_insertion_point(field_get:protobuf.Specification.wheelRadius)
   return wheelradius_;
 }
 inline void Specification::set_wheelradius(float value) {
   
   wheelradius_ = value;
-  // @@protoc_insertion_point(field_set:Specification.wheelRadius)
+  // @@protoc_insertion_point(field_set:protobuf.Specification.wheelRadius)
 }
 
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
 
 // @@protoc_insertion_point(namespace_scope)
 
+
+}  // namespace protobuf
 
 // @@protoc_insertion_point(global_scope)
 
