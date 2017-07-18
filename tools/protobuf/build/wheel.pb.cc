@@ -250,7 +250,6 @@ void Wheel::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* Wheel::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:Wheel)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;

@@ -152,14 +152,15 @@ Control::Control(const Control& from)
       _cached_size_(0) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::memcpy(&steer_, &from.steer_,
-    reinterpret_cast<char*>(&gear_) -
-    reinterpret_cast<char*>(&steer_) + sizeof(gear_));
+    static_cast<size_t>(reinterpret_cast<char*>(&gear_) -
+    reinterpret_cast<char*>(&steer_)) + sizeof(gear_));
   // @@protoc_insertion_point(copy_constructor:Control)
 }
 
 void Control::SharedCtor() {
-  ::memset(&steer_, 0, reinterpret_cast<char*>(&gear_) -
-    reinterpret_cast<char*>(&steer_) + sizeof(gear_));
+  ::memset(&steer_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&gear_) -
+      reinterpret_cast<char*>(&steer_)) + sizeof(gear_));
   _cached_size_ = 0;
 }
 
@@ -196,8 +197,9 @@ Control* Control::New(::google::protobuf::Arena* arena) const {
 
 void Control::Clear() {
 // @@protoc_insertion_point(message_clear_start:Control)
-  ::memset(&steer_, 0, reinterpret_cast<char*>(&gear_) -
-    reinterpret_cast<char*>(&steer_) + sizeof(gear_));
+  ::memset(&steer_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&gear_) -
+      reinterpret_cast<char*>(&steer_)) + sizeof(gear_));
 }
 
 bool Control::MergePartialFromCodedStream(
@@ -318,7 +320,6 @@ void Control::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* Control::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:Control)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;

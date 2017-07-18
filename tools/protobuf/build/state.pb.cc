@@ -174,14 +174,15 @@ State::State(const State& from)
     specification_ = NULL;
   }
   ::memcpy(&steer_, &from.steer_,
-    reinterpret_cast<char*>(&accelcmd_) -
-    reinterpret_cast<char*>(&steer_) + sizeof(accelcmd_));
+    static_cast<size_t>(reinterpret_cast<char*>(&accelcmd_) -
+    reinterpret_cast<char*>(&steer_)) + sizeof(accelcmd_));
   // @@protoc_insertion_point(copy_constructor:State)
 }
 
 void State::SharedCtor() {
-  ::memset(&specification_, 0, reinterpret_cast<char*>(&accelcmd_) -
-    reinterpret_cast<char*>(&specification_) + sizeof(accelcmd_));
+  ::memset(&specification_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&accelcmd_) -
+      reinterpret_cast<char*>(&specification_)) + sizeof(accelcmd_));
   _cached_size_ = 0;
 }
 
@@ -227,8 +228,9 @@ void State::Clear() {
     delete specification_;
   }
   specification_ = NULL;
-  ::memset(&steer_, 0, reinterpret_cast<char*>(&accelcmd_) -
-    reinterpret_cast<char*>(&steer_) + sizeof(accelcmd_));
+  ::memset(&steer_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&accelcmd_) -
+      reinterpret_cast<char*>(&steer_)) + sizeof(accelcmd_));
 }
 
 bool State::MergePartialFromCodedStream(
@@ -347,15 +349,17 @@ void State::SerializeWithCachedSizes(
   (void) cached_has_bits;
 
   // repeated .Sensor sensor = 1;
-  for (unsigned int i = 0, n = this->sensor_size(); i < n; i++) {
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->sensor_size()); i < n; i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->sensor(i), output);
+      1, this->sensor(static_cast<int>(i)), output);
   }
 
   // repeated .Wheel wheel = 2;
-  for (unsigned int i = 0, n = this->wheel_size(); i < n; i++) {
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->wheel_size()); i < n; i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      2, this->wheel(i), output);
+      2, this->wheel(static_cast<int>(i)), output);
   }
 
   // .Specification specification = 3;
@@ -384,23 +388,24 @@ void State::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* State::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:State)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   // repeated .Sensor sensor = 1;
-  for (unsigned int i = 0, n = this->sensor_size(); i < n; i++) {
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->sensor_size()); i < n; i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        1, this->sensor(i), deterministic, target);
+        1, this->sensor(static_cast<int>(i)), deterministic, target);
   }
 
   // repeated .Wheel wheel = 2;
-  for (unsigned int i = 0, n = this->wheel_size(); i < n; i++) {
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->wheel_size()); i < n; i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        2, this->wheel(i), deterministic, target);
+        2, this->wheel(static_cast<int>(i)), deterministic, target);
   }
 
   // .Specification specification = 3;
@@ -435,23 +440,23 @@ size_t State::ByteSizeLong() const {
 
   // repeated .Sensor sensor = 1;
   {
-    unsigned int count = this->sensor_size();
+    unsigned int count = static_cast<unsigned int>(this->sensor_size());
     total_size += 1UL * count;
     for (unsigned int i = 0; i < count; i++) {
       total_size +=
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-          this->sensor(i));
+          this->sensor(static_cast<int>(i)));
     }
   }
 
   // repeated .Wheel wheel = 2;
   {
-    unsigned int count = this->wheel_size();
+    unsigned int count = static_cast<unsigned int>(this->wheel_size());
     total_size += 1UL * count;
     for (unsigned int i = 0; i < count; i++) {
       total_size +=
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-          this->wheel(i));
+          this->wheel(static_cast<int>(i)));
     }
   }
 

@@ -13,6 +13,7 @@
 #include <base/printf.h>
 #include <util/xml_node.h>
 #include <os/config.h>
+#include <os/attached_ram_dataspace.h>
 
 /* lwip includes */
 extern "C" {
@@ -29,12 +30,12 @@ int _listen_socket;
 struct sockaddr_in _in_addr;
 sockaddr _target_addr;
 
-class Proto_server : public Tcp_socket
+class Proto_client : public Tcp_socket
 {
 public:
-	Proto_server();
+	Proto_client();
 
-	~Proto_server();
+	~Proto_client();
 
 	int connect();
 
@@ -48,13 +49,11 @@ private:
 	sockaddr _target_addr;
 };
 
-Proto_server::Proto_server() :
+Proto_client::Proto_client() :
 	_listen_socket(0),
 	_in_addr{0},
 	_target_addr{0}
 {
-	//lwip_tcpip_init();
-
 	_in_addr.sin_family = AF_INET;
 	_in_addr.sin_port = htons(3001);
 
@@ -82,60 +81,44 @@ Proto_server::Proto_server() :
 		if (lwip_connect(_listen_socket, (struct sockaddr*)&_in_addr, sizeof(_in_addr)))
 		{
 			PERR("Connection failed!");
+			PERR("Reconnecting!");
 		}
 
-		/*if (lwip_bind(_listen_socket, (struct sockaddr*)&_in_addr, sizeof(_in_addr)))
-		{
-			PERR("Bind failed!");
-			return;
-		}
-		PDBG("lwip bind\n");
-		if (lwip_listen(_listen_socket, 5))
-		{
-			PERR("Listen failed!");
-			return;
-		}*/
 	PINF("Connected...\n");
 
 }
 
-Proto_server::~Proto_server()
+Proto_client::~Proto_client()
 {
-	disconnect();
+	
 }
 
-int Proto_server::connect()
+void Proto_client::serve()
 {
-	socklen_t len = sizeof(_target_addr);
-	_target_socket = lwip_accept(_listen_socket, &_target_addr, &len);
-	if (_target_socket < 0)
-	{
-		PWRN("Invalid socket from accept!");
-		return _target_socket;
-	}
-	sockaddr_in* target_in_addr = (sockaddr_in*)&_target_addr;
-	PINF("Got connection from %s", inet_ntoa(target_in_addr));
-	return _target_socket;
-}
-
-void Proto_server::serve()
-{
-	int message = 0;
+	int size = 0;
 	while (true)
 	{
-		NETCHECK_LOOP(receiveInt32_t(message));
-		if (message == 0)
+		NETCHECK_LOOP(receiveInt32_t(size));
+		if (size>0)
 		{
-			PDBG("Ready to receive task description.");
+			PDBG("Ready to receive state.");
+			Genode::Attached_ram_dataspace state_ds(Genode::env()->ram_session(), size);
+			NETCHECK_LOOP(receive_data(state_ds.local_addr<char>(), size));
+			Genode::env()->rm_session()->attach(state_ds.cap());
 		}
 		else
 		{
-			PWRN("Unknown message: %d", message);
+			PWRN("Unknown message: %d", size);
 		}
 	}
 }
 
-void Proto_server::disconnect()
+int Proto_client::connect()
+{
+	return 0;
+}
+
+void Proto_client::disconnect()
 {
 	lwip_close(_target_socket);
 	PERR("Target socket closed.");
@@ -165,7 +148,7 @@ public:
 		void on_publish(int ret) {
 			PDBG("Published with code %d!", ret);
 
-			Publisher::my_publish();
+			//Publisher::my_publish();
 		}
 
 
@@ -246,7 +229,7 @@ int main(int argc, char* argv[]) {
 	mosquitto.attribute("port").value(port, sizeof(port));
 
 	PDBG("protobuf init");
-	Proto_server client;
+	Proto_client client;
 	PDBG("done");
 
 	/* create new mosquitto peer */
@@ -257,7 +240,7 @@ int main(int argc, char* argv[]) {
 	/* endless loop with auto reconnect */
 	publisher->loop_start();
 
-	PDBG("Blub\n");
+	client.serve();
 
 	while(1);
 

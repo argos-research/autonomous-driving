@@ -295,7 +295,8 @@ void Sensor::SerializeWithCachedSizes(
   // repeated float value = 2;
   if (this->value_size() > 0) {
     ::google::protobuf::internal::WireFormatLite::WriteTag(2, ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED, output);
-    output->WriteVarint32(_value_cached_byte_size_);
+    output->WriteVarint32(static_cast<::google::protobuf::uint32>(
+        _value_cached_byte_size_));
     ::google::protobuf::internal::WireFormatLite::WriteFloatArray(
       this->value().data(), this->value_size(), output);
   }
@@ -305,7 +306,6 @@ void Sensor::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* Sensor::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:Sensor)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
@@ -323,7 +323,8 @@ void Sensor::SerializeWithCachedSizes(
       ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED,
       target);
     target = ::google::protobuf::io::CodedOutputStream::WriteVarint32ToArray(
-      _value_cached_byte_size_, target);
+        static_cast<::google::protobuf::uint32>(
+            _value_cached_byte_size_), target);
     target = ::google::protobuf::internal::WireFormatLite::
       WriteFloatNoTagToArray(this->value_, target);
   }
@@ -338,11 +339,12 @@ size_t Sensor::ByteSizeLong() const {
 
   // repeated float value = 2;
   {
-    unsigned int count = this->value_size();
+    unsigned int count = static_cast<unsigned int>(this->value_size());
     size_t data_size = 4UL * count;
     if (data_size > 0) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::Int32Size(data_size);
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+            static_cast<google::protobuf::int32>(data_size));
     }
     int cached_size = ::google::protobuf::internal::ToCachedSize(data_size);
     GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();

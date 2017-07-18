@@ -150,14 +150,15 @@ Specification::Specification(const Specification& from)
       _cached_size_(0) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::memcpy(&length_, &from.length_,
-    reinterpret_cast<char*>(&wheelradius_) -
-    reinterpret_cast<char*>(&length_) + sizeof(wheelradius_));
+    static_cast<size_t>(reinterpret_cast<char*>(&wheelradius_) -
+    reinterpret_cast<char*>(&length_)) + sizeof(wheelradius_));
   // @@protoc_insertion_point(copy_constructor:Specification)
 }
 
 void Specification::SharedCtor() {
-  ::memset(&length_, 0, reinterpret_cast<char*>(&wheelradius_) -
-    reinterpret_cast<char*>(&length_) + sizeof(wheelradius_));
+  ::memset(&length_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&wheelradius_) -
+      reinterpret_cast<char*>(&length_)) + sizeof(wheelradius_));
   _cached_size_ = 0;
 }
 
@@ -194,8 +195,9 @@ Specification* Specification::New(::google::protobuf::Arena* arena) const {
 
 void Specification::Clear() {
 // @@protoc_insertion_point(message_clear_start:Specification)
-  ::memset(&length_, 0, reinterpret_cast<char*>(&wheelradius_) -
-    reinterpret_cast<char*>(&length_) + sizeof(wheelradius_));
+  ::memset(&length_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&wheelradius_) -
+      reinterpret_cast<char*>(&length_)) + sizeof(wheelradius_));
 }
 
 bool Specification::MergePartialFromCodedStream(
@@ -297,7 +299,6 @@ void Specification::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* Specification::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:Specification)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
