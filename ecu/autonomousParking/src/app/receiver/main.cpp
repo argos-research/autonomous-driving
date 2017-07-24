@@ -122,17 +122,20 @@ public:
 			if(!strcmp(name,"laser1"))
 			{
 				payload.erase(0, payload.find(";")+2);
-				laser0=atof(payload.substr(0, payload.find(";")).c_str());
+				laser1=atof(payload.substr(0, payload.find(";")).c_str());
 			}
 			if(!strcmp(name,"laser2"))
 			{
 				payload.erase(0, payload.find(";")+2);
-				laser0=atof(payload.substr(0, payload.find(";")).c_str());
+				laser2=atof(payload.substr(0, payload.find(";")).c_str());
 			}
 			if(!strcmp(name,"laser3"))
 			{
 				payload.erase(0, payload.find(";")+2);
-				laser0=atof(payload.substr(0, payload.find(";")).c_str());
+				laser3=atof(payload.substr(0, payload.find(";")).c_str());
+				char buffer[10000] = { 0 };
+				sprintf(buffer, "%f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f;", steer, brake, accel, spinVel0, spinVel1, spinVel2, spinVel3, length, width, wheelRadius, gps_x, gps_y, laser0, laser1, laser2, laser3);
+				PDBG("%s\n", buffer);
 			}
 
 		}
