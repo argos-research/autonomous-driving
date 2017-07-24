@@ -1,0 +1,103 @@
+set use_usb_driver [expr [have_spec omap4] || [have_spec arndale] || [have_spec rpi]]
+set use_nic_driver [expr !$use_usb_driver && ![have_spec imx53] && ![have_spec hw_odroid_xu] && ![have_spec linux] && ![have_spec hw_wand_quad]]
+
+if {[expr !$use_usb_driver && !$use_nic_driver]} {
+	puts "\n Run script is not supported on this platform. \n"; exit 0 }
+
+set build_components { core init app/receiver drivers/timer drivers/nic }
+
+lappend_if $use_usb_driver              build_components drivers/usb
+lappend_if [have_spec gpio]             build_components drivers/gpio
+
+source ${genode_dir}/repos/base/run/platform_drv.inc
+append_platform_drv_build_components
+
+build $build_components
+
+create_boot_directory
+
+#
+# Generate config
+#
+
+set config {
+<config>
+    <parent-provides>
+        <service name="LOG"/>
+        <service name="RM"/>
+        <service name="ROM"/>
+        <service name="RAM"/>
+        <service name="IO_MEM"/>
+        <service name="IO_PORT"/>
+        <service name="IRQ"/>
+        <service name="CAP"/>
+        <service name="SIGNAL"/>
+    </parent-provides>
+    <default-route>
+        <any-service> <parent/> <any-child/> </any-service>
+    </default-route>
+    <start name="timer">
+        <resource name="RAM" quantum="1M"/>
+        <provides><service name="Timer"/></provides>
+    </start>
+    <start name="receiver">
+        <resource name="RAM" quantum="4M"/>
+				<config>
+            <network dhcp="no" ip-address="10.0.0.3" subnet-mask="255.255.255.0" default-gateway="192.168.217.3" />
+            <mosquitto ip-address="192.168.217.3" port="1883" />
+        </config>
+    </start>}
+
+    append_if [have_spec gpio] config {
+      <start name="gpio_drv">
+        <resource name="RAM" quantum="4M"/>
+        <provides><service name="Gpio"/></provides>
+        <config/>
+      </start>}
+
+    append_if $use_usb_driver config {
+      <start name="usb_drv">
+        <resource name="RAM" quantum="64M"/>
+        <provides>
+          <service name="Nic"/>
+        </provides>
+        <config uhci="yes" ehci="yes" xhci="yes">
+          <nic mac="02:00:00:00:01:01"/>
+        </config>
+      </start>}
+
+    append_platform_drv_config
+
+    append_if $use_nic_driver config {
+      <start name="nic_drv">
+        <resource name="RAM" quantum="4M"/>
+        <provides><service name="Nic"/></provides>
+      </start>}
+
+    append config {
+    </config>
+    }
+
+    install_config $config
+
+#
+# Boot image
+#
+
+append qemu_args "-net vde,sock=/tmp/switch1 "
+append qemu_args "-net nic,model=lan9118,macaddr=02:00:00:00:01:01 "
+
+set boot_modules { core init receiver ld.lib.so libc.lib.so stdcxx.lib.so libm.lib.so pthread.lib.so timer lwip.lib.so libmosquitto.lib.so libssl.lib.so libcrypto.lib.so }
+
+# platform-specific modules
+lappend_if $use_usb_driver              boot_modules usb_drv
+lappend_if $use_nic_driver              boot_modules nic_drv
+lappend_if [have_spec gpio]             boot_modules gpio_drv
+
+append_platform_drv_boot_modules
+
+build_boot_image $boot_modules
+
+append qemu_args " -nographic "
+
+run_genode_until forever
