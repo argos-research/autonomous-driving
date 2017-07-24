@@ -87,7 +87,7 @@ set config {
 append qemu_args "-net vde,sock=/tmp/switch1 "
 append qemu_args "-net nic,model=lan9118,macaddr=02:00:00:00:01:01 "
 
-set boot_modules { core init savm ld.lib.so libc.lib.so stdcxx.lib.so libm.lib.so pthread.lib.so timer lwip.lib.so libmosquitto.lib.so libssl.lib.so libcrypto.lib.so }
+set boot_modules { core init savm ld.lib.so libc.lib.so stdcxx.lib.so libm.lib.so pthread.lib.so timer lwip.lib.so libmosquitto.lib.so libssl.lib.so libcrypto.lib.so libprotobuf.lib.so zlib.lib.so }
 
 # platform-specific modules
 lappend_if $use_usb_driver              boot_modules usb_drv

@@ -16,6 +16,8 @@
 #include <google/protobuf/reflection_ops.h>
 #include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
+
+namespace protobuf {
 class StateDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<State> {
 } _State_default_instance_;
 
@@ -96,12 +98,12 @@ void TableStruct::InitDefaultsImpl() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::internal::InitProtobufDefaults();
-  ::protobuf_sensor_2eproto::InitDefaults();
-  ::protobuf_wheel_2eproto::InitDefaults();
-  ::protobuf_specification_2eproto::InitDefaults();
+  ::protobuf::protobuf_sensor_2eproto::InitDefaults();
+  ::protobuf::protobuf_wheel_2eproto::InitDefaults();
+  ::protobuf::protobuf_specification_2eproto::InitDefaults();
   _State_default_instance_.DefaultConstruct();
-  _State_default_instance_.get_mutable()->specification_ = const_cast< ::Specification*>(
-      ::Specification::internal_default_instance());
+  _State_default_instance_.get_mutable()->specification_ = const_cast< ::protobuf::Specification*>(
+      ::protobuf::Specification::internal_default_instance());
 }
 
 void InitDefaults() {
@@ -111,20 +113,21 @@ void InitDefaults() {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] = {
-      "\n\013state.proto\032\014sensor.proto\032\013wheel.proto"
-      "\032\023specification.proto\"\221\001\n\005State\022\027\n\006senso"
-      "r\030\001 \003(\0132\007.Sensor\022\025\n\005wheel\030\002 \003(\0132\006.Wheel\022"
-      "%\n\rspecification\030\003 \001(\0132\016.Specification\022\r"
-      "\n\005steer\030\004 \001(\002\022\020\n\010brakeCmd\030\005 \001(\002\022\020\n\010accel"
-      "Cmd\030\006 \001(\002b\006proto3"
+      "\n\013state.proto\022\010protobuf\032\014sensor.proto\032\013w"
+      "heel.proto\032\023specification.proto\"\254\001\n\005Stat"
+      "e\022 \n\006sensor\030\001 \003(\0132\020.protobuf.Sensor\022\036\n\005w"
+      "heel\030\002 \003(\0132\017.protobuf.Wheel\022.\n\rspecifica"
+      "tion\030\003 \001(\0132\027.protobuf.Specification\022\r\n\005s"
+      "teer\030\004 \001(\002\022\020\n\010brakeCmd\030\005 \001(\002\022\020\n\010accelCmd"
+      "\030\006 \001(\002b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 217);
+      descriptor, 254);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "state.proto", &protobuf_RegisterTypes);
-  ::protobuf_sensor_2eproto::AddDescriptors();
-  ::protobuf_wheel_2eproto::AddDescriptors();
-  ::protobuf_specification_2eproto::AddDescriptors();
+  ::protobuf::protobuf_sensor_2eproto::AddDescriptors();
+  ::protobuf::protobuf_wheel_2eproto::AddDescriptors();
+  ::protobuf::protobuf_specification_2eproto::AddDescriptors();
   ::google::protobuf::internal::OnShutdown(&TableStruct::Shutdown);
 }
 
@@ -159,7 +162,7 @@ State::State()
     protobuf_state_2eproto::InitDefaults();
   }
   SharedCtor();
-  // @@protoc_insertion_point(constructor:State)
+  // @@protoc_insertion_point(constructor:protobuf.State)
 }
 State::State(const State& from)
   : ::google::protobuf::Message(),
@@ -169,24 +172,25 @@ State::State(const State& from)
       _cached_size_(0) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   if (from.has_specification()) {
-    specification_ = new ::Specification(*from.specification_);
+    specification_ = new ::protobuf::Specification(*from.specification_);
   } else {
     specification_ = NULL;
   }
   ::memcpy(&steer_, &from.steer_,
-    reinterpret_cast<char*>(&accelcmd_) -
-    reinterpret_cast<char*>(&steer_) + sizeof(accelcmd_));
-  // @@protoc_insertion_point(copy_constructor:State)
+    static_cast<size_t>(reinterpret_cast<char*>(&accelcmd_) -
+    reinterpret_cast<char*>(&steer_)) + sizeof(accelcmd_));
+  // @@protoc_insertion_point(copy_constructor:protobuf.State)
 }
 
 void State::SharedCtor() {
-  ::memset(&specification_, 0, reinterpret_cast<char*>(&accelcmd_) -
-    reinterpret_cast<char*>(&specification_) + sizeof(accelcmd_));
+  ::memset(&specification_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&accelcmd_) -
+      reinterpret_cast<char*>(&specification_)) + sizeof(accelcmd_));
   _cached_size_ = 0;
 }
 
 State::~State() {
-  // @@protoc_insertion_point(destructor:State)
+  // @@protoc_insertion_point(destructor:protobuf.State)
   SharedDtor();
 }
 
@@ -220,28 +224,29 @@ State* State::New(::google::protobuf::Arena* arena) const {
 }
 
 void State::Clear() {
-// @@protoc_insertion_point(message_clear_start:State)
+// @@protoc_insertion_point(message_clear_start:protobuf.State)
   sensor_.Clear();
   wheel_.Clear();
   if (GetArenaNoVirtual() == NULL && specification_ != NULL) {
     delete specification_;
   }
   specification_ = NULL;
-  ::memset(&steer_, 0, reinterpret_cast<char*>(&accelcmd_) -
-    reinterpret_cast<char*>(&steer_) + sizeof(accelcmd_));
+  ::memset(&steer_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&accelcmd_) -
+      reinterpret_cast<char*>(&steer_)) + sizeof(accelcmd_));
 }
 
 bool State::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:State)
+  // @@protoc_insertion_point(parse_start:protobuf.State)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated .Sensor sensor = 1;
+      // repeated .protobuf.Sensor sensor = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(10u)) {
@@ -253,7 +258,7 @@ bool State::MergePartialFromCodedStream(
         break;
       }
 
-      // repeated .Wheel wheel = 2;
+      // repeated .protobuf.Wheel wheel = 2;
       case 2: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(18u)) {
@@ -265,7 +270,7 @@ bool State::MergePartialFromCodedStream(
         break;
       }
 
-      // .Specification specification = 3;
+      // .protobuf.Specification specification = 3;
       case 3: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(26u)) {
@@ -332,33 +337,35 @@ bool State::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:State)
+  // @@protoc_insertion_point(parse_success:protobuf.State)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:State)
+  // @@protoc_insertion_point(parse_failure:protobuf.State)
   return false;
 #undef DO_
 }
 
 void State::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:State)
+  // @@protoc_insertion_point(serialize_start:protobuf.State)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // repeated .Sensor sensor = 1;
-  for (unsigned int i = 0, n = this->sensor_size(); i < n; i++) {
+  // repeated .protobuf.Sensor sensor = 1;
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->sensor_size()); i < n; i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->sensor(i), output);
+      1, this->sensor(static_cast<int>(i)), output);
   }
 
-  // repeated .Wheel wheel = 2;
-  for (unsigned int i = 0, n = this->wheel_size(); i < n; i++) {
+  // repeated .protobuf.Wheel wheel = 2;
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->wheel_size()); i < n; i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      2, this->wheel(i), output);
+      2, this->wheel(static_cast<int>(i)), output);
   }
 
-  // .Specification specification = 3;
+  // .protobuf.Specification specification = 3;
   if (this->has_specification()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       3, *this->specification_, output);
@@ -379,31 +386,32 @@ void State::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteFloat(6, this->accelcmd(), output);
   }
 
-  // @@protoc_insertion_point(serialize_end:State)
+  // @@protoc_insertion_point(serialize_end:protobuf.State)
 }
 
 ::google::protobuf::uint8* State::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
-  // @@protoc_insertion_point(serialize_to_array_start:State)
+  // @@protoc_insertion_point(serialize_to_array_start:protobuf.State)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // repeated .Sensor sensor = 1;
-  for (unsigned int i = 0, n = this->sensor_size(); i < n; i++) {
+  // repeated .protobuf.Sensor sensor = 1;
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->sensor_size()); i < n; i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        1, this->sensor(i), deterministic, target);
+        1, this->sensor(static_cast<int>(i)), deterministic, target);
   }
 
-  // repeated .Wheel wheel = 2;
-  for (unsigned int i = 0, n = this->wheel_size(); i < n; i++) {
+  // repeated .protobuf.Wheel wheel = 2;
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->wheel_size()); i < n; i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        2, this->wheel(i), deterministic, target);
+        2, this->wheel(static_cast<int>(i)), deterministic, target);
   }
 
-  // .Specification specification = 3;
+  // .protobuf.Specification specification = 3;
   if (this->has_specification()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
@@ -425,37 +433,37 @@ void State::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(6, this->accelcmd(), target);
   }
 
-  // @@protoc_insertion_point(serialize_to_array_end:State)
+  // @@protoc_insertion_point(serialize_to_array_end:protobuf.State)
   return target;
 }
 
 size_t State::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:State)
+// @@protoc_insertion_point(message_byte_size_start:protobuf.State)
   size_t total_size = 0;
 
-  // repeated .Sensor sensor = 1;
+  // repeated .protobuf.Sensor sensor = 1;
   {
-    unsigned int count = this->sensor_size();
+    unsigned int count = static_cast<unsigned int>(this->sensor_size());
     total_size += 1UL * count;
     for (unsigned int i = 0; i < count; i++) {
       total_size +=
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-          this->sensor(i));
+          this->sensor(static_cast<int>(i)));
     }
   }
 
-  // repeated .Wheel wheel = 2;
+  // repeated .protobuf.Wheel wheel = 2;
   {
-    unsigned int count = this->wheel_size();
+    unsigned int count = static_cast<unsigned int>(this->wheel_size());
     total_size += 1UL * count;
     for (unsigned int i = 0; i < count; i++) {
       total_size +=
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-          this->wheel(i));
+          this->wheel(static_cast<int>(i)));
     }
   }
 
-  // .Specification specification = 3;
+  // .protobuf.Specification specification = 3;
   if (this->has_specification()) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
@@ -485,22 +493,22 @@ size_t State::ByteSizeLong() const {
 }
 
 void State::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:State)
+// @@protoc_insertion_point(generalized_merge_from_start:protobuf.State)
   GOOGLE_DCHECK_NE(&from, this);
   const State* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const State>(
           &from);
   if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:State)
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:protobuf.State)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:State)
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:protobuf.State)
     MergeFrom(*source);
   }
 }
 
 void State::MergeFrom(const State& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:State)
+// @@protoc_insertion_point(class_specific_merge_from_start:protobuf.State)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::google::protobuf::uint32 cached_has_bits = 0;
@@ -509,7 +517,7 @@ void State::MergeFrom(const State& from) {
   sensor_.MergeFrom(from.sensor_);
   wheel_.MergeFrom(from.wheel_);
   if (from.has_specification()) {
-    mutable_specification()->::Specification::MergeFrom(from.specification());
+    mutable_specification()->::protobuf::Specification::MergeFrom(from.specification());
   }
   if (from.steer() != 0) {
     set_steer(from.steer());
@@ -523,14 +531,14 @@ void State::MergeFrom(const State& from) {
 }
 
 void State::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:State)
+// @@protoc_insertion_point(generalized_copy_from_start:protobuf.State)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 void State::CopyFrom(const State& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:State)
+// @@protoc_insertion_point(class_specific_copy_from_start:protobuf.State)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -562,67 +570,67 @@ void State::InternalSwap(State* other) {
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // State
 
-// repeated .Sensor sensor = 1;
+// repeated .protobuf.Sensor sensor = 1;
 int State::sensor_size() const {
   return sensor_.size();
 }
 void State::clear_sensor() {
   sensor_.Clear();
 }
-const ::Sensor& State::sensor(int index) const {
-  // @@protoc_insertion_point(field_get:State.sensor)
+const ::protobuf::Sensor& State::sensor(int index) const {
+  // @@protoc_insertion_point(field_get:protobuf.State.sensor)
   return sensor_.Get(index);
 }
-::Sensor* State::mutable_sensor(int index) {
-  // @@protoc_insertion_point(field_mutable:State.sensor)
+::protobuf::Sensor* State::mutable_sensor(int index) {
+  // @@protoc_insertion_point(field_mutable:protobuf.State.sensor)
   return sensor_.Mutable(index);
 }
-::Sensor* State::add_sensor() {
-  // @@protoc_insertion_point(field_add:State.sensor)
+::protobuf::Sensor* State::add_sensor() {
+  // @@protoc_insertion_point(field_add:protobuf.State.sensor)
   return sensor_.Add();
 }
-::google::protobuf::RepeatedPtrField< ::Sensor >*
+::google::protobuf::RepeatedPtrField< ::protobuf::Sensor >*
 State::mutable_sensor() {
-  // @@protoc_insertion_point(field_mutable_list:State.sensor)
+  // @@protoc_insertion_point(field_mutable_list:protobuf.State.sensor)
   return &sensor_;
 }
-const ::google::protobuf::RepeatedPtrField< ::Sensor >&
+const ::google::protobuf::RepeatedPtrField< ::protobuf::Sensor >&
 State::sensor() const {
-  // @@protoc_insertion_point(field_list:State.sensor)
+  // @@protoc_insertion_point(field_list:protobuf.State.sensor)
   return sensor_;
 }
 
-// repeated .Wheel wheel = 2;
+// repeated .protobuf.Wheel wheel = 2;
 int State::wheel_size() const {
   return wheel_.size();
 }
 void State::clear_wheel() {
   wheel_.Clear();
 }
-const ::Wheel& State::wheel(int index) const {
-  // @@protoc_insertion_point(field_get:State.wheel)
+const ::protobuf::Wheel& State::wheel(int index) const {
+  // @@protoc_insertion_point(field_get:protobuf.State.wheel)
   return wheel_.Get(index);
 }
-::Wheel* State::mutable_wheel(int index) {
-  // @@protoc_insertion_point(field_mutable:State.wheel)
+::protobuf::Wheel* State::mutable_wheel(int index) {
+  // @@protoc_insertion_point(field_mutable:protobuf.State.wheel)
   return wheel_.Mutable(index);
 }
-::Wheel* State::add_wheel() {
-  // @@protoc_insertion_point(field_add:State.wheel)
+::protobuf::Wheel* State::add_wheel() {
+  // @@protoc_insertion_point(field_add:protobuf.State.wheel)
   return wheel_.Add();
 }
-::google::protobuf::RepeatedPtrField< ::Wheel >*
+::google::protobuf::RepeatedPtrField< ::protobuf::Wheel >*
 State::mutable_wheel() {
-  // @@protoc_insertion_point(field_mutable_list:State.wheel)
+  // @@protoc_insertion_point(field_mutable_list:protobuf.State.wheel)
   return &wheel_;
 }
-const ::google::protobuf::RepeatedPtrField< ::Wheel >&
+const ::google::protobuf::RepeatedPtrField< ::protobuf::Wheel >&
 State::wheel() const {
-  // @@protoc_insertion_point(field_list:State.wheel)
+  // @@protoc_insertion_point(field_list:protobuf.State.wheel)
   return wheel_;
 }
 
-// .Specification specification = 3;
+// .protobuf.Specification specification = 3;
 bool State::has_specification() const {
   return this != internal_default_instance() && specification_ != NULL;
 }
@@ -630,27 +638,27 @@ void State::clear_specification() {
   if (GetArenaNoVirtual() == NULL && specification_ != NULL) delete specification_;
   specification_ = NULL;
 }
-const ::Specification& State::specification() const {
-  // @@protoc_insertion_point(field_get:State.specification)
+const ::protobuf::Specification& State::specification() const {
+  // @@protoc_insertion_point(field_get:protobuf.State.specification)
   return specification_ != NULL ? *specification_
-                         : *::Specification::internal_default_instance();
+                         : *::protobuf::Specification::internal_default_instance();
 }
-::Specification* State::mutable_specification() {
+::protobuf::Specification* State::mutable_specification() {
   
   if (specification_ == NULL) {
-    specification_ = new ::Specification;
+    specification_ = new ::protobuf::Specification;
   }
-  // @@protoc_insertion_point(field_mutable:State.specification)
+  // @@protoc_insertion_point(field_mutable:protobuf.State.specification)
   return specification_;
 }
-::Specification* State::release_specification() {
-  // @@protoc_insertion_point(field_release:State.specification)
+::protobuf::Specification* State::release_specification() {
+  // @@protoc_insertion_point(field_release:protobuf.State.specification)
   
-  ::Specification* temp = specification_;
+  ::protobuf::Specification* temp = specification_;
   specification_ = NULL;
   return temp;
 }
-void State::set_allocated_specification(::Specification* specification) {
+void State::set_allocated_specification(::protobuf::Specification* specification) {
   delete specification_;
   specification_ = specification;
   if (specification) {
@@ -658,7 +666,7 @@ void State::set_allocated_specification(::Specification* specification) {
   } else {
     
   }
-  // @@protoc_insertion_point(field_set_allocated:State.specification)
+  // @@protoc_insertion_point(field_set_allocated:protobuf.State.specification)
 }
 
 // float steer = 4;
@@ -666,13 +674,13 @@ void State::clear_steer() {
   steer_ = 0;
 }
 float State::steer() const {
-  // @@protoc_insertion_point(field_get:State.steer)
+  // @@protoc_insertion_point(field_get:protobuf.State.steer)
   return steer_;
 }
 void State::set_steer(float value) {
   
   steer_ = value;
-  // @@protoc_insertion_point(field_set:State.steer)
+  // @@protoc_insertion_point(field_set:protobuf.State.steer)
 }
 
 // float brakeCmd = 5;
@@ -680,13 +688,13 @@ void State::clear_brakecmd() {
   brakecmd_ = 0;
 }
 float State::brakecmd() const {
-  // @@protoc_insertion_point(field_get:State.brakeCmd)
+  // @@protoc_insertion_point(field_get:protobuf.State.brakeCmd)
   return brakecmd_;
 }
 void State::set_brakecmd(float value) {
   
   brakecmd_ = value;
-  // @@protoc_insertion_point(field_set:State.brakeCmd)
+  // @@protoc_insertion_point(field_set:protobuf.State.brakeCmd)
 }
 
 // float accelCmd = 6;
@@ -694,17 +702,19 @@ void State::clear_accelcmd() {
   accelcmd_ = 0;
 }
 float State::accelcmd() const {
-  // @@protoc_insertion_point(field_get:State.accelCmd)
+  // @@protoc_insertion_point(field_get:protobuf.State.accelCmd)
   return accelcmd_;
 }
 void State::set_accelcmd(float value) {
   
   accelcmd_ = value;
-  // @@protoc_insertion_point(field_set:State.accelCmd)
+  // @@protoc_insertion_point(field_set:protobuf.State.accelCmd)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
 
 // @@protoc_insertion_point(namespace_scope)
+
+}  // namespace protobuf
 
 // @@protoc_insertion_point(global_scope)

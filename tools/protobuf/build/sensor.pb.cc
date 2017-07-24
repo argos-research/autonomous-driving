@@ -16,6 +16,8 @@
 #include <google/protobuf/reflection_ops.h>
 #include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
+
+namespace protobuf {
 class SensorDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<Sensor> {
 } _Sensor_default_instance_;
 
@@ -103,12 +105,13 @@ void InitDefaults() {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] = {
-      "\n\014sensor.proto\"[\n\006Sensor\022 \n\004type\030\001 \001(\0162\022"
-      ".Sensor.SensorType\022\r\n\005value\030\002 \003(\002\" \n\nSen"
-      "sorType\022\007\n\003GPS\020\000\022\t\n\005LASER\020\001b\006proto3"
+      "\n\014sensor.proto\022\010protobuf\"d\n\006Sensor\022)\n\004ty"
+      "pe\030\001 \001(\0162\033.protobuf.Sensor.SensorType\022\r\n"
+      "\005value\030\002 \003(\002\" \n\nSensorType\022\007\n\003GPS\020\000\022\t\n\005L"
+      "ASER\020\001b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 115);
+      descriptor, 134);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "sensor.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&TableStruct::Shutdown);
@@ -162,7 +165,7 @@ Sensor::Sensor()
     protobuf_sensor_2eproto::InitDefaults();
   }
   SharedCtor();
-  // @@protoc_insertion_point(constructor:Sensor)
+  // @@protoc_insertion_point(constructor:protobuf.Sensor)
 }
 Sensor::Sensor(const Sensor& from)
   : ::google::protobuf::Message(),
@@ -171,7 +174,7 @@ Sensor::Sensor(const Sensor& from)
       _cached_size_(0) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   type_ = from.type_;
-  // @@protoc_insertion_point(copy_constructor:Sensor)
+  // @@protoc_insertion_point(copy_constructor:protobuf.Sensor)
 }
 
 void Sensor::SharedCtor() {
@@ -180,7 +183,7 @@ void Sensor::SharedCtor() {
 }
 
 Sensor::~Sensor() {
-  // @@protoc_insertion_point(destructor:Sensor)
+  // @@protoc_insertion_point(destructor:protobuf.Sensor)
   SharedDtor();
 }
 
@@ -211,7 +214,7 @@ Sensor* Sensor::New(::google::protobuf::Arena* arena) const {
 }
 
 void Sensor::Clear() {
-// @@protoc_insertion_point(message_clear_start:Sensor)
+// @@protoc_insertion_point(message_clear_start:protobuf.Sensor)
   value_.Clear();
   type_ = 0;
 }
@@ -220,13 +223,13 @@ bool Sensor::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:Sensor)
+  // @@protoc_insertion_point(parse_start:protobuf.Sensor)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // .Sensor.SensorType type = 1;
+      // .protobuf.Sensor.SensorType type = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(8u)) {
@@ -234,7 +237,7 @@ bool Sensor::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
                  input, &value)));
-          set_type(static_cast< ::Sensor_SensorType >(value));
+          set_type(static_cast< ::protobuf::Sensor_SensorType >(value));
         } else {
           goto handle_unusual;
         }
@@ -272,21 +275,21 @@ bool Sensor::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:Sensor)
+  // @@protoc_insertion_point(parse_success:protobuf.Sensor)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:Sensor)
+  // @@protoc_insertion_point(parse_failure:protobuf.Sensor)
   return false;
 #undef DO_
 }
 
 void Sensor::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:Sensor)
+  // @@protoc_insertion_point(serialize_start:protobuf.Sensor)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // .Sensor.SensorType type = 1;
+  // .protobuf.Sensor.SensorType type = 1;
   if (this->type() != 0) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       1, this->type(), output);
@@ -295,22 +298,22 @@ void Sensor::SerializeWithCachedSizes(
   // repeated float value = 2;
   if (this->value_size() > 0) {
     ::google::protobuf::internal::WireFormatLite::WriteTag(2, ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED, output);
-    output->WriteVarint32(_value_cached_byte_size_);
+    output->WriteVarint32(static_cast<::google::protobuf::uint32>(
+        _value_cached_byte_size_));
     ::google::protobuf::internal::WireFormatLite::WriteFloatArray(
       this->value().data(), this->value_size(), output);
   }
 
-  // @@protoc_insertion_point(serialize_end:Sensor)
+  // @@protoc_insertion_point(serialize_end:protobuf.Sensor)
 }
 
 ::google::protobuf::uint8* Sensor::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
-  // @@protoc_insertion_point(serialize_to_array_start:Sensor)
+  // @@protoc_insertion_point(serialize_to_array_start:protobuf.Sensor)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // .Sensor.SensorType type = 1;
+  // .protobuf.Sensor.SensorType type = 1;
   if (this->type() != 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       1, this->type(), target);
@@ -323,26 +326,28 @@ void Sensor::SerializeWithCachedSizes(
       ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED,
       target);
     target = ::google::protobuf::io::CodedOutputStream::WriteVarint32ToArray(
-      _value_cached_byte_size_, target);
+        static_cast<::google::protobuf::uint32>(
+            _value_cached_byte_size_), target);
     target = ::google::protobuf::internal::WireFormatLite::
       WriteFloatNoTagToArray(this->value_, target);
   }
 
-  // @@protoc_insertion_point(serialize_to_array_end:Sensor)
+  // @@protoc_insertion_point(serialize_to_array_end:protobuf.Sensor)
   return target;
 }
 
 size_t Sensor::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:Sensor)
+// @@protoc_insertion_point(message_byte_size_start:protobuf.Sensor)
   size_t total_size = 0;
 
   // repeated float value = 2;
   {
-    unsigned int count = this->value_size();
+    unsigned int count = static_cast<unsigned int>(this->value_size());
     size_t data_size = 4UL * count;
     if (data_size > 0) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::Int32Size(data_size);
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+            static_cast<google::protobuf::int32>(data_size));
     }
     int cached_size = ::google::protobuf::internal::ToCachedSize(data_size);
     GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
@@ -351,7 +356,7 @@ size_t Sensor::ByteSizeLong() const {
     total_size += data_size;
   }
 
-  // .Sensor.SensorType type = 1;
+  // .protobuf.Sensor.SensorType type = 1;
   if (this->type() != 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());
@@ -365,22 +370,22 @@ size_t Sensor::ByteSizeLong() const {
 }
 
 void Sensor::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:Sensor)
+// @@protoc_insertion_point(generalized_merge_from_start:protobuf.Sensor)
   GOOGLE_DCHECK_NE(&from, this);
   const Sensor* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const Sensor>(
           &from);
   if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:Sensor)
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:protobuf.Sensor)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:Sensor)
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:protobuf.Sensor)
     MergeFrom(*source);
   }
 }
 
 void Sensor::MergeFrom(const Sensor& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:Sensor)
+// @@protoc_insertion_point(class_specific_merge_from_start:protobuf.Sensor)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::google::protobuf::uint32 cached_has_bits = 0;
@@ -393,14 +398,14 @@ void Sensor::MergeFrom(const Sensor& from) {
 }
 
 void Sensor::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:Sensor)
+// @@protoc_insertion_point(generalized_copy_from_start:protobuf.Sensor)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 void Sensor::CopyFrom(const Sensor& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:Sensor)
+// @@protoc_insertion_point(class_specific_copy_from_start:protobuf.Sensor)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -428,18 +433,18 @@ void Sensor::InternalSwap(Sensor* other) {
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // Sensor
 
-// .Sensor.SensorType type = 1;
+// .protobuf.Sensor.SensorType type = 1;
 void Sensor::clear_type() {
   type_ = 0;
 }
-::Sensor_SensorType Sensor::type() const {
-  // @@protoc_insertion_point(field_get:Sensor.type)
-  return static_cast< ::Sensor_SensorType >(type_);
+::protobuf::Sensor_SensorType Sensor::type() const {
+  // @@protoc_insertion_point(field_get:protobuf.Sensor.type)
+  return static_cast< ::protobuf::Sensor_SensorType >(type_);
 }
-void Sensor::set_type(::Sensor_SensorType value) {
+void Sensor::set_type(::protobuf::Sensor_SensorType value) {
   
   type_ = value;
-  // @@protoc_insertion_point(field_set:Sensor.type)
+  // @@protoc_insertion_point(field_set:protobuf.Sensor.type)
 }
 
 // repeated float value = 2;
@@ -450,30 +455,32 @@ void Sensor::clear_value() {
   value_.Clear();
 }
 float Sensor::value(int index) const {
-  // @@protoc_insertion_point(field_get:Sensor.value)
+  // @@protoc_insertion_point(field_get:protobuf.Sensor.value)
   return value_.Get(index);
 }
 void Sensor::set_value(int index, float value) {
   value_.Set(index, value);
-  // @@protoc_insertion_point(field_set:Sensor.value)
+  // @@protoc_insertion_point(field_set:protobuf.Sensor.value)
 }
 void Sensor::add_value(float value) {
   value_.Add(value);
-  // @@protoc_insertion_point(field_add:Sensor.value)
+  // @@protoc_insertion_point(field_add:protobuf.Sensor.value)
 }
 const ::google::protobuf::RepeatedField< float >&
 Sensor::value() const {
-  // @@protoc_insertion_point(field_list:Sensor.value)
+  // @@protoc_insertion_point(field_list:protobuf.Sensor.value)
   return value_;
 }
 ::google::protobuf::RepeatedField< float >*
 Sensor::mutable_value() {
-  // @@protoc_insertion_point(field_mutable_list:Sensor.value)
+  // @@protoc_insertion_point(field_mutable_list:protobuf.Sensor.value)
   return &value_;
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
 
 // @@protoc_insertion_point(namespace_scope)
+
+}  // namespace protobuf
 
 // @@protoc_insertion_point(global_scope)

@@ -1,4 +1,5 @@
 syntax = "proto3";
+package protobuf;
 
 import "sensor.proto";
 import "wheel.proto";

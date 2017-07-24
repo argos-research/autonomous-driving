@@ -4,15 +4,14 @@
  * \date   2017-07-16
  */
 
-/* mosquitto includes */
-#include <mosquittopp.h>
-#include "tcp_socket.h"
+/* protobuf include */
+#include <state.pb.h>
+#include <control.pb.h>
 
-/* genode includes */
-#include <base/env.h>
-#include <base/printf.h>
-#include <util/xml_node.h>
-#include <os/config.h>
+#define timeval timeval_linux
+
+#include "publisher.h"
+#include "proto_client.h"
 
 /* lwip includes */
 extern "C" {
@@ -21,40 +20,65 @@ extern "C" {
 #include <lwip/genode.h>
 #include <nic/packet_allocator.h>
 
+/* genode includes */
+#include <base/env.h>
+#include <base/printf.h>
+#include <util/xml_node.h>
+#include <os/config.h>
+#include <ram_session/connection.h>
+#include <timer_session/connection.h>
+
 /* etc */
 #include <cstdio>
 #include <cstring>
 
-int _listen_socket;
-struct sockaddr_in _in_addr;
-sockaddr _target_addr;
+Publisher::Publisher(const char* id, const char* host, int port) : mosquittopp(id) {
+			/* init the library */
+			mosqpp::lib_init();
 
-class Proto_server : public Tcp_socket
-{
-public:
-	Proto_server();
+			int keepalive = 60;
+			Publisher::connect(host, port, keepalive);
+		}
 
-	~Proto_server();
+		/* connect callback */
+void Publisher::on_connect(int ret) {
+			PDBG("Connected with code %d!", ret);
+		}
 
-	int connect();
+		/* publish callback */
+void Publisher::on_publish(int ret) {
+			//PDBG("Published with code %d!", ret);
+		}
 
-	void serve();
 
-	void disconnect();
+void Publisher::on_log(int ret) {
+			PDBG("Log with code %d!", ret);
+		}
 
-private:
-	int _listen_socket;
-	struct sockaddr_in _in_addr;
-	sockaddr _target_addr;
-};
+		/* disconnect callback */
+void Publisher::on_disconnect(int ret) {
+			PDBG("Disconnected with code %d!", ret);
+		}
 
-Proto_server::Proto_server() :
+		/* error callback */
+void Publisher::on_error() {
+			PDBG("Error!");
+		}
+
+void Publisher::my_publish(int id, float value) {
+	char buffer[1024] = { 0 };
+	int i = 0, ret = -1;
+	sprintf(buffer, "%d %f", id, value);
+	ret = Publisher::publish(NULL, "state", strlen(buffer), buffer);
+	PDBG("state '%s' successful: %d", buffer, MOSQ_ERR_SUCCESS == ret);
+	i++;
+}
+
+Proto_client::Proto_client() :
 	_listen_socket(0),
 	_in_addr{0},
 	_target_addr{0}
 {
-	//lwip_tcpip_init();
-
 	_in_addr.sin_family = AF_INET;
 	_in_addr.sin_port = htons(3001);
 
@@ -82,60 +106,51 @@ Proto_server::Proto_server() :
 		if (lwip_connect(_listen_socket, (struct sockaddr*)&_in_addr, sizeof(_in_addr)))
 		{
 			PERR("Connection failed!");
+			PERR("Reconnecting!");
 		}
 
-		/*if (lwip_bind(_listen_socket, (struct sockaddr*)&_in_addr, sizeof(_in_addr)))
-		{
-			PERR("Bind failed!");
-			return;
-		}
-		PDBG("lwip bind\n");
-		if (lwip_listen(_listen_socket, 5))
-		{
-			PERR("Listen failed!");
-			return;
-		}*/
 	PINF("Connected...\n");
 
 }
 
-Proto_server::~Proto_server()
+Proto_client::~Proto_client()
 {
-	disconnect();
+	
 }
 
-int Proto_server::connect()
+void Proto_client::serve(Publisher *publisher)
 {
-	socklen_t len = sizeof(_target_addr);
-	_target_socket = lwip_accept(_listen_socket, &_target_addr, &len);
-	if (_target_socket < 0)
-	{
-		PWRN("Invalid socket from accept!");
-		return _target_socket;
-	}
-	sockaddr_in* target_in_addr = (sockaddr_in*)&_target_addr;
-	PINF("Got connection from %s", inet_ntoa(target_in_addr));
-	return _target_socket;
-}
-
-void Proto_server::serve()
-{
-	int message = 0;
+	Timer::Connection timer;
+	timer.msleep(1000);
+	int size = 0;
+	int id=0;
+	float value=0;
 	while (true)
 	{
-		NETCHECK_LOOP(receiveInt32_t(message));
-		if (message == 0)
+		/*NETCHECK_LOOP(receiveInt32_t(size));
+		if (size>0)
 		{
-			PDBG("Ready to receive task description.");
+			PDBG("Ready to receive state.");
+			Genode::Ram_dataspace_capability state_ds=Genode::env()->ram_session()->alloc(size);
+			protobuf::State* state=Genode::env()->rm_session()->attach(state_ds);
+			NETCHECK_LOOP(receive_data(state, size));
+			float spinVel=state->wheel(0).spinvel();
+			publisher->my_publish(0,0);
+			Genode::env()->ram_session()->free(state_ds);
 		}
 		else
 		{
-			PWRN("Unknown message: %d", message);
-		}
+			PWRN("Unknown message: %d", size);
+		}*/
 	}
 }
 
-void Proto_server::disconnect()
+int Proto_client::connect()
+{
+	return 0;
+}
+
+void Proto_client::disconnect()
 {
 	lwip_close(_target_socket);
 	PERR("Target socket closed.");
@@ -143,58 +158,6 @@ void Proto_server::disconnect()
 	PERR("Server socket closed.");
 }	
 
-
-class Publisher : public mosqpp::mosquittopp {
-public:
-		Publisher(const char* id, const char* host, int port) : mosquittopp(id) {
-			/* init the library */
-			mosqpp::lib_init();
-
-			int keepalive = 60;
-			Publisher::connect(host, port, keepalive);
-		}
-
-		/* connect callback */
-		void on_connect(int ret) {
-			PDBG("Connected with code %d!", ret);
-
-			Publisher::my_publish();
-		}
-
-		/* publish callback */
-		void on_publish(int ret) {
-			PDBG("Published with code %d!", ret);
-
-			Publisher::my_publish();
-		}
-
-
-		void on_log(int ret) {
-			PDBG("Log with code %d!", ret);
-		}
-
-		/* disconnect callback */
-		void on_disconnect(int ret) {
-			PDBG("Disconnected with code %d!", ret);
-		}
-
-		/* error callback */
-		void on_error() {
-			PDBG("Error!");
-		}
-
-
-private:
-		char buffer[1024] = { 0 };
-		int i = 0, ret = -1;
-
-		void my_publish() {
-			sprintf(buffer, "Hello World: %d", i);
-			ret = Publisher::publish(NULL, "Publisher", strlen(buffer), buffer);
-			PDBG("Publish '%s' successful: %d", buffer, MOSQ_ERR_SUCCESS == ret);
-			i++;
-		};
-};
 
 int main(int argc, char* argv[]) {
 	//lwip_tcpip_init(); /* causes freeze, code works fine without it */
@@ -246,20 +209,18 @@ int main(int argc, char* argv[]) {
 	mosquitto.attribute("port").value(port, sizeof(port));
 
 	PDBG("protobuf init");
-	Proto_server client;
+	Proto_client *client;
 	PDBG("done");
 
 	/* create new mosquitto peer */
 	PDBG("mosquitto init");
-	class Publisher *publisher = new Publisher("Publisher", ip_addr, atoi(port));
+	Publisher *publisher = new Publisher("Publisher", ip_addr, atoi(port));
 	PDBG("done");
 
 	/* endless loop with auto reconnect */
 	publisher->loop_start();
 
-	PDBG("Blub\n");
-
-	while(1);
+	client->serve(publisher);
 
 	/* cleanup */
 	mosqpp::lib_cleanup();
