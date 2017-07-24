@@ -43,8 +43,8 @@ set config {
     <start name="savm">
         <resource name="RAM" quantum="4M"/>
 				<config>
-            <network dhcp="no" ip-address="10.0.0.3" subnet-mask="255.255.255.0" default-gateway="10.0.0.1" />
-            <mosquitto ip-address="10.0.0.1" port="1883" />
+            <network dhcp="no" ip-address="10.0.1.2" subnet-mask="255.255.255.0" default-gateway="10.0.1.1" />
+            <mosquitto ip-address="10.0.0.2" port="1883" />
         </config>
     </start>}
 
