@@ -50,10 +50,10 @@ public:
 		}
 
 		void on_message(const struct mosquitto_message *message) {
-			PDBG("%s %s", message->topic, message->payload);
+			//PDBG("%s %s", message->topic, message->payload);
 			std::string payload = (char*)message->payload;
 			const char* name = payload.substr(0, payload.find(";")).c_str();
-			PDBG("name %s", name);
+			//PDBG("name %s", name);
 			if(!strcmp(name,"steer"))
 			{
 				payload.erase(0, payload.find(";")+2);
