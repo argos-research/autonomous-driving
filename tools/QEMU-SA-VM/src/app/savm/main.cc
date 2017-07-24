@@ -68,7 +68,7 @@ void Publisher::on_error() {
 void Publisher::my_publish(const char* name, float value) {
 	char buffer[1024] = { 0 };
 	int i = 0, ret = -1;
-	sprintf(buffer, "%s;%f", name, value);
+	sprintf(buffer, "%s; %f", name, value);
 	ret = Publisher::publish(NULL, "state", strlen(buffer), buffer);
 	//PDBG("state '%s' successful: %d", buffer, MOSQ_ERR_SUCCESS == ret);
 	i++;

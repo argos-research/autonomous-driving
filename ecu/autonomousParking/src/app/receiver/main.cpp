@@ -56,19 +56,16 @@ public:
 			PDBG("name %s", name);
 			if(!strcmp(name,"steer"))
 			{
-				PDBG("steer\n");
 				payload.erase(0, payload.find(";")+2);
 				steer=atof(payload.substr(0, payload.find(";")).c_str());
 			}
 			if(!strcmp(name,"brake"))
 			{
-				PDBG("brake\n");
 				payload.erase(0, payload.find(";")+2);
 				brake=atof(payload.substr(0, payload.find(";")).c_str());
 			}
 			if(!strcmp(name,"accel"))
 			{
-				PDBG("accel\n");
 				payload.erase(0, payload.find(";")+2);
 				accel=atof(payload.substr(0, payload.find(";")).c_str());
 			}
