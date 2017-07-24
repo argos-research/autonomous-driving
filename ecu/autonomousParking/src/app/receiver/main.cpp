@@ -23,6 +23,9 @@ extern "C" {
 /* etc */
 #include <cstdio>
 #include <cstring>
+#include <string>
+
+float steer, brake, accel, spinVel0, spinVel1, spinVel2, spinVel3, length, width, wheelRadius, gps_x, gps_y, laser0, laser1, laser2, laser3;
 
 class Receiver : public mosqpp::mosquittopp {
 public:
@@ -38,7 +41,7 @@ public:
 		void on_connect(int ret) {
 			PDBG("Connected with code %d!", ret);
 
-			Reciever::my_subscribe();
+			Receiver::my_subscribe();
 		}
 
 		/* publish callback */
@@ -48,6 +51,93 @@ public:
 
 		void on_message(const struct mosquitto_message *message) {
 			PDBG("%s %s", message->topic, message->payload);
+			std::string payload = (char*)message->payload;
+			const char* name = payload.substr(0, payload.find(";")).c_str();
+			PDBG("name %s", name);
+			if(!strcmp(name,"steer"))
+			{
+				PDBG("steer\n");
+				payload.erase(0, payload.find(";")+2);
+				steer=atof(payload.substr(0, payload.find(";")).c_str());
+			}
+			if(!strcmp(name,"brake"))
+			{
+				PDBG("brake\n");
+				payload.erase(0, payload.find(";")+2);
+				brake=atof(payload.substr(0, payload.find(";")).c_str());
+			}
+			if(!strcmp(name,"accel"))
+			{
+				PDBG("accel\n");
+				payload.erase(0, payload.find(";")+2);
+				accel=atof(payload.substr(0, payload.find(";")).c_str());
+			}
+			if(!strcmp(name,"wheel0"))
+			{
+				payload.erase(0, payload.find(";")+2);
+				spinVel0=atof(payload.substr(0, payload.find(";")).c_str());
+			}
+			if(!strcmp(name,"wheel1"))
+			{
+				payload.erase(0, payload.find(";")+2);
+				spinVel1=atof(payload.substr(0, payload.find(";")).c_str());
+			}
+			if(!strcmp(name,"wheel2"))
+			{
+				payload.erase(0, payload.find(";")+2);
+				spinVel2=atof(payload.substr(0, payload.find(";")).c_str());
+			}
+			if(!strcmp(name,"wheel3"))
+			{
+				payload.erase(0, payload.find(";")+2);
+				spinVel3=atof(payload.substr(0, payload.find(";")).c_str());
+			}
+			if(!strcmp(name,"length"))
+			{
+				payload.erase(0, payload.find(";")+2);
+				length=atof(payload.substr(0, payload.find(";")).c_str());
+			}
+			if(!strcmp(name,"width"))
+			{
+				payload.erase(0, payload.find(";")+2);
+				width=atof(payload.substr(0, payload.find(";")).c_str());
+			}
+			if(!strcmp(name,"wheelRadius"))
+			{
+				payload.erase(0, payload.find(";")+2);
+				wheelRadius=atof(payload.substr(0, payload.find(";")).c_str());
+			}
+			if(!strcmp(name,"gps_x"))
+			{
+				payload.erase(0, payload.find(";")+2);
+				gps_x=atof(payload.substr(0, payload.find(";")).c_str());
+			}
+			if(!strcmp(name,"gps_y"))
+			{
+				payload.erase(0, payload.find(";")+2);
+				gps_y=atof(payload.substr(0, payload.find(";")).c_str());
+			}
+			if(!strcmp(name,"laser0"))
+			{
+				payload.erase(0, payload.find(";")+2);
+				laser0=atof(payload.substr(0, payload.find(";")).c_str());
+			}
+			if(!strcmp(name,"laser1"))
+			{
+				payload.erase(0, payload.find(";")+2);
+				laser0=atof(payload.substr(0, payload.find(";")).c_str());
+			}
+			if(!strcmp(name,"laser2"))
+			{
+				payload.erase(0, payload.find(";")+2);
+				laser0=atof(payload.substr(0, payload.find(";")).c_str());
+			}
+			if(!strcmp(name,"laser3"))
+			{
+				payload.erase(0, payload.find(";")+2);
+				laser0=atof(payload.substr(0, payload.find(";")).c_str());
+			}
+
 		}
 
 		void on_log(int ret) {
@@ -70,9 +160,8 @@ private:
 		int ret = -1;
 
 		void my_subscribe() {
-			topic="mpct";
-			ret = Receiver::subscribe(NULL, topic, 0);
-			PDBG("Subscribed '%s' successful: %d", topic, MOSQ_ERR_SUCCESS == ret);
+			ret = Receiver::subscribe(NULL, "state", 0);
+			PDBG("Subscribed '%s' successful: %d", "state", MOSQ_ERR_SUCCESS == ret);
 			//i++;
 		};
 };
@@ -127,7 +216,7 @@ int main(int argc, char* argv[]) {
 
 	/* create new mosquitto peer */
 	PDBG("mosquitto init");
-	class Receiver *rec = new MPCT("receiver", ip_addr, atoi(port));
+	class Receiver *rec = new Receiver("receiver", ip_addr, atoi(port));
 	PDBG("done");
 
 	/* endless loop with auto reconnect */
