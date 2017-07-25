@@ -30,6 +30,8 @@ extern "C" {
 
 float steer, brake, accel, spinVel0, spinVel1, spinVel2, spinVel3, length, width, wheelRadius, gps_x, gps_y, laser0, laser1, laser2, laser3;
 
+Publisher *pub;
+
 Publisher::Publisher(const char* id, const char* host, int port) : mosquittopp(id) {
 			/* init the library */
 			mosqpp::lib_init();
@@ -66,8 +68,8 @@ void Publisher::on_error() {
 void Publisher::my_publish(const char* name, float value) {
 	char buffer[1024] = { 0 };
 	int i = 0, ret = -1;
-	sprintf(buffer, "%s; %f", name, value);
-	ret = Publisher::publish(NULL, "state", strlen(buffer), buffer);
+	sprintf(buffer, "%s; %f;", name, value);
+	ret = Publisher::publish(NULL, "control", strlen(buffer), buffer);
 	//PDBG("state '%s' successful: %d", buffer, MOSQ_ERR_SUCCESS == ret);
 	i++;
 }
@@ -103,16 +105,19 @@ public:
 			{
 				payload.erase(0, payload.find(";")+2);
 				steer=atof(payload.substr(0, payload.find(";")).c_str());
+				pub->my_publish("steer", steer);
 			}
 			if(!strcmp(name,"brake"))
 			{
 				payload.erase(0, payload.find(";")+2);
 				brake=atof(payload.substr(0, payload.find(";")).c_str());
+				pub->my_publish("brake", brake);
 			}
 			if(!strcmp(name,"accel"))
 			{
 				payload.erase(0, payload.find(";")+2);
 				accel=atof(payload.substr(0, payload.find(";")).c_str());
+				pub->my_publish("accel", accel);
 			}
 			if(!strcmp(name,"wheel0"))
 			{
@@ -261,11 +266,11 @@ int main(int argc, char* argv[]) {
 
 	/* create new mosquitto peer */
 	PDBG("Ecu sub init");
-	class Sub *sub = new Sub("EcuSub", ip_addr, atoi(port));
+	Sub *sub = new Sub("EcuSub", ip_addr, atoi(port));
 	PDBG("done");
 
 	PDBG("Ecu pub init");
-	Publisher *pub = new Publisher("EcuPub", ip_addr, atoi(port));
+	pub = new Publisher("EcuPub", ip_addr, atoi(port));
 	PDBG("done");
 
 	/* endless loop with auto reconnect */
