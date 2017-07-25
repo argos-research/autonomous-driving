@@ -346,6 +346,9 @@ drive_at(int index, tCarElt* car, tSituation *s)
     write(newsockfd, &message_length, 4);
     write(newsockfd, output.c_str(), output.length());
 
+    printf("state was sent.\n");
+    printf("waiting for control.\n");
+
     /* receive protobuf message from S/A VM
      * 1. message length as uint32_t
      * 2. message (Control) itself
@@ -354,6 +357,9 @@ drive_at(int index, tCarElt* car, tSituation *s)
     message_length = ntohl(message_length);         // get length of message
     char* buffer = malloc(message_length);          // alloc buffer for message
     read(newsockfd, buffer, message_length);
+
+    printf("control received.\n");
+
     protobuf::Control control;
     control.ParseFromArray(buffer, message_length); // parse protobuf into control
 
