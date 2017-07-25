@@ -334,6 +334,7 @@ drive_at(int index, tCarElt* car, tSituation *s)
     sensor->add_value(myPos.y);
 
     /* prepare protobuf message (serialize, calculate length, ...) */
+    uint32_t message_length = 0;
     std::string output;
     current_state.SerializeToString(&output);
     message_length = htonl(output.size());
@@ -342,7 +343,6 @@ drive_at(int index, tCarElt* car, tSituation *s)
      * 1. message length as uint32_t
      * 2. message (State) itself
      */
-    uint32_t message_length = 0;
     write(newsockfd, &message_length, 4);
     write(newsockfd, output.c_str(), output.length());
 
