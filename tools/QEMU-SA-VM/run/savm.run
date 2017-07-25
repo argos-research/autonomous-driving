@@ -44,7 +44,7 @@ set config {
         <resource name="RAM" quantum="4M"/>
 				<config>
             <network dhcp="no" ip-address="10.0.1.2" subnet-mask="255.255.255.0" default-gateway="10.0.1.1" />
-            <mosquitto ip-address="10.0.0.2" port="1883" />
+            <mosquitto ip-address="131.159.211.132" port="1883" />
         </config>
     </start>}
 

@@ -70,7 +70,7 @@ void Publisher::my_publish(const char* name, float value) {
 	int i = 0, ret = -1;
 	sprintf(buffer, "%s; %f;", name, value);
 	ret = Publisher::publish(NULL, "control", strlen(buffer), buffer);
-	//PDBG("state '%s' successful: %d", buffer, MOSQ_ERR_SUCCESS == ret);
+	PDBG("pub control '%s' successful: %d", buffer, MOSQ_ERR_SUCCESS == ret);
 	i++;
 }
 
@@ -97,7 +97,7 @@ public:
 		}
 
 		void on_message(const struct mosquitto_message *message) {
-			//PDBG("%s %s", message->topic, message->payload);
+			PDBG("%s %s", message->topic, message->payload);
 			std::string payload = (char*)message->payload;
 			const char* name = payload.substr(0, payload.find(";")).c_str();
 			//PDBG("name %s", name);
