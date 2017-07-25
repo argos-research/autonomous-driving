@@ -3,7 +3,7 @@
 * \date   2017-07-06
 */
 
-#define __DEBUG_OPP_SENS__
+//#define __DEBUG_OPP_SENS__
 #define __OPP_NOISE_STD__ 0.02
 
 #include "obstacleSensors.h"
@@ -104,7 +104,7 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 		myc->_corner_x(2), myc->_corner_y(2), // back right
 		myc->_corner_x(3), myc->_corner_y(3), // back left
 		sensorPosition.x, sensorPosition.y);	// sensor
-		printf("f(x)=%f * x + %f\n", m, t);			// straight line of the sensor
+		printf("f(x)=%f * x + %f\n", m, t);		// straight line of the sensor
 		#endif
 
 		/* iterate over all cars */
@@ -190,6 +190,7 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 			}
 
 			obstacleDistance *= normRand(1, __OPP_NOISE_STD__); // add noise
+			(*it).setDistance(obstacleDistance);
 
 			#ifdef __DEBUG_OPP_SENS__
 			printf("sensor #%d: %f\n", std::distance(sensors.begin(), it), obstacleDistance);
