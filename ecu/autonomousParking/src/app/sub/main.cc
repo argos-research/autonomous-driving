@@ -1,5 +1,5 @@
 /*
- * \brief  receiver - subscribes on topcis and receives messages from server
+ * \brief  Sub - subscribes on topcis and receives messages from server
  * \author Alexander Reisner
  * \date   2017-07-16
  */
@@ -25,23 +25,68 @@ extern "C" {
 #include <cstring>
 #include <string>
 
+/*pub*/
+#include <publisher.h>
+
 float steer, brake, accel, spinVel0, spinVel1, spinVel2, spinVel3, length, width, wheelRadius, gps_x, gps_y, laser0, laser1, laser2, laser3;
 
-class Receiver : public mosqpp::mosquittopp {
-public:
-		Receiver(const char* id, const char* host, int port) : mosquittopp(id) {
+Publisher::Publisher(const char* id, const char* host, int port) : mosquittopp(id) {
 			/* init the library */
 			mosqpp::lib_init();
 
 			int keepalive = 60;
-			Receiver::connect(host, port, keepalive);
+			Publisher::connect(host, port, keepalive);
+		}
+
+		/* connect callback */
+void Publisher::on_connect(int ret) {
+			PDBG("Connected with code %d!", ret);
+		}
+
+		/* publish callback */
+void Publisher::on_publish(int ret) {
+			//PDBG("Published with code %d!", ret);
+		}
+
+
+void Publisher::on_log(int ret) {
+			PDBG("Log with code %d!", ret);
+		}
+
+		/* disconnect callback */
+void Publisher::on_disconnect(int ret) {
+			PDBG("Disconnected with code %d!", ret);
+		}
+
+		/* error callback */
+void Publisher::on_error() {
+			PDBG("Error!");
+		}
+
+void Publisher::my_publish(const char* name, float value) {
+	char buffer[1024] = { 0 };
+	int i = 0, ret = -1;
+	sprintf(buffer, "%s; %f", name, value);
+	ret = Publisher::publish(NULL, "state", strlen(buffer), buffer);
+	//PDBG("state '%s' successful: %d", buffer, MOSQ_ERR_SUCCESS == ret);
+	i++;
+}
+
+class Sub : public mosqpp::mosquittopp {
+public:
+		Sub(const char* id, const char* host, int port) : mosquittopp(id) {
+			/* init the library */
+			mosqpp::lib_init();
+
+			int keepalive = 60;
+			Sub::connect(host, port, keepalive);
 		}
 
 		/* connect callback */
 		void on_connect(int ret) {
 			PDBG("Connected with code %d!", ret);
 
-			Receiver::my_subscribe();
+			Sub::my_subscribe();
 		}
 
 		/* publish callback */
@@ -160,7 +205,7 @@ private:
 		int ret = -1;
 
 		void my_subscribe() {
-			ret = Receiver::subscribe(NULL, "state", 0);
+			ret = Sub::subscribe(NULL, "state", 0);
 			PDBG("Subscribed '%s' successful: %d", "state", MOSQ_ERR_SUCCESS == ret);
 			//i++;
 		};
@@ -215,12 +260,18 @@ int main(int argc, char* argv[]) {
 	mosquitto.attribute("port").value(port, sizeof(port));
 
 	/* create new mosquitto peer */
-	PDBG("mosquitto init");
-	class Receiver *rec = new Receiver("receiver", ip_addr, atoi(port));
+	PDBG("Ecu sub init");
+	class Sub *sub = new Sub("EcuSub", ip_addr, atoi(port));
+	PDBG("done");
+
+	PDBG("Ecu pub init");
+	Publisher *pub = new Publisher("EcuPub", ip_addr, atoi(port));
 	PDBG("done");
 
 	/* endless loop with auto reconnect */
-	rec->loop_forever();
+	pub->loop_start();
+	sub->loop_forever();
+	
 
 	/* cleanup */
 	mosqpp::lib_cleanup();

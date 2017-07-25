@@ -4,7 +4,7 @@ set use_nic_driver [expr !$use_usb_driver && ![have_spec imx53] && ![have_spec h
 if {[expr !$use_usb_driver && !$use_nic_driver]} {
 	puts "\n Run script is not supported on this platform. \n"; exit 0 }
 
-set build_components { core init app/receiver drivers/timer drivers/nic }
+set build_components { core init app/sub drivers/timer drivers/nic }
 
 lappend_if $use_usb_driver              build_components drivers/usb
 lappend_if [have_spec gpio]             build_components drivers/gpio
@@ -40,11 +40,11 @@ set config {
         <resource name="RAM" quantum="1M"/>
         <provides><service name="Timer"/></provides>
     </start>
-    <start name="receiver">
+    <start name="sub">
         <resource name="RAM" quantum="4M"/>
 				<config>
             <network dhcp="no" ip-address="10.0.1.3" subnet-mask="255.255.255.0" default-gateway="10.0.1.1" />
-            <mosquitto ip-address="10.0.0.2" port="1883" />
+            <mosquitto ip-address="131.159.196.184" port="1883" />
         </config>
     </start>}
 
@@ -87,7 +87,7 @@ set config {
 append qemu_args "-net vde,sock=/tmp/switch1 "
 append qemu_args "-net nic,model=lan9118,macaddr=02:00:00:00:01:01 "
 
-set boot_modules { core init receiver ld.lib.so libc.lib.so stdcxx.lib.so libm.lib.so pthread.lib.so timer lwip.lib.so libmosquitto.lib.so libssl.lib.so libcrypto.lib.so }
+set boot_modules { core init sub ld.lib.so libc.lib.so stdcxx.lib.so libm.lib.so pthread.lib.so timer lwip.lib.so libmosquitto.lib.so libssl.lib.so libcrypto.lib.so }
 
 # platform-specific modules
 lappend_if $use_usb_driver              boot_modules usb_drv
