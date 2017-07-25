@@ -43,6 +43,14 @@
 #include <gpsSensor.h>
 #include <obstacleSensors.h>
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+
+#include <state.pb.h>
+#include <control.pb.h>
+
 static ObstacleSensors *sens;
 static tTrack	*curTrack;
 
@@ -57,6 +65,8 @@ static int  pitcmd(int index, tCarElt* car, tSituation *s);
 
 static GPSSensor gps = GPSSensor();
 
+static int sockfd, newsockfd;
+
 #ifdef _WIN32
 /* Must be present under MS Windows */
 BOOL WINAPI DllEntryPoint (HINSTANCE hDLL, DWORD dwReason, LPVOID Reserved)
@@ -69,6 +79,8 @@ BOOL WINAPI DllEntryPoint (HINSTANCE hDLL, DWORD dwReason, LPVOID Reserved)
 static void
 shutdown(const int index)
 {
+  close(newsockfd);
+  close(sockfd);
     robot.shutdown(index);
 }//shutdown
 
@@ -190,7 +202,35 @@ initTrack(int index, tTrack* track, void *carHandle, void **carParmHandle, tSitu
 void
 newrace(int index, tCarElt* car, tSituation *s)
 {
+    sockfd = socket(AF_INET,SOCK_STREAM,0);
+
+    /* make port reusable */
+    int optval = 1;
+    setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
+
+    struct sockaddr_in srv_addr, cli_addr;
+    bzero(&srv_addr, sizeof(srv_addr));
+    srv_addr.sin_family = AF_INET;
+    struct hostent *host;
+    host = gethostbyname("0.0.0.0"); // listen globally...
+    if (host == NULL) {
+      printf("Couldn't resolve hostname!\n");
+    }
+    bcopy((char *)host->h_addr, (char *)&srv_addr.sin_addr.s_addr, host->h_length);
+    srv_addr.sin_port = htons(9002); // ... on port 9002
+
+    while (bind(sockfd, (struct sockaddr *)&srv_addr, sizeof(srv_addr)) < 0) {
+      printf("bind failed!\n");
+    }
+
+    /* wait for S/A VM to connect */
+    listen(sockfd, 5);
+    socklen_t clilen = sizeof(cli_addr);
+
+    newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
+
     robot.new_race(index, car, s);
+    /* add laser obstacle sensors */
     sens = new ObstacleSensors(curTrack, car);
     /* car, angle, move_x, move_y, range */
 
@@ -199,10 +239,10 @@ newrace(int index, tCarElt* car, tSituation *s)
      *      H     0     V
      *      +-----L-----+ (car->_cimension_x/2, car->dimension_y/2)
      */
-    sens->addSensor(car, 0, car->_dimension_x/2, 0, 20); // front
-    sens->addSensor(car, -90, 0, -car->_dimension_y/2, 20); // right
-    sens->addSensor(car, 180, -car->_dimension_x/2, 0, 20); // back
-    sens->addSensor(car, 90, 0, car->_dimension_y/2, 20); // left
+    sens->addSensor(car, 0, car->_dimension_x/2, 0, 200); // front
+    sens->addSensor(car, -90, 0, -car->_dimension_y/2, 200); // right
+    sens->addSensor(car, 180, -car->_dimension_x/2, 0, 200); // back
+    sens->addSensor(car, 90, 0, car->_dimension_y/2, 200); // left
 }//newrace
 
 
@@ -254,11 +294,68 @@ drive_mt(int index, tCarElt* car, tSituation *s)
 static void
 drive_at(int index, tCarElt* car, tSituation *s)
 {
+    /* update gps position */
     gps.update(car);
     vec2 myPos = gps.getPosition();
     //printf("Players's position according to GPS is (%f, %f)\n", myPos.x, myPos.y);
+
+    /* update laser proximity sensors */
     sens->sensors_update(s);
-    //sens->printSensors();
+
+    /* actuators */
+    protobuf::State current_state;
+    current_state.set_steer(car->_steerCmd);
+    current_state.set_accelcmd(car->_accelCmd);
+    current_state.set_brakecmd(car->_brakeCmd);
+    /* wheels */
+    protobuf::Wheel* wheels[4];
+    for(int i = 0; i < 4; i++) {
+      wheels[i] = current_state.add_wheel();
+      wheels[i]->set_spinvel(car->_wheelSpinVel(i));
+    }
+    /* specification protobuf */
+    protobuf::Specification* spec = current_state.mutable_specification();
+    spec->set_length(car->_dimension_y);
+    spec->set_width(car->_dimension_x);
+    spec->set_wheelradius(car->_wheelRadius(0));
+    /* sensors
+     * add laser proximity sensors as specified in newrace
+     */
+    std::list<SingleObstacleSensor> sensors_list = sens->getSensorsList();
+    for(std::list<SingleObstacleSensor>::iterator it = sensors_list.begin(); it != sensors_list.end(); ++it) {
+      protobuf::Sensor* sensor = current_state.add_sensor();
+      sensor->set_type(protobuf::Sensor_SensorType_LASER);
+      sensor->add_value((*it).getDistance());
+    }
+    /* add single gps sensor */
+    protobuf::Sensor* sensor = current_state.add_sensor();
+    sensor->set_type(protobuf::Sensor_SensorType_GPS);
+    sensor->add_value(myPos.x);
+    sensor->add_value(myPos.y);
+
+    /* prepare protobuf message (serialize, calculate length, ...) */
+    std::string output;
+    current_state.SerializeToString(&output);
+    message_length = htonl(output.size());
+
+    /* send protobuf message to S/A VM
+     * 1. message length as uint32_t
+     * 2. message (State) itself
+     */
+    uint32_t message_length = 0;
+    write(newsockfd, &message_length, 4);
+    write(newsockfd, output.c_str(), output.length());
+
+    /* receive protobuf message from S/A VM
+     * 1. message length as uint32_t
+     * 2. message (Control) itself
+     */
+    read(newsockfd, &message_length, 4);
+    message_length = ntohl(message_length);         // get length of message
+    char* buffer = malloc(message_length);          // alloc buffer for message
+    read(newsockfd, buffer, message_length);
+    protobuf::Control control;
+    control.ParseFromArray(buffer, message_length); // parse protobuf into control
 
     robot.drive_at(index, car, s);
 }//drive_at
