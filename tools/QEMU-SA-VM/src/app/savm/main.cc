@@ -72,7 +72,7 @@ void Publisher::my_publish(const char* name, float value) {
 	int i = 0, ret = -1;
 	sprintf(buffer, "%s; %f;", name, value);
 	ret = Publisher::publish(NULL, "state", strlen(buffer), buffer);
-	PDBG("pub state '%s' successful: %d", buffer, MOSQ_ERR_SUCCESS == ret);
+	//PDBG("pub state '%s' successful: %d", buffer, MOSQ_ERR_SUCCESS == ret);
 	i++;
 }
 
@@ -99,26 +99,26 @@ public:
 		}
 
 		void on_message(const struct mosquitto_message *message) {
-			PDBG("%s %s", message->topic, message->payload);
+			//PDBG("%s %s", message->topic, message->payload);
 			std::string payload = (char*)message->payload;
-			const char* name = payload.substr(0, payload.find(";")).c_str();
+			const char* name = payload.substr(0, payload.find(",")).c_str();
 			//PDBG("name %s", name);
-			if(!strcmp(name,"steer"))
+			if(!strcmp(name,"0"))
 			{
-				payload.erase(0, payload.find(";")+2);
-				steer=atof(payload.substr(0, payload.find(";")).c_str());
+				payload.erase(0, payload.find(",")+1);
+				steer=atof(payload.c_str());
 				//pub->my_publish("steer", steer);
 			}
-			if(!strcmp(name,"brake"))
+			if(!strcmp(name,"1"))
 			{
-				payload.erase(0, payload.find(";")+2);
-				brake=atof(payload.substr(0, payload.find(";")).c_str());
+				payload.erase(0, payload.find(",")+1);
+				brake=atof(payload.c_str());
 				//pub->my_publish("brake", brake);
 			}
-			if(!strcmp(name,"accel"))
+			if(!strcmp(name,"2"))
 			{
-				payload.erase(0, payload.find(";")+2);
-				accel=atof(payload.substr(0, payload.find(";")).c_str());
+				payload.erase(0, payload.find(",")+2);
+				accel=atof(payload.c_str());
 				//pub->my_publish("accel", accel);
 			}
 		}
@@ -143,7 +143,7 @@ private:
 		int ret = -1;
 
 		void my_subscribe() {
-			ret = Sub::subscribe(NULL, "control", 0);
+			ret = Sub::subscribe(NULL, "car-control", 0);
 			PDBG("Subscribed '%s' successful: %d", "state", MOSQ_ERR_SUCCESS == ret);
 			//i++;
 		};
@@ -161,7 +161,7 @@ Proto_client::Proto_client() :
 
 	Genode::Xml_node network = Genode::config()->xml_node().sub_node("network");
 
-		char ip_addr[16] = {"131.159.211.132"};
+		char ip_addr[16] = {"10.200.32.15"};
 		char subnet[16] = {0};
 		char gateway[16] = {0};
 
@@ -203,7 +203,7 @@ void Proto_client::serve(Publisher *publisher)
 	while (true)
 	{
 		size=0;
-		PDBG("loop\n");
+		//PDBG("loop\n");
 		NETCHECK_LOOP(receiveInt32_t(size));
 		if (size>0)
 		{
@@ -258,20 +258,21 @@ void Proto_client::serve(Publisher *publisher)
 		{
 			PWRN("Unknown message: %d", size);
 		}
+		//timer.msleep(0.1);
 		std::string foo;
-		PDBG("prepare proto");
+		//PDBG("prepare proto");
 		protobuf::Control ctrl;
-		PDBG("set proto");
+		//PDBG("set proto");
 		ctrl.set_steer(steer);
 		ctrl.set_accelcmd(accel);
 		ctrl.set_brakecmd(brake);
-		PDBG("start serialize");
+		//PDBG("start serialize");
 		ctrl.SerializeToString(&foo);
 		uint32_t length=htonl(foo.size());
-		PDBG("control set\n");
+		//PDBG("control set\n");
 		send_data(&length,4);
 		send_data((void*)foo.c_str(),foo.size());
-		PDBG("data sent to Alex\n");
+		//PDBG("data sent to Alex\n");
 	}
 }
 
@@ -325,9 +326,10 @@ int main(int argc, char* argv[]) {
 			PERR("lwip init failed!");
 			return 1;
 		}
-
-	PDBG("done");
 	}
+	Timer::Connection timer;
+	timer.msleep(10000);
+	PDBG("waited 10s");
 
 	/* get config */
 	Genode::Xml_node mosquitto = Genode::config()->xml_node().sub_node("mosquitto");

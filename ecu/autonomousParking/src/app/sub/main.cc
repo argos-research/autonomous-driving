@@ -24,6 +24,7 @@ extern "C" {
 #include <cstdio>
 #include <cstring>
 #include <string>
+#include <timer_session/connection.h>
 
 /*pub*/
 #include <publisher.h>
@@ -68,9 +69,9 @@ void Publisher::on_error() {
 void Publisher::my_publish(const char* name, float value) {
 	char buffer[1024] = { 0 };
 	int i = 0, ret = -1;
-	sprintf(buffer, "%s; %f;", name, value);
-	ret = Publisher::publish(NULL, "control", strlen(buffer), buffer);
-	PDBG("pub control '%s' successful: %d", buffer, MOSQ_ERR_SUCCESS == ret);
+	sprintf(buffer, "%s,%f", name, value);
+	ret = Publisher::publish(NULL, "car-control", strlen(buffer), buffer);
+	//PDBG("pub control '%s' successful: %d", buffer, MOSQ_ERR_SUCCESS == ret);
 	i++;
 }
 
@@ -97,7 +98,7 @@ public:
 		}
 
 		void on_message(const struct mosquitto_message *message) {
-			PDBG("%s %s", message->topic, message->payload);
+			//PDBG("%s %s", message->topic, message->payload);
 			std::string payload = (char*)message->payload;
 			const char* name = payload.substr(0, payload.find(";")).c_str();
 			//PDBG("name %s", name);
@@ -105,19 +106,19 @@ public:
 			{
 				payload.erase(0, payload.find(";")+2);
 				steer=atof(payload.substr(0, payload.find(";")).c_str());
-				pub->my_publish("steer", steer);
+				pub->my_publish("0", steer);
 			}
 			if(!strcmp(name,"brake"))
 			{
 				payload.erase(0, payload.find(";")+2);
 				brake=atof(payload.substr(0, payload.find(";")).c_str());
-				pub->my_publish("brake", brake);
+				pub->my_publish("1", brake);
 			}
 			if(!strcmp(name,"accel"))
 			{
 				payload.erase(0, payload.find(";")+2);
 				accel=atof(payload.substr(0, payload.find(";")).c_str());
-				pub->my_publish("accel", accel);
+				pub->my_publish("2", accel);
 			}
 			if(!strcmp(name,"wheel0"))
 			{
@@ -183,9 +184,9 @@ public:
 			{
 				payload.erase(0, payload.find(";")+2);
 				laser3=atof(payload.substr(0, payload.find(";")).c_str());
-				char buffer[10000] = { 0 };
-				sprintf(buffer, "%f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f;", steer, brake, accel, spinVel0, spinVel1, spinVel2, spinVel3, length, width, wheelRadius, gps_x, gps_y, laser0, laser1, laser2, laser3);
-				PDBG("%s\n", buffer);
+				//char buffer[10000] = { 0 };
+				//sprintf(buffer, "%f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f;", steer, brake, accel, spinVel0, spinVel1, spinVel2, spinVel3, length, width, wheelRadius, gps_x, gps_y, laser0, laser1, laser2, laser3);
+				//PDBG("%s\n", buffer);
 			}
 
 		}
@@ -255,6 +256,9 @@ int main(int argc, char* argv[]) {
 		PDBG("done");
 	}
 
+	Timer::Connection timer;
+	timer.msleep(10000);
+
 	/* get config */
 	Genode::Xml_node mosquitto = Genode::config()->xml_node().sub_node("mosquitto");
 
@@ -275,7 +279,9 @@ int main(int argc, char* argv[]) {
 
 	/* endless loop with auto reconnect */
 	pub->loop_start();
-	sub->loop_forever();
+	sub->loop_start();
+
+	while(1);
 	
 
 	/* cleanup */

@@ -43,8 +43,8 @@ set config {
     <start name="savm">
         <resource name="RAM" quantum="4M"/>
 				<config>
-            <network dhcp="no" ip-address="10.0.1.2" subnet-mask="255.255.255.0" default-gateway="10.0.1.1" />
-            <mosquitto ip-address="131.159.211.132" port="1883" />
+            <network dhcp="yes" ip-address="192.168.178.3" subnet-mask="255.255.255.0" default-gateway="192.168.178.1" />
+            <mosquitto ip-address="10.200.32.15" port="1883" />
         </config>
     </start>}
 
@@ -62,7 +62,7 @@ set config {
           <service name="Nic"/>
         </provides>
         <config uhci="yes" ehci="yes" xhci="yes">
-          <nic mac="02:00:00:00:01:01"/>
+          <nic mac="02:00:00:00:01:03"/>
         </config>
       </start>}
 
@@ -85,7 +85,7 @@ set config {
 #
 
 append qemu_args "-net vde,sock=/tmp/switch1 "
-append qemu_args "-net nic,model=lan9118,macaddr=02:00:00:00:01:01 "
+append qemu_args "-net nic,model=lan9118,macaddr=02:00:00:00:01:03"
 
 set boot_modules { core init savm ld.lib.so libc.lib.so stdcxx.lib.so libm.lib.so pthread.lib.so timer lwip.lib.so libmosquitto.lib.so libssl.lib.so libcrypto.lib.so libprotobuf.lib.so zlib.lib.so }
 
