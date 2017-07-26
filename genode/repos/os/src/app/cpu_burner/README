@@ -1,2 +1,0 @@
-This directory contains a simple CPU burner. The percentage of CPU time to burn
-can be configured via its '<config>' attribute 'percent'.
