@@ -93,9 +93,9 @@ private:
 	/*
 	 *  condition methods are used to check the distance conditions
 	 */
-	bool _longitudinalCondition(double startX, double endX);
+	bool _longitudinalCondition(double startX, double endX, double startY, double endY, double end_angle);
 
-	bool _lateralCondition(double startY, double endY);
+	bool _lateralCondition(double startX, double endX, double startY, double endY, double end_angle);
 
 public:
 
@@ -103,6 +103,6 @@ public:
 
 	~Parking() { }
 
-	void receiveData(double sensor_front, double sensor_back, double sensor_right, double rotations);
+	void receiveData(double sensor_front, double sensor_right, double sensor_back, double rotations);
 
 };
