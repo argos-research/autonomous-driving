@@ -748,6 +748,11 @@ static void drive(int Index, tCarElt* Car, tSituation *S)
         //m_Instances[Index-IndexOffset].m_Robot->DriveLast();      // Use last drive commands
     }
     //LogUSR.debug("#<<< TDriver::Drive\n");
+    // LL4
+    Car->_accelCmd = 0.0;
+    Car->_brakeCmd = 1.0;
+    Car->_steerCmd = 0.0;
+    // ---
 }
 
 ////////////////////////////////////////////////////////////

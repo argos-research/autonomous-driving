@@ -85,6 +85,8 @@ MACRO(ADD_SD_COMPILE_OPTIONS)
 
     SET(OPTION_SIMCOUPLER false CACHE BOOL "Build for usage with SimCoupler")
 
+    SET(OPTION_PARKING false CACHE BOOL "Build for usage with parking scenario")
+
     IF(APPLE)
       # Automatically set OPTION_USE_MACPORTS (at least until someone fixes the regular APPLE build)
       MESSAGE(STATUS "Automatically set OPTION_USE_MACPORTS (at least until someone fixes the regular APPLE build)")
@@ -203,6 +205,10 @@ MACRO(ADD_SD_COMPILE_OPTIONS)
     IF(OPTION_SIMCOUPLER)
           ADD_DEFINITIONS(-DSIMCOUPLER)
     ENDIF(OPTION_SIMCOUPLER)
+
+    IF(OPTION_PARKING)
+          ADD_DEFINITIONS(-DPARKING)
+    ENDIF(OPTION_PARKING)
 
     IF(OPTION_USE_MACPORTS)
           ADD_DEFINITIONS(-DUSE_MACPORTS)
