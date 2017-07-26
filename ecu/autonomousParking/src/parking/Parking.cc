@@ -8,8 +8,8 @@
  */
 #include "Parking.h"
 
-Parking::Parking(CarInformation info) : _info(info), _lastRotationValue(0), 
-                                        _rotationsWhileEnoughSpace(0),
+Parking::Parking(CarInformation info) : _info(info), _traveled_distance(0), 
+                                        _free_space(0),
                                         _state(SEARCHING), _direction(1),
                                         _side(1), _timestamp(0),
                                         _sampling_period(1)
@@ -18,25 +18,27 @@ Parking::Parking(CarInformation info) : _info(info), _lastRotationValue(0),
     _T = _T_star;   // first estimation of T
 }
 
-bool Parking::_findParkingLot(double sensor_right, double rotations) {
+bool Parking::_findParkingLot(double sensor_right, double spin_velocity, double timestamp) {
     // check if sensor data indicates that the distance to the right is too narrow
     if(sensor_right < _info.parkingLotWidth) {
         // reset number of wheel rotations while enough space for parking and update displacements
-        _rotationsWhileEnoughSpace = 0;
+        _free_space = 0;
         _map.setLongitudinalDisplacement(0);
         _map.setLateralDisplacement(0);
     } else {
         // add rotations and update displacements
-        _rotationsWhileEnoughSpace += (rotations - _lastRotationValue);
-        _map.setLongitudinalDisplacement(_rotationsWhileEnoughSpace * _info.wheelCircumference);
+        _free_space += spin_velocity * timestamp * _info.wheelRadius;
+        _map.setLongitudinalDisplacement(_free_space);
         _map.setLateralDisplacement(fmin(sensor_right, _old_sensor_right));
     }
-        
-    _lastRotationValue = rotations;
-    _map.setX(rotations * _info.wheelCircumference);
+    
+    _traveled_distance += spin_velocity * timestamp * _info.wheelRadius;
+    _map.setX(_traveled_distance);
+
+    _old_sensor_right = sensor_right;
 
     // check if the potential parking lot has sufficient length
-    if(_rotationsWhileEnoughSpace >= _info.minRotationsNeeded) {
+    if(_free_space >= _info.parkingLotLength) {
         return true;
     }
     return false;
@@ -141,13 +143,13 @@ bool Parking::_lateralCondition(double startX, double endX, double startY, doubl
     return fabs(((startX - endX) * sin(_phi)) + ((endY - startY) * cos(_phi))) < _map.getLateralDisplacement();
 }
 
-void Parking::receiveData(double sensor_front, double sensor_right, double sensor_back, double rotations){
+void Parking::receiveData(double sensor_front, double sensor_right, double sensor_back, double spin_velocity, double timestamp){
 
         // TODO - process sensor data to determine potential collisions
 
         switch(_state){
 
-        case SEARCHING      : if(_findParkingLot(sensor_right, rotations)){
+        case SEARCHING      : if(_findParkingLot(sensor_right, spin_velocity, timestamp)){
                                 _actuator_steering = 0;
                                 _actuator_velocity = 0;
                                 _direction = -1;
