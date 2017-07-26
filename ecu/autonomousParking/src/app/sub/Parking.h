@@ -4,6 +4,9 @@
 #include "CarInformation.h"
 #include "Map.h"
 
+/*pub*/
+#include <publisher.h>
+
 enum STATE { SEARCHING, CALCULATING, CONTROLLING, PARKED };
 
 class Parking {
@@ -103,6 +106,6 @@ public:
 
 	~Parking() { }
 
-	void receiveData(double sensor_front, double sensor_right, double sensor_back, double rotations);
+	void receiveData(double sensor_front, double sensor_right, double sensor_back, double rotations, Publisher *publisher);
 
 };

@@ -8,6 +8,8 @@
  */
 #include "Parking.h"
 
+#include <base/printf.h>
+
 Parking::Parking(CarInformation info) : _info(info), _lastRotationValue(0), 
                                         _rotationsWhileEnoughSpace(0),
                                         _state(SEARCHING), _direction(1),
@@ -141,9 +143,10 @@ bool Parking::_lateralCondition(double startX, double endX, double startY, doubl
     return fabs(((startX - endX) * sin(_phi)) + ((endY - startY) * cos(_phi))) < _map.getLateralDisplacement();
 }
 
-void Parking::receiveData(double sensor_front, double sensor_right, double sensor_back, double rotations){
+void Parking::receiveData(double sensor_front, double sensor_right, double sensor_back, double rotations, Publisher *publisher){
 
-        // TODO - process sensor data to determine potential collisions
+	PDBG("Calculate parking");
+        // TODO : check sensor data for collision ?
 
         switch(_state){
 
@@ -177,6 +180,8 @@ void Parking::receiveData(double sensor_front, double sensor_right, double senso
                               _actuator_velocity = 0;
                               break;
         }
+	publisher->my_publish("0", _actuator_steering);
+	publisher->my_publish("1", _actuator_velocity);
 
         // TODO : send actuator data
 

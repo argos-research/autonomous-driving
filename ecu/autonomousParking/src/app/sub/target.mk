@@ -1,5 +1,8 @@
 TARGET = sub
-SRC_CC = main.cc
+
+SRC_CC += main.cc
+SRC_CC += Parking.cc
+          
 LIBS   = base libmosquitto stdcxx lwip pthread
 
 INC_DIR += $(call select_from_repositories,include/lwip)

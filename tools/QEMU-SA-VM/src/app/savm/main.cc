@@ -69,11 +69,10 @@ void Publisher::on_error() {
 
 void Publisher::my_publish(const char* name, float value) {
 	char buffer[1024] = { 0 };
-	int i = 0, ret = -1;
 	sprintf(buffer, "%s; %f;", name, value);
-	ret = Publisher::publish(NULL, "state", strlen(buffer), buffer);
+	int ret = this->publish(NULL, "state", strlen(buffer), buffer);
 	//PDBG("pub state '%s' successful: %d", buffer, MOSQ_ERR_SUCCESS == ret);
-	i++;
+	//i++;
 }
 
 class Sub : public mosqpp::mosquittopp {
@@ -161,7 +160,7 @@ Proto_client::Proto_client() :
 
 	Genode::Xml_node network = Genode::config()->xml_node().sub_node("network");
 
-		char ip_addr[16] = {"10.200.32.15"};
+		char ip_addr[16] = {"10.0.0.2"};
 		char subnet[16] = {0};
 		char gateway[16] = {0};
 
@@ -178,7 +177,7 @@ Proto_client::Proto_client() :
 		}
 		PDBG("listen socket\n");
 
-		while (lwip_connect(_listen_socket, (struct sockaddr*)&_in_addr, sizeof(_in_addr)))
+		if (lwip_connect(_listen_socket, (struct sockaddr*)&_in_addr, sizeof(_in_addr)))
 		{
 			PERR("Connection failed!");
 			PERR("Reconnecting!");
@@ -198,8 +197,8 @@ void Proto_client::serve(Publisher *publisher)
 	Timer::Connection timer;
 	//timer.msleep(1000);
 	int size = 0;
-	int id=0;
-	float value=0;
+	//int id=0;
+	//float value=0;
 	while (true)
 	{
 		size=0;
@@ -221,27 +220,27 @@ void Proto_client::serve(Publisher *publisher)
 			float accelCmd=state.accelcmd();
 			publisher->my_publish("accel",accelCmd);
 			float spinVel0=state.wheel(0).spinvel();
-			publisher->my_publish("wheel0",spinVel0);
+			//publisher->my_publish("wheel0",spinVel0);
 			float spinVel1=state.wheel(1).spinvel();
-			publisher->my_publish("wheel1",spinVel1);
+			//publisher->my_publish("wheel1",spinVel1);
 			float spinVel2=state.wheel(2).spinvel();
-			publisher->my_publish("wheel2",spinVel2);
+			//publisher->my_publish("wheel2",spinVel2);
 			float spinVel3=state.wheel(3).spinvel();
-			publisher->my_publish("wheel3",spinVel3);
+			//publisher->my_publish("wheel3",spinVel3);
 			float length=state.specification().length();
-			publisher->my_publish("length",length);
+			//publisher->my_publish("length",length);
 			float width=state.specification().width();
-			publisher->my_publish("width",width);
+			//publisher->my_publish("width",width);
 			float wheelRadius=state.specification().wheelradius();
-			publisher->my_publish("wheelRadius",wheelRadius);
+			//publisher->my_publish("wheelRadius",wheelRadius);
 			for(int i=0; i<state.sensor().size(); i++)
 			{
 				if(state.sensor(i).type()==protobuf::Sensor_SensorType_GPS)
 				{
 					float gps_x=state.sensor(i).value(0);
-					publisher->my_publish("gps_x",gps_x);
+					//publisher->my_publish("gps_x",gps_x);
 					float gps_y=state.sensor(i).value(1);
-					publisher->my_publish("gps_y",gps_y);
+					//publisher->my_publish("gps_y",gps_y);
 				}
 				else
 				{
@@ -249,7 +248,7 @@ void Proto_client::serve(Publisher *publisher)
 					char buffer[1024] = { 0 };
 					sprintf(buffer, "laser%d", i);
 					const char* name=buffer;
-					publisher->my_publish(name,laser);
+					//publisher->my_publish(name,laser);
 				}
 			}
 			Genode::env()->ram_session()->free(state_ds);
@@ -307,6 +306,9 @@ int main(int argc, char* argv[]) {
 			PERR("lwip init failed!");
 			return 1;
 		}
+		PDBG("waiting 10s");
+		Timer::Connection timer;
+		timer.msleep(10000);
 		PDBG("done");
 	} else {
 		PDBG("manual network...");
@@ -327,9 +329,6 @@ int main(int argc, char* argv[]) {
 			return 1;
 		}
 	}
-	Timer::Connection timer;
-	timer.msleep(10000);
-	PDBG("waited 10s");
 
 	/* get config */
 	Genode::Xml_node mosquitto = Genode::config()->xml_node().sub_node("mosquitto");

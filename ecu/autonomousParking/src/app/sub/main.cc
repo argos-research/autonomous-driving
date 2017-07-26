@@ -27,11 +27,17 @@ extern "C" {
 #include <timer_session/connection.h>
 
 /*pub*/
-#include <publisher.h>
+//#include <publisher.h>
+
+/*parking*/
+#include "Parking.h"
 
 float steer, brake, accel, spinVel0, spinVel1, spinVel2, spinVel3, length, width, wheelRadius, gps_x, gps_y, laser0, laser1, laser2, laser3;
+bool car_complete, got_length, got_width, got_wheelRadius, got_laser0, got_laser1, got_laser2, got_spinVel, go;
 
 Publisher *pub;
+CarInformation *car;
+Parking *parking;
 
 Publisher::Publisher(const char* id, const char* host, int port) : mosquittopp(id) {
 			/* init the library */
@@ -68,11 +74,10 @@ void Publisher::on_error() {
 
 void Publisher::my_publish(const char* name, float value) {
 	char buffer[1024] = { 0 };
-	int i = 0, ret = -1;
 	sprintf(buffer, "%s,%f", name, value);
-	ret = Publisher::publish(NULL, "car-control", strlen(buffer), buffer);
+	int ret = this->publish(NULL, "car-control", strlen(buffer), buffer);
 	//PDBG("pub control '%s' successful: %d", buffer, MOSQ_ERR_SUCCESS == ret);
-	i++;
+	//i++;
 }
 
 class Sub : public mosqpp::mosquittopp {
@@ -106,24 +111,28 @@ public:
 			{
 				payload.erase(0, payload.find(";")+2);
 				steer=atof(payload.substr(0, payload.find(";")).c_str());
-				pub->my_publish("0", steer);
+				//pub->my_publish("0", steer);	
+				//parking->receiveData(laser0, laser1, laser2,spinVel0,pub);
 			}
 			if(!strcmp(name,"brake"))
 			{
 				payload.erase(0, payload.find(";")+2);
 				brake=atof(payload.substr(0, payload.find(";")).c_str());
-				pub->my_publish("1", brake);
+				//pub->my_publish("1", brake);
+				//parking->receiveData(laser0, laser1, laser2,spinVel0,pub);
 			}
 			if(!strcmp(name,"accel"))
 			{
 				payload.erase(0, payload.find(";")+2);
 				accel=atof(payload.substr(0, payload.find(";")).c_str());
-				pub->my_publish("2", accel);
+				//pub->my_publish("2", accel);
+				//parking->receiveData(laser0, laser1, laser2,spinVel0,pub);
 			}
 			if(!strcmp(name,"wheel0"))
 			{
 				payload.erase(0, payload.find(";")+2);
 				spinVel0=atof(payload.substr(0, payload.find(";")).c_str());
+				got_spinVel=true;
 			}
 			if(!strcmp(name,"wheel1"))
 			{
@@ -144,16 +153,19 @@ public:
 			{
 				payload.erase(0, payload.find(";")+2);
 				length=atof(payload.substr(0, payload.find(";")).c_str());
+				got_length=true;
 			}
 			if(!strcmp(name,"width"))
-			{
+			{	
 				payload.erase(0, payload.find(";")+2);
 				width=atof(payload.substr(0, payload.find(";")).c_str());
+				got_width=true;
 			}
 			if(!strcmp(name,"wheelRadius"))
 			{
 				payload.erase(0, payload.find(";")+2);
 				wheelRadius=atof(payload.substr(0, payload.find(";")).c_str());
+				got_wheelRadius=true;
 			}
 			if(!strcmp(name,"gps_x"))
 			{
@@ -169,26 +181,36 @@ public:
 			{
 				payload.erase(0, payload.find(";")+2);
 				laser0=atof(payload.substr(0, payload.find(";")).c_str());
+				got_laser0=true;
 			}
 			if(!strcmp(name,"laser1"))
 			{
 				payload.erase(0, payload.find(";")+2);
 				laser1=atof(payload.substr(0, payload.find(";")).c_str());
+				got_laser1=true;
 			}
 			if(!strcmp(name,"laser2"))
 			{
 				payload.erase(0, payload.find(";")+2);
 				laser2=atof(payload.substr(0, payload.find(";")).c_str());
+				got_laser2=true;
 			}
-			if(!strcmp(name,"laser3"))
+			if(!car_complete)
 			{
-				payload.erase(0, payload.find(";")+2);
-				laser3=atof(payload.substr(0, payload.find(";")).c_str());
-				//char buffer[10000] = { 0 };
-				//sprintf(buffer, "%f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f; %f;", steer, brake, accel, spinVel0, spinVel1, spinVel2, spinVel3, length, width, wheelRadius, gps_x, gps_y, laser0, laser1, laser2, laser3);
-				//PDBG("%s\n", buffer);
+				if(got_length&&got_width&&got_wheelRadius)
+				{
+					car=new CarInformation(length,width,wheelRadius);
+					car_complete=true;
+				}
 			}
-
+			if(go&&got_laser0&&got_laser1&&got_laser2&&got_spinVel)
+			{
+				parking->receiveData(laser0, laser1, laser2,spinVel0,pub);
+				got_laser0=false;
+				got_laser1=false;
+				got_laser2=false;
+				got_spinVel=false;
+			}
 		}
 
 		void on_log(int ret) {
@@ -234,6 +256,9 @@ int main(int argc, char* argv[]) {
 			PERR("lwip init failed!");
 			return 1;
 		}
+		PDBG("Waiting for 10s");
+		Timer::Connection timer;
+		timer.msleep(10000);
 		PDBG("done");
 	} else {
 		PDBG("manual network...");
@@ -256,9 +281,6 @@ int main(int argc, char* argv[]) {
 		PDBG("done");
 	}
 
-	Timer::Connection timer;
-	timer.msleep(10000);
-
 	/* get config */
 	Genode::Xml_node mosquitto = Genode::config()->xml_node().sub_node("mosquitto");
 
@@ -277,11 +299,25 @@ int main(int argc, char* argv[]) {
 	pub = new Publisher("EcuPub", ip_addr, atoi(port));
 	PDBG("done");
 
+	PDBG("Parking");
+	got_laser0=false;
+	got_laser1=false;
+	got_laser2=false;
+	got_spinVel=false;
+	car_complete=false;
+	got_length=false;
+	got_width=false;
+	got_wheelRadius=false;
+	go=false;
+	//length=5;
+	//width=2;
+	//car = new CarInformation(length,width,wheelRadius);
+	//parking = new Parking(*car);
+	PDBG("done");
+
 	/* endless loop with auto reconnect */
 	pub->loop_start();
-	sub->loop_start();
-
-	while(1);
+	sub->loop_forever();
 	
 
 	/* cleanup */
