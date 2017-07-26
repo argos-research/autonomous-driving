@@ -95,13 +95,13 @@ void Parking::_calculate_T() {
             }
         }
         _T += _timestamp;
-    } while(_longitudinalCondition(_x, _map.getX()));
+    } while(_longitudinalCondition(_map.getX(), _x, _map.getY(), _y, _phi));
 
     _T -= _timestamp;
 }
 
 void Parking::_calculate_local_max_steer() {
-    if(_lateralCondition(_y, _map.getY())) return;
+    if(_lateralCondition(_map.getX(), _x, _map.getY(), _y, _phi)) return;
 
     double s_angle;
     double velo;
@@ -111,7 +111,7 @@ void Parking::_calculate_local_max_steer() {
     _phi = _map.get_angle();
 
     do {
-        _local_steer_max -= 0.1;
+        _local_steer_max -= 0.0872665;
 
         for(double ts = 0; ts <= _T; ts += _timestamp){
             s_angle = _steering_angle(ts);
@@ -129,21 +129,21 @@ void Parking::_calculate_local_max_steer() {
                 _y = _y - ((_info.length_car / tan(s_angle)) * (cos(_phi) - cos(_phi_old)));;
             }
         }
-    } while(!_lateralCondition(_y, _map.getY()));
+    } while(!_lateralCondition(_map.getX(), _x, _map.getY(), _y, _phi));
 
 }
 
-bool Parking::_longitudinalCondition(double startX, double endX){
-    return fabs(startX+endX) < _map.getLongitudinalDisplacement();
+bool Parking::_longitudinalCondition(double startX, double endX, double startY, double endY, double end_angle){
+    return fabs(((endX - startX) * cos(_phi)) + ((endY - startY) * sin(_phi))) < _map.getLongitudinalDisplacement();
 }
 
-bool Parking::_lateralCondition(double startY, double endY){
-    return fabs(startY+endY) < _map.getLateralDisplacement();
+bool Parking::_lateralCondition(double startX, double endX, double startY, double endY, double end_angle){
+    return fabs(((startX - endX) * sin(_phi)) + ((endY - startY) * cos(_phi))) < _map.getLateralDisplacement();
 }
 
-void Parking::receiveData(double sensor_front, double sensor_back, double sensor_right, double rotations){
+void Parking::receiveData(double sensor_front, double sensor_right, double sensor_back, double rotations){
 
-        // TODO : check sensor data for collision ?
+        // TODO - process sensor data to determine potential collisions
 
         switch(_state){
 
@@ -151,11 +151,11 @@ void Parking::receiveData(double sensor_front, double sensor_back, double sensor
                                 _actuator_steering = 0;
                                 _actuator_velocity = 0;
                                 _direction = -1;
+                                _state = PARKED;
                               } else {
                                 _actuator_steering = 0;
                                 _actuator_velocity = _info.velocity_max * _direction;
                               }
-                              _state = PARKED;
                               break;
         
         case CALCULATING    : _calculate_T();
@@ -167,7 +167,7 @@ void Parking::receiveData(double sensor_front, double sensor_back, double sensor
                                 _actuator_steering = 0;
                                 _actuator_velocity = 0;
                               } else {
-                                _actuator_steering = _steering_angle(_timestamp);
+                                _actuator_steering = (_steering_angle(_timestamp) / _local_steer_max);
                                 _actuator_velocity = _velocity(_timestamp);
                                 _timestamp += _sampling_period;
                               }
@@ -178,6 +178,7 @@ void Parking::receiveData(double sensor_front, double sensor_back, double sensor
                               break;
         }
 
-        // TODO : send actuator data somehow
+        // TODO : send actuator data
+
         return;
     }
