@@ -2,6 +2,10 @@
 	path = simulators/sumo
 	url = https://github.com/argos-research/sumo
 
-[submodule "genode/repos/world"]
-	path = genode/repos/world
-	url = https://github.com/argos-research/genode-world.git
+[submodule "genode"]
+	path = genode
+	url = https://github.com/genodelabs/genode
+
+[submodule "tools/genode-world"]
+	path = tools/genode-world
+	url = https://github.com/argos-research/genode-world
