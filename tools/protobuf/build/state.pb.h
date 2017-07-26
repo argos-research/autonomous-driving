@@ -172,6 +172,12 @@ class State : public ::google::protobuf::Message /* @@protoc_insertion_point(cla
   float accelcmd() const;
   void set_accelcmd(float value);
 
+  // float timestamp = 7;
+  void clear_timestamp();
+  static const int kTimestampFieldNumber = 7;
+  float timestamp() const;
+  void set_timestamp(float value);
+
   // @@protoc_insertion_point(class_scope:protobuf.State)
  private:
 
@@ -182,6 +188,7 @@ class State : public ::google::protobuf::Message /* @@protoc_insertion_point(cla
   float steer_;
   float brakecmd_;
   float accelcmd_;
+  float timestamp_;
   mutable int _cached_size_;
   friend struct protobuf_state_2eproto::TableStruct;
 };
@@ -332,6 +339,20 @@ inline void State::set_accelcmd(float value) {
   
   accelcmd_ = value;
   // @@protoc_insertion_point(field_set:protobuf.State.accelCmd)
+}
+
+// float timestamp = 7;
+inline void State::clear_timestamp() {
+  timestamp_ = 0;
+}
+inline float State::timestamp() const {
+  // @@protoc_insertion_point(field_get:protobuf.State.timestamp)
+  return timestamp_;
+}
+inline void State::set_timestamp(float value) {
+  
+  timestamp_ = value;
+  // @@protoc_insertion_point(field_set:protobuf.State.timestamp)
 }
 
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS

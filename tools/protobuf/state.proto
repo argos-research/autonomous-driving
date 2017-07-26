@@ -12,4 +12,5 @@ message State {
   float steer = 4;
   float brakeCmd = 5;
   float accelCmd = 6;
+  float timestamp = 7;
 }

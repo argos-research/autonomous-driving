@@ -142,6 +142,12 @@ class Control : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::google::protobuf::int32 gear() const;
   void set_gear(::google::protobuf::int32 value);
 
+  // float speed = 5;
+  void clear_speed();
+  static const int kSpeedFieldNumber = 5;
+  float speed() const;
+  void set_speed(float value);
+
   // @@protoc_insertion_point(class_scope:protobuf.Control)
  private:
 
@@ -150,6 +156,7 @@ class Control : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   float brakecmd_;
   float accelcmd_;
   ::google::protobuf::int32 gear_;
+  float speed_;
   mutable int _cached_size_;
   friend struct protobuf_control_2eproto::TableStruct;
 };
@@ -215,6 +222,20 @@ inline void Control::set_gear(::google::protobuf::int32 value) {
   
   gear_ = value;
   // @@protoc_insertion_point(field_set:protobuf.Control.gear)
+}
+
+// float speed = 5;
+inline void Control::clear_speed() {
+  speed_ = 0;
+}
+inline float Control::speed() const {
+  // @@protoc_insertion_point(field_get:protobuf.Control.speed)
+  return speed_;
+}
+inline void Control::set_speed(float value) {
+  
+  speed_ = value;
+  // @@protoc_insertion_point(field_set:protobuf.Control.speed)
 }
 
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
