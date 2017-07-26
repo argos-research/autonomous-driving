@@ -5,3 +5,7 @@
 [submodule "genode"]
 	path = genode
 	url = https://github.com/genodelabs/genode
+
+[submodule "tools/genode-world"]
+	path = tools/genode-world
+	url = https://github.com/argos-research/genode-world
