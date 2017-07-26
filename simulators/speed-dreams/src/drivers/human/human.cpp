@@ -38,6 +38,8 @@
  * Robot interface entry points are still here.
  */
 
+#define __DEBUG__PARKING
+
 #include <humandriver.h>
 
 #include <gpsSensor.h>
@@ -346,8 +348,9 @@ drive_at(int index, tCarElt* car, tSituation *s)
     write(newsockfd, &message_length, 4);
     write(newsockfd, output.c_str(), output.length());
 
-    printf("state was sent.\n");
-    printf("waiting for control.\n");
+    #ifdef __DEBUG__PARKING
+    printf("State was sent, waiting for control msg... ");
+    #endif
 
     /* receive protobuf message from S/A VM
      * 1. message length as uint32_t
@@ -358,7 +361,9 @@ drive_at(int index, tCarElt* car, tSituation *s)
     char* buffer = malloc(message_length);          // alloc buffer for message
     read(newsockfd, buffer, message_length);
 
-    printf("control received.\n");
+    #ifdef __DEBUG__PARKING
+    printf("done\n");
+    #endif
 
     protobuf::Control control;
     control.ParseFromArray(buffer, message_length); // parse protobuf into control
