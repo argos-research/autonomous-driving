@@ -32,8 +32,8 @@ extern "C" {
 /*parking*/
 #include "Parking.h"
 
-float steer, brake, accel, spinVel0, spinVel1, spinVel2, spinVel3, length, width, wheelRadius, gps_x, gps_y, laser0, laser1, laser2, laser3, speed, autonomous, steer_max, vel_max=0.8, timestamp, got_go;
-bool car_complete, got_length, got_width, got_wheelRadius, got_laser0, got_laser1, got_laser2, got_spinVel, go;
+float steer, brake, accel, spinVel0, spinVel1, spinVel2, spinVel3, length, width, wheelRadius, gps_x, gps_y, laser0, laser1, laser2, laser3, speed, autonomous, steer_max, vel_max=3.0, timestamp, got_go;
+bool car_complete, got_length, got_width, got_wheelRadius, got_laser0, got_laser1, got_laser2, got_spinVel, go, got_steerlock;
 
 Publisher *pub;
 CarInformation *car;
@@ -111,7 +111,8 @@ public:
 			{
 				payload.erase(0, payload.find(";")+2);
 				steer=atof(payload.substr(0, payload.find(";")).c_str());
-				//pub->my_publish("0", steer);	
+				//pub->my_publish("4", -1);
+				//pub->my_publish("3", 1);	
 				//parking->receiveData(laser0, laser1, laser2,spinVel0,pub);
 			}
 			if(!strcmp(name,"brake"))
@@ -202,6 +203,7 @@ public:
 			{
 				payload.erase(0, payload.find(";")+2);
 				steer_max=atof(payload.substr(0, payload.find(";")).c_str());
+				got_steerlock=true;
 			}
 			if(!strcmp(name,"timestamp"))
 			{
@@ -226,9 +228,9 @@ public:
 			}
 			if(!car_complete)
 			{
-				if(got_length&&got_width&&got_wheelRadius)
+				if(got_length&&got_width&&got_wheelRadius&&got_steerlock)
 				{
-					car=new CarInformation(length,width,wheelRadius,steer_max,vel_max);
+					car=new CarInformation(length,width,wheelRadius,0.5*steer_max,vel_max);
 					car_complete=true;
 					parking = new Parking(*car);
 					//PDBG("created car");

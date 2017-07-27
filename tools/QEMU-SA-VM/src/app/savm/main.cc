@@ -139,7 +139,7 @@ public:
 			}
 			if(!strcmp(name,"4"))
 			{
-				payload.erase(0, payload.find(",")+2);
+				payload.erase(0, payload.find(",")+1);
 				speed=atof(payload.c_str());
 				//pub->my_publish("accel", accel);
 			}
@@ -292,7 +292,7 @@ void Proto_client::serve(Publisher *publisher)
 		ctrl.set_steer(steer);
 		char buffer[1024] = { 0 };
 		sprintf(buffer, "steer %f", steer);
-		//PDBG("%s",buffer);
+		PDBG("%s",buffer);
 		ctrl.set_accelcmd(accel);
 		buffer[0] = 0;
 		sprintf(buffer, "accel %f", accel);
@@ -304,7 +304,7 @@ void Proto_client::serve(Publisher *publisher)
 		ctrl.set_speed(speed);
 		buffer[0] = 0;
 		sprintf(buffer, "speed %f", speed);
-		//PDBG("%s",buffer);
+		PDBG("%s",buffer);
 		ctrl.set_autonomous(autonomous);
 		buffer[0] = 0;
 		sprintf(buffer, "autonomous %d", autonomous);
