@@ -173,7 +173,8 @@ void Parking::receiveData(double sensor_front, double sensor_right, double senso
                                 _actuator_steering = 0;
                                 _actuator_velocity = 0;
                                 _direction = -1;
-                                _state = CALCULATING;
+                                _state = PARKED;
+                                PDBG("State changed to PARKED");
                               } else {
                                 _actuator_steering = 0;
                                 _actuator_velocity = _info.velocity_max * _direction;
@@ -183,6 +184,7 @@ void Parking::receiveData(double sensor_front, double sensor_right, double senso
         case CALCULATING    : _calculate_T();
                               _calculate_local_max_steer();
                               _state = CONTROLLING;
+                              PUBG("State changed to CONTROLLING");
               
         case CONTROLLING    : _actuator_steering = (_steering_angle(_maneuver_timestamp) / _local_steer_max);
                               _actuator_velocity = _velocity(_maneuver_timestamp);
