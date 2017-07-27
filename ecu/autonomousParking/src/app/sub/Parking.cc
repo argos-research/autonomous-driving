@@ -156,8 +156,11 @@ bool Parking::_lateralCondition(double startX, double endX, double startY, doubl
 
 void Parking::receiveData(double sensor_front, double sensor_right, double sensor_back, double spin_velocity, double timestamp, Publisher *publisher){
 
-        _sampling_period = timestamp;
-        // TODO - process sensor data to determine potential collisions
+    _sampling_period = timestamp;
+    
+    if((sensor_front <= _info.safetyDistanceLength) && (sensor_right <= _info.safetyDistanceWidth) && (sensor_front <= _info.safetyDistanceLength)){
+        _state = PARKED;
+    }
 
 	char buffer[1024] = { 0 };
 	sprintf(buffer, "%f %f %f %f %f",sensor_front,sensor_right,sensor_back,spin_velocity,timestamp);

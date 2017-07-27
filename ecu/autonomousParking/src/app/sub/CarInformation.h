@@ -29,7 +29,7 @@ struct CarInformation {
     //double minRotationsNeeded;      // amount of wheel rotations needed to pass a parking lot which has a sufficient length
 
     CarInformation(double len, double wid, double rad, double steer, double velo) : length_car(len), width_car(wid), wheelRadius(rad),
-                                                         safetyDistanceLength(0.5), safetyDistanceWidth(0.2),
+                                                         safetyDistanceLength(1.0), safetyDistanceWidth(0.2),
                                                          steer_max(steer), velocity_max(velo) 
     {
         //wheelCircumference = (wheelRadius* 2 * M_PI);
