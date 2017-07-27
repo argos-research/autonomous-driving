@@ -314,7 +314,7 @@ initStartingGrid(void)
     car = &(ReInfo->carList[i]);
     car->_speed_x = speedInit;
 		#ifdef PARKING
-		startpos = ReInfo->track->length - i * 6.0; // hard code distance between cars to 6m
+		startpos = ReInfo->track->length - i * 8.0; // hard code distance between cars to 8m
 		#else
     startpos = ReInfo->track->length - (d1 + (i / rows) * d2 + (i % rows) * d3);
 		#endif
