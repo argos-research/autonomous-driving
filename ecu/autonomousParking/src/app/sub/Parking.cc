@@ -8,6 +8,12 @@
  */
 #include "Parking.h"
 
+#include <base/printf.h>
+
+/* etc */
+#include <cstdio>
+#include <cstring>
+
 Parking::Parking(CarInformation info) : _info(info), _traveled_distance(0), 
                                         _free_space(0),
                                         _state(SEARCHING), _direction(1),
@@ -150,6 +156,10 @@ void Parking::receiveData(double sensor_front, double sensor_right, double senso
         _sampling_period = timestamp - _old_timestamp;
         // TODO - process sensor data to determine potential collisions
 
+	char buffer[1024] = { 0 };
+	sprintf(buffer, "%f %f %f %f %f",sensor_front,sensor_right,sensor_back,spin_velocity,timestamp);
+	PDBG("%s",buffer);
+
         switch(_state){
 
         case SEARCHING      : if(_findParkingLot(sensor_right, spin_velocity)){
@@ -184,7 +194,7 @@ void Parking::receiveData(double sensor_front, double sensor_right, double senso
         }
 	//PDBG("publish");
 	publisher->my_publish("0", _actuator_steering);
-	publisher->my_publish("1", _actuator_velocity);
+	publisher->my_publish("4", _actuator_velocity);
 	if(_state==PARKED)
 	{
 		publisher->my_publish("3", 0);

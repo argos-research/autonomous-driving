@@ -32,7 +32,7 @@ extern "C" {
 /*parking*/
 #include "Parking.h"
 
-float steer, brake, accel, spinVel0, spinVel1, spinVel2, spinVel3, length, width, wheelRadius, gps_x, gps_y, laser0, laser1, laser2, laser3, speed, autonomous, steer_max, vel_max=0.2, timestamp;
+float steer, brake, accel, spinVel0, spinVel1, spinVel2, spinVel3, length, width, wheelRadius, gps_x, gps_y, laser0, laser1, laser2, laser3, speed, autonomous, steer_max, vel_max=0.2, timestamp, got_go;
 bool car_complete, got_length, got_width, got_wheelRadius, got_laser0, got_laser1, got_laser2, got_spinVel, go;
 
 Publisher *pub;
@@ -211,8 +211,9 @@ public:
 			if(!strcmp(name,"go"))
 			{
 				payload.erase(0, payload.find(";")+2);
-				float got_go=atof(payload.substr(0, payload.find(";")).c_str());
-				if(got_go)
+				got_go=atof(payload.substr(0, payload.find(";")).c_str());
+				//PDBG("Got got");
+				if(got_go>0)
 				{
 					go=true;
 					pub->my_publish("3", 1);

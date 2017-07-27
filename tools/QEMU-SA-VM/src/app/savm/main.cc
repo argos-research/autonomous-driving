@@ -32,8 +32,8 @@ extern "C" {
 #include <cstdio>
 #include <cstring>
 
-float steer, brake, accel, autonomous;
-
+float steer, brake, accel, speed;
+bool autonomous;
 Publisher::Publisher(const char* id, const char* host, int port) : mosquittopp(id) {
 			/* init the library */
 			mosqpp::lib_init();
@@ -116,14 +116,31 @@ public:
 			}
 			if(!strcmp(name,"2"))
 			{
-				payload.erase(0, payload.find(",")+2);
+				payload.erase(0, payload.find(",")+1);
 				accel=atof(payload.c_str());
 				//pub->my_publish("accel", accel);
 			}
 			if(!strcmp(name,"3"))
 			{
+				PDBG("SAVM got autonomous");
+				payload.erase(0, payload.find(",")+1);
+				float tmp=atof(payload.c_str());
+				if(tmp>0)
+				{
+					PDBG("bigger 0");
+					autonomous=true;
+				}
+				else
+				{
+					PDBG("smaller 0");
+					autonomous=false;
+				}
+				//pub->my_publish("accel", accel);
+			}
+			if(!strcmp(name,"4"))
+			{
 				payload.erase(0, payload.find(",")+2);
-				autonomous=atof(payload.c_str());
+				speed=atof(payload.c_str());
 				//pub->my_publish("accel", accel);
 			}
 		}
@@ -210,7 +227,7 @@ void Proto_client::serve(Publisher *publisher)
 	while (true)
 	{
 		size=0;
-		PDBG("receive %lu\n",timer.elapsed_ms());
+		//PDBG("receive %lu\n",timer.elapsed_ms());
 		NETCHECK_LOOP(receiveInt32_t(size));
 		if (size>0)
 		{
@@ -261,7 +278,7 @@ void Proto_client::serve(Publisher *publisher)
 					publisher->my_publish(name,laser);
 				}
 			}
-			PDBG("send %lu\n",timer.elapsed_ms());
+			//PDBG("send %lu\n",timer.elapsed_ms());
 		}
 		else
 		{
@@ -273,8 +290,25 @@ void Proto_client::serve(Publisher *publisher)
 		protobuf::Control ctrl;
 		//PDBG("set proto");
 		ctrl.set_steer(steer);
+		char buffer[1024] = { 0 };
+		sprintf(buffer, "steer %f", steer);
+		//PDBG("%s",buffer);
 		ctrl.set_accelcmd(accel);
+		buffer[0] = 0;
+		sprintf(buffer, "accel %f", accel);
+		//PDBG("%s",buffer);
 		ctrl.set_brakecmd(brake);
+		buffer[0] = 0;
+		sprintf(buffer, "brake %f", brake);
+		//PDBG("%s",buffer);
+		ctrl.set_speed(speed);
+		buffer[0] = 0;
+		sprintf(buffer, "speed %f", speed);
+		//PDBG("%s",buffer);
+		ctrl.set_autonomous(autonomous);
+		buffer[0] = 0;
+		sprintf(buffer, "autonomous %d", autonomous);
+		//PDBG("%s",buffer);
 		//PDBG("start serialize");
 		ctrl.SerializeToString(&foo);
 		uint32_t length=htonl(foo.size());
@@ -282,7 +316,7 @@ void Proto_client::serve(Publisher *publisher)
 		send_data(&length,4);
 		send_data((void*)foo.c_str(),foo.size());
 		//PDBG("data sent to Alex\n");
-		PDBG("done %lu\n",timer.elapsed_ms());
+		//PDBG("done %lu\n",timer.elapsed_ms());
 	}
 	Genode::env()->ram_session()->free(state_ds);
 }
