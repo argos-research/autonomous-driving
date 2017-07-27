@@ -55,6 +55,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] = {
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Control, accelcmd_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Control, gear_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Control, speed_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Control, autonomous_),
 };
 
 static const ::google::protobuf::internal::MigrationSchema schemas[] = {
@@ -107,13 +108,13 @@ void InitDefaults() {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] = {
-      "\n\rcontrol.proto\022\010protobuf\"Y\n\007Control\022\r\n\005"
+      "\n\rcontrol.proto\022\010protobuf\"m\n\007Control\022\r\n\005"
       "steer\030\001 \001(\002\022\020\n\010brakeCmd\030\002 \001(\002\022\020\n\010accelCm"
-      "d\030\003 \001(\002\022\014\n\004gear\030\004 \001(\005\022\r\n\005speed\030\005 \001(\002b\006pr"
-      "oto3"
+      "d\030\003 \001(\002\022\014\n\004gear\030\004 \001(\005\022\r\n\005speed\030\005 \001(\002\022\022\n\n"
+      "autonomous\030\006 \001(\010b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 124);
+      descriptor, 144);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "control.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&TableStruct::Shutdown);
@@ -141,6 +142,7 @@ const int Control::kBrakeCmdFieldNumber;
 const int Control::kAccelCmdFieldNumber;
 const int Control::kGearFieldNumber;
 const int Control::kSpeedFieldNumber;
+const int Control::kAutonomousFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 Control::Control()
@@ -157,15 +159,15 @@ Control::Control(const Control& from)
       _cached_size_(0) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::memcpy(&steer_, &from.steer_,
-    static_cast<size_t>(reinterpret_cast<char*>(&speed_) -
-    reinterpret_cast<char*>(&steer_)) + sizeof(speed_));
+    static_cast<size_t>(reinterpret_cast<char*>(&autonomous_) -
+    reinterpret_cast<char*>(&steer_)) + sizeof(autonomous_));
   // @@protoc_insertion_point(copy_constructor:protobuf.Control)
 }
 
 void Control::SharedCtor() {
   ::memset(&steer_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&speed_) -
-      reinterpret_cast<char*>(&steer_)) + sizeof(speed_));
+      reinterpret_cast<char*>(&autonomous_) -
+      reinterpret_cast<char*>(&steer_)) + sizeof(autonomous_));
   _cached_size_ = 0;
 }
 
@@ -203,8 +205,8 @@ Control* Control::New(::google::protobuf::Arena* arena) const {
 void Control::Clear() {
 // @@protoc_insertion_point(message_clear_start:protobuf.Control)
   ::memset(&steer_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&speed_) -
-      reinterpret_cast<char*>(&steer_)) + sizeof(speed_));
+      reinterpret_cast<char*>(&autonomous_) -
+      reinterpret_cast<char*>(&steer_)) + sizeof(autonomous_));
 }
 
 bool Control::MergePartialFromCodedStream(
@@ -287,6 +289,20 @@ bool Control::MergePartialFromCodedStream(
         break;
       }
 
+      // bool autonomous = 6;
+      case 6: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(48u)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &autonomous_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
       default: {
       handle_unusual:
         if (tag == 0 ||
@@ -339,6 +355,11 @@ void Control::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteFloat(5, this->speed(), output);
   }
 
+  // bool autonomous = 6;
+  if (this->autonomous() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(6, this->autonomous(), output);
+  }
+
   // @@protoc_insertion_point(serialize_end:protobuf.Control)
 }
 
@@ -371,6 +392,11 @@ void Control::SerializeWithCachedSizes(
   // float speed = 5;
   if (this->speed() != 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(5, this->speed(), target);
+  }
+
+  // bool autonomous = 6;
+  if (this->autonomous() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(6, this->autonomous(), target);
   }
 
   // @@protoc_insertion_point(serialize_to_array_end:protobuf.Control)
@@ -406,6 +432,11 @@ size_t Control::ByteSizeLong() const {
   // float speed = 5;
   if (this->speed() != 0) {
     total_size += 1 + 4;
+  }
+
+  // bool autonomous = 6;
+  if (this->autonomous() != 0) {
+    total_size += 1 + 1;
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -452,6 +483,9 @@ void Control::MergeFrom(const Control& from) {
   if (from.speed() != 0) {
     set_speed(from.speed());
   }
+  if (from.autonomous() != 0) {
+    set_autonomous(from.autonomous());
+  }
 }
 
 void Control::CopyFrom(const ::google::protobuf::Message& from) {
@@ -482,6 +516,7 @@ void Control::InternalSwap(Control* other) {
   std::swap(accelcmd_, other->accelcmd_);
   std::swap(gear_, other->gear_);
   std::swap(speed_, other->speed_);
+  std::swap(autonomous_, other->autonomous_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
@@ -561,6 +596,20 @@ void Control::set_speed(float value) {
   
   speed_ = value;
   // @@protoc_insertion_point(field_set:protobuf.Control.speed)
+}
+
+// bool autonomous = 6;
+void Control::clear_autonomous() {
+  autonomous_ = false;
+}
+bool Control::autonomous() const {
+  // @@protoc_insertion_point(field_get:protobuf.Control.autonomous)
+  return autonomous_;
+}
+void Control::set_autonomous(bool value) {
+  
+  autonomous_ = value;
+  // @@protoc_insertion_point(field_set:protobuf.Control.autonomous)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

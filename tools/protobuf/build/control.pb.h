@@ -148,6 +148,12 @@ class Control : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   float speed() const;
   void set_speed(float value);
 
+  // bool autonomous = 6;
+  void clear_autonomous();
+  static const int kAutonomousFieldNumber = 6;
+  bool autonomous() const;
+  void set_autonomous(bool value);
+
   // @@protoc_insertion_point(class_scope:protobuf.Control)
  private:
 
@@ -157,6 +163,7 @@ class Control : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   float accelcmd_;
   ::google::protobuf::int32 gear_;
   float speed_;
+  bool autonomous_;
   mutable int _cached_size_;
   friend struct protobuf_control_2eproto::TableStruct;
 };
@@ -236,6 +243,20 @@ inline void Control::set_speed(float value) {
   
   speed_ = value;
   // @@protoc_insertion_point(field_set:protobuf.Control.speed)
+}
+
+// bool autonomous = 6;
+inline void Control::clear_autonomous() {
+  autonomous_ = false;
+}
+inline bool Control::autonomous() const {
+  // @@protoc_insertion_point(field_get:protobuf.Control.autonomous)
+  return autonomous_;
+}
+inline void Control::set_autonomous(bool value) {
+  
+  autonomous_ = value;
+  // @@protoc_insertion_point(field_set:protobuf.Control.autonomous)
 }
 
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS

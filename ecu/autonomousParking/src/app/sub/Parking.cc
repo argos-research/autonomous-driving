@@ -145,7 +145,7 @@ bool Parking::_lateralCondition(double startX, double endX, double startY, doubl
 
 void Parking::receiveData(double sensor_front, double sensor_right, double sensor_back, double rotations, Publisher *publisher){
 
-	PDBG("Calculate parking");
+	//PDBG("Calculate parking");
         // TODO : check sensor data for collision ?
 
         switch(_state){
@@ -180,6 +180,7 @@ void Parking::receiveData(double sensor_front, double sensor_right, double senso
                               _actuator_velocity = 0;
                               break;
         }
+	//PDBG("publish");
 	publisher->my_publish("0", _actuator_steering);
 	publisher->my_publish("1", _actuator_velocity);
 

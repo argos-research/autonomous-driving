@@ -201,7 +201,6 @@ void Proto_client::serve(Publisher *publisher)
 	//float value=0;
 	Genode::Ram_dataspace_capability state_ds=Genode::env()->ram_session()->alloc(1024);
 	char* foo=Genode::env()->rm_session()->attach(state_ds);
-	uint32_t length=42;
 	while (true)
 	{
 		size=0;
@@ -212,7 +211,7 @@ void Proto_client::serve(Publisher *publisher)
 			//PDBG("Ready to receive state.");
 			//PDBG("Got size %llu\n", ntohl(size));
 			NETCHECK_LOOP(receive_data(foo, ntohl(size)));
-			/*protobuf::State state;
+			protobuf::State state;
 			state.ParseFromArray(foo,ntohl(size));			
 			float steer=state.steer();
 			publisher->my_publish("steer",steer);
@@ -221,27 +220,27 @@ void Proto_client::serve(Publisher *publisher)
 			float accelCmd=state.accelcmd();
 			publisher->my_publish("accel",accelCmd);
 			float spinVel0=state.wheel(0).spinvel();
-			//publisher->my_publish("wheel0",spinVel0);
+			publisher->my_publish("wheel0",spinVel0);
 			float spinVel1=state.wheel(1).spinvel();
-			//publisher->my_publish("wheel1",spinVel1);
+			publisher->my_publish("wheel1",spinVel1);
 			float spinVel2=state.wheel(2).spinvel();
-			//publisher->my_publish("wheel2",spinVel2);
+			publisher->my_publish("wheel2",spinVel2);
 			float spinVel3=state.wheel(3).spinvel();
-			//publisher->my_publish("wheel3",spinVel3);
+			publisher->my_publish("wheel3",spinVel3);
 			float length=state.specification().length();
-			//publisher->my_publish("length",length);
+			publisher->my_publish("length",length);
 			float width=state.specification().width();
-			//publisher->my_publish("width",width);
+			publisher->my_publish("width",width);
 			float wheelRadius=state.specification().wheelradius();
-			//publisher->my_publish("wheelRadius",wheelRadius);
+			publisher->my_publish("wheelRadius",wheelRadius);
 			for(int i=0; i<state.sensor().size(); i++)
 			{
 				if(state.sensor(i).type()==protobuf::Sensor_SensorType_GPS)
 				{
 					float gps_x=state.sensor(i).value(0);
-					//publisher->my_publish("gps_x",gps_x);
+					publisher->my_publish("gps_x",gps_x);
 					float gps_y=state.sensor(i).value(1);
-					//publisher->my_publish("gps_y",gps_y);
+					publisher->my_publish("gps_y",gps_y);
 				}
 				else
 				{
@@ -249,7 +248,7 @@ void Proto_client::serve(Publisher *publisher)
 					char buffer[1024] = { 0 };
 					sprintf(buffer, "laser%d", i);
 					const char* name=buffer;
-					//publisher->my_publish(name,laser);
+					publisher->my_publish(name,laser);
 				}
 			}
 			PDBG("send %lu\n",timer.elapsed_ms());
@@ -269,12 +268,11 @@ void Proto_client::serve(Publisher *publisher)
 		//PDBG("start serialize");
 		ctrl.SerializeToString(&foo);
 		uint32_t length=htonl(foo.size());
-		//PDBG("control set\n");*/
+		//PDBG("control set\n");
 		send_data(&length,4);
-		//send_data((void*)foo.c_str(),foo.size());
+		send_data((void*)foo.c_str(),foo.size());
 		//PDBG("data sent to Alex\n");
 		PDBG("done %lu\n",timer.elapsed_ms());
-		}
 	}
 	Genode::env()->ram_session()->free(state_ds);
 }

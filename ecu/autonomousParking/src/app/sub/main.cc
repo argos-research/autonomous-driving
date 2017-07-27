@@ -154,18 +154,21 @@ public:
 				payload.erase(0, payload.find(";")+2);
 				length=atof(payload.substr(0, payload.find(";")).c_str());
 				got_length=true;
+				//PDBG("Got length");
 			}
 			if(!strcmp(name,"width"))
 			{	
 				payload.erase(0, payload.find(";")+2);
 				width=atof(payload.substr(0, payload.find(";")).c_str());
 				got_width=true;
+				//PDBG("Got width");
 			}
 			if(!strcmp(name,"wheelRadius"))
 			{
 				payload.erase(0, payload.find(";")+2);
 				wheelRadius=atof(payload.substr(0, payload.find(";")).c_str());
 				got_wheelRadius=true;
+				//PDBG("Got wheelRadius");
 			}
 			if(!strcmp(name,"gps_x"))
 			{
@@ -195,12 +198,18 @@ public:
 				laser2=atof(payload.substr(0, payload.find(";")).c_str());
 				got_laser2=true;
 			}
+			if(!strcmp(name,"go"))
+			{
+				go=true;
+			}
 			if(!car_complete)
 			{
 				if(got_length&&got_width&&got_wheelRadius)
 				{
 					car=new CarInformation(length,width,wheelRadius);
 					car_complete=true;
+					parking = new Parking(*car);
+					//PDBG("created car");
 				}
 			}
 			if(go&&got_laser0&&got_laser1&&got_laser2&&got_spinVel)
