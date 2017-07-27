@@ -29,6 +29,11 @@ Parking::Parking(CarInformation info) : _info(info), _traveled_distance(0),
 bool Parking::_findParkingLot(double sensor_right, double spin_velocity) {
     // check if sensor data indicates that the distance to the right is too narrow
     if(sensor_right < _info.parkingLotWidth) {
+
+    // check if the potential parking lot has sufficient length
+        if(_free_space >= _info.parkingLotLength) {
+            return true;
+        }
         // reset number of wheel rotations while enough space for parking and update displacements
         _free_space = 0;
         _map.setLongitudinalDisplacement(0);
@@ -48,10 +53,6 @@ bool Parking::_findParkingLot(double sensor_right, double spin_velocity) {
 
     _old_sensor_right = sensor_right;
 
-    // check if the potential parking lot has sufficient length
-    if(_free_space >= _info.parkingLotLength) {
-        return true;
-    }
     return false;
 }
 
@@ -157,7 +158,7 @@ bool Parking::_lateralCondition(double startX, double endX, double startY, doubl
 void Parking::receiveData(double sensor_front, double sensor_right, double sensor_back, double spin_velocity, double timestamp, Publisher *publisher){
 
     _sampling_period = timestamp;
-    
+
     if((sensor_front <= _info.safetyDistanceLength) && (sensor_right <= _info.safetyDistanceWidth) && (sensor_front <= _info.safetyDistanceLength)){
         _state = PARKED;
     }
@@ -172,7 +173,7 @@ void Parking::receiveData(double sensor_front, double sensor_right, double senso
                                 _actuator_steering = 0;
                                 _actuator_velocity = 0;
                                 _direction = -1;
-                                _state = PARKED;
+                                _state = CALCULATING;
                               } else {
                                 _actuator_steering = 0;
                                 _actuator_velocity = _info.velocity_max * _direction;
