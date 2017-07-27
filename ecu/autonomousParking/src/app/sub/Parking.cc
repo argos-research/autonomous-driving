@@ -184,15 +184,9 @@ void Parking::receiveData(double sensor_front, double sensor_right, double senso
                               _calculate_local_max_steer();
                               _state = CONTROLLING;
               
-        case CONTROLLING    : if(true){
-                                _state = PARKED;
-                                _actuator_steering = 0;
-                                _actuator_velocity = 0;
-                              } else {
-                                _actuator_steering = (_steering_angle(_maneuver_timestamp) / _local_steer_max);
-                                _actuator_velocity = _velocity(_maneuver_timestamp);
-                                _maneuver_timestamp += _sampling_period;
-                              }
+        case CONTROLLING    : _actuator_steering = (_steering_angle(_maneuver_timestamp) / _local_steer_max);
+                              _actuator_velocity = _velocity(_maneuver_timestamp);
+                              _maneuver_timestamp += _sampling_period;
                               break;
 
         case PARKED         : _actuator_steering = 0;
