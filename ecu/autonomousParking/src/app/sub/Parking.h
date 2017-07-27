@@ -36,7 +36,6 @@ private:
 	double _direction;				// forward = 1 ; backwards = -1
 	double _side;					// right = 1 ; left = 0 --- we only support parking to the parking lot on the right
 
-	double _old_timestamp;			// last timestamp of simulation
 	double _maneuver_timestamp;     // timestamp during parking meneuver
 	double _sampling_period;		// time of 1 sampling period
 

@@ -17,7 +17,7 @@
 Parking::Parking(CarInformation info) : _info(info), _traveled_distance(0), 
                                         _free_space(0),
                                         _state(SEARCHING), _direction(1),
-                                        _side(1), _old_timestamp(0),
+                                        _side(1),
                                         _maneuver_timestamp(0),
                                         _sampling_period(0),
                                         _local_steer_max(_info.steer_max)
@@ -40,6 +40,8 @@ bool Parking::_findParkingLot(double sensor_right, double spin_velocity) {
         _map.setLateralDisplacement(fmin(sensor_right, _old_sensor_right));
     }
     
+    PDBG("%f", _free_space);
+
     _traveled_distance += spin_velocity * _sampling_period * _info.wheelRadius;
     _map.setX(_traveled_distance);
 
@@ -153,7 +155,7 @@ bool Parking::_lateralCondition(double startX, double endX, double startY, doubl
 
 void Parking::receiveData(double sensor_front, double sensor_right, double sensor_back, double spin_velocity, double timestamp, Publisher *publisher){
 
-        _sampling_period = timestamp - _old_timestamp;
+        _sampling_period = timestamp;
         // TODO - process sensor data to determine potential collisions
 
 	char buffer[1024] = { 0 };
