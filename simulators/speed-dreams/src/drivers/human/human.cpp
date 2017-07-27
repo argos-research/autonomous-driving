@@ -248,10 +248,11 @@ newrace(int index, tCarElt* car, tSituation *s)
      *      H     0     V
      *      +-----L-----+ (car->_cimension_x/2, car->dimension_y/2)
      */
-    sens->addSensor(car, 0, car->_dimension_x/2, 0, 200); // front
-    sens->addSensor(car, -90, 0, -car->_dimension_y/2, 200); // right
-    sens->addSensor(car, 180, -car->_dimension_x/2, 0, 200); // back
-    sens->addSensor(car, 90, 0, car->_dimension_y/2, 200); // left
+    sens->addSensor(car, 0, car->_dimension_x/2, 0, 20); // front
+    //sens->addSensor(car, -90, car->priv.wheel[2].relPos.x, -car->_dimension_y/2, 20); // right
+    sens->addSensor(car, -90, 0, -car->_dimension_y/2, 20); // right
+    sens->addSensor(car, 180, -car->_dimension_x/2, 0, 20); // back
+    //sens->addSensor(car, 90, 0, car->_dimension_y/2, 20); // left
 }//newrace
 
 
@@ -319,7 +320,7 @@ drive_at(int index, tCarElt* car, tSituation *s)
     current_state.set_steer(car->_steerCmd);
     current_state.set_accelcmd(car->_accelCmd);
     current_state.set_brakecmd(car->_brakeCmd);
-    current_state.set_timestamp(car->_curTime);
+    current_state.set_timestamp(s->deltaTime);
     /* wheels */
     protobuf::Wheel* wheels[4];
     for(int i = 0; i < 4; i++) {
@@ -328,8 +329,8 @@ drive_at(int index, tCarElt* car, tSituation *s)
     }
     /* specification protobuf */
     protobuf::Specification* spec = current_state.mutable_specification();
-    spec->set_length(car->_dimension_y);
-    spec->set_width(car->_dimension_x);
+    spec->set_length(car->_dimension_x);
+    spec->set_width(car->_dimension_y);
     spec->set_wheelradius(car->_wheelRadius(0));
     spec->set_steerlock(car->_steerLock);
     /* sensors
@@ -380,7 +381,43 @@ drive_at(int index, tCarElt* car, tSituation *s)
     protobuf::Control control;
     control.ParseFromArray(buffer, message_length); // parse protobuf into control
 
-    robot.drive_at(index, car, s);
+    printf("steer: %f brake: %f accel: %f speed: %f autonomous: %d\n",
+    control.steer(),
+    control.brakecmd(),
+    control.accelcmd(),
+    control.speed(),
+    control.autonomous());
+
+    if (control.autonomous()) {
+      printf("WE ARE AUTONOMOUS!\n");
+      car->_steerCmd = control.steer();
+      if (control.speed() < 0) { // negative speed wanted
+        car->_clutchCmd = 1;
+        car->_gearCmd = -1;
+        car->_clutchCmd = 0;
+        if (car->_speed_x < control.speed()) { // car too fast
+          car->_brakeCmd = 1.0;
+          car->_accelCmd = 0.0;
+        } else { // car too slow
+          car->_accelCmd = 1.0;
+          car->_brakeCmd = 0.0;
+        }
+      } else { // positive speed
+        car->_clutchCmd = 1;
+        car->_gearCmd = 1;
+        car->_clutchCmd = 0;
+        if (car->_speed_x > control.speed()) { // car too fast
+          car->_brakeCmd = 0.2;
+          car->_accelCmd = 0.0;
+        } else {
+          car->_accelCmd = 0.2;
+          car->_brakeCmd = 0.0;
+        }
+      }
+    } else {
+      printf("CONVENTIAL!\n");
+      robot.drive_at(index, car, s);
+    }
 }//drive_at
 
 
