@@ -190,10 +190,10 @@ void Parking::receiveData(double sensor_front, double sensor_right, double senso
                              
                               sprintf(buffer1, "%f",_T);
                               PDBG("%s", buffer1);
-                            /*
+                            
                               sprintf(buffer2, "%f",_local_steer_max);
                               PDBG("%s", buffer2);
-                            */
+                            
                               _state = CONTROLLING;
                               PDBG("State changed to PARKED");
               
