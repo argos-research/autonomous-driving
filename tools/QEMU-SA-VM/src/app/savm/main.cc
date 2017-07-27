@@ -199,19 +199,20 @@ void Proto_client::serve(Publisher *publisher)
 	int size = 0;
 	//int id=0;
 	//float value=0;
+	Genode::Ram_dataspace_capability state_ds=Genode::env()->ram_session()->alloc(1024);
+	char* foo=Genode::env()->rm_session()->attach(state_ds);
+	uint32_t length=42;
 	while (true)
 	{
 		size=0;
-		//PDBG("loop\n");
+		PDBG("receive %lu\n",timer.elapsed_ms());
 		NETCHECK_LOOP(receiveInt32_t(size));
 		if (size>0)
 		{
 			//PDBG("Ready to receive state.");
 			//PDBG("Got size %llu\n", ntohl(size));
-			Genode::Ram_dataspace_capability state_ds=Genode::env()->ram_session()->alloc(ntohl(size));
-			char* foo=Genode::env()->rm_session()->attach(state_ds);
 			NETCHECK_LOOP(receive_data(foo, ntohl(size)));
-			protobuf::State state;
+			/*protobuf::State state;
 			state.ParseFromArray(foo,ntohl(size));			
 			float steer=state.steer();
 			publisher->my_publish("steer",steer);
@@ -251,7 +252,7 @@ void Proto_client::serve(Publisher *publisher)
 					//publisher->my_publish(name,laser);
 				}
 			}
-			Genode::env()->ram_session()->free(state_ds);
+			PDBG("send %lu\n",timer.elapsed_ms());
 		}
 		else
 		{
@@ -268,11 +269,14 @@ void Proto_client::serve(Publisher *publisher)
 		//PDBG("start serialize");
 		ctrl.SerializeToString(&foo);
 		uint32_t length=htonl(foo.size());
-		//PDBG("control set\n");
+		//PDBG("control set\n");*/
 		send_data(&length,4);
-		send_data((void*)foo.c_str(),foo.size());
+		//send_data((void*)foo.c_str(),foo.size());
 		//PDBG("data sent to Alex\n");
+		PDBG("done %lu\n",timer.elapsed_ms());
+		}
 	}
+	Genode::env()->ram_session()->free(state_ds);
 }
 
 int Proto_client::connect()
