@@ -241,7 +241,7 @@ void Proto_client::serve(Publisher *publisher)
 			publisher->my_publish("wheelRadius",wheelRadius);	
 			float steerlock=state.specification().steerlock();
 			publisher->my_publish("steerlock",steerlock);
-			float timestamp=state.specification().timestamp();
+			float timestamp=state.timestamp();
 			publisher->my_publish("timestamp",timestamp);
 			for(int i=0; i<state.sensor().size(); i++)
 			{
