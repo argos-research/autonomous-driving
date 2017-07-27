@@ -32,7 +32,7 @@ extern "C" {
 /*parking*/
 #include "Parking.h"
 
-float steer, brake, accel, spinVel0, spinVel1, spinVel2, spinVel3, length, width, wheelRadius, gps_x, gps_y, laser0, laser1, laser2, laser3;
+float steer, brake, accel, spinVel0, spinVel1, spinVel2, spinVel3, length, width, wheelRadius, gps_x, gps_y, laser0, laser1, laser2, laser3, speed, autonomous, steer_max, vel_max=0.2, timestamp;
 bool car_complete, got_length, got_width, got_wheelRadius, got_laser0, got_laser1, got_laser2, got_spinVel, go;
 
 Publisher *pub;
@@ -198,15 +198,36 @@ public:
 				laser2=atof(payload.substr(0, payload.find(";")).c_str());
 				got_laser2=true;
 			}
+			if(!strcmp(name,"steerlock"))
+			{
+				payload.erase(0, payload.find(";")+2);
+				steer_max=atof(payload.substr(0, payload.find(";")).c_str());
+			}
+			if(!strcmp(name,"timestamp"))
+			{
+				payload.erase(0, payload.find(";")+2);
+				timestamp=atof(payload.substr(0, payload.find(";")).c_str());
+			}
 			if(!strcmp(name,"go"))
 			{
-				go=true;
+				payload.erase(0, payload.find(";")+2);
+				float got_go=atof(payload.substr(0, payload.find(";")).c_str());
+				if(got_go)
+				{
+					go=true;
+					pub->my_publish("3", 1);
+				}
+				else
+				{
+					go=false;
+					pub->my_publish("3", 0);
+				}
 			}
 			if(!car_complete)
 			{
 				if(got_length&&got_width&&got_wheelRadius)
 				{
-					car=new CarInformation(length,width,wheelRadius);
+					car=new CarInformation(length,width,wheelRadius,steer_max,vel_max);
 					car_complete=true;
 					parking = new Parking(*car);
 					//PDBG("created car");
@@ -214,7 +235,7 @@ public:
 			}
 			if(go&&got_laser0&&got_laser1&&got_laser2&&got_spinVel)
 			{
-				parking->receiveData(laser0, laser1, laser2,spinVel0,pub);
+				parking->receiveData(laser0, laser1, laser2,spinVel0,timestamp,pub);
 				got_laser0=false;
 				got_laser1=false;
 				got_laser2=false;

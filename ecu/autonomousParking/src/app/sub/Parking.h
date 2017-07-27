@@ -23,9 +23,9 @@ private:
 	/*
 	 * Information for parking lot detection
 	 */
-	double _old_sensor_right;
-	double _lastRotationValue;          // number of wheel rotations of the last simulation step
-    double _rotationsWhileEnoughSpace;  // number of wheel rotations while enough space for parking (width of parking lot is sufficiently large)
+	double _old_sensor_right;       // value of right sensor from last simulation step
+	double _traveled_distance;      // distance traveled since start of searching procedure
+    double _free_space;             // current length of potential parking lot
 
 
 	/*
@@ -36,8 +36,10 @@ private:
 	double _direction;				// forward = 1 ; backwards = -1
 	double _side;					// right = 1 ; left = 0 --- we only support parking to the parking lot on the right
 
-	double _timestamp;				// elapsed time since start of parking maneuver
+	double _old_timestamp;			// last timestamp of simulation
+	double _maneuver_timestamp;     // timestamp during parking meneuver
 	double _sampling_period;		// time of 1 sampling period
+
 	double _T_star;					// time for steering negative max to positive max
 	double _T;						// estimated time for iteration/parking maneuver as we inly support one iteration right now
 
@@ -63,7 +65,7 @@ private:
 	/*
 	 * findParkingLot - finds a parking lot wiht appropriate size and builds a map of the environment to the right of th car
 	 */
-	bool _findParkingLot(double sensor_right, double rotations);
+	bool _findParkingLot(double sensor_right, double spin_velocity);
 
 	/*
 	 * _a and _b - helper functions for _steering_angle() and _veloctity
@@ -106,6 +108,6 @@ public:
 
 	~Parking() { }
 
-	void receiveData(double sensor_front, double sensor_right, double sensor_back, double rotations, Publisher *publisher);
+	void receiveData(double sensor_front, double sensor_right, double sensor_back, double spin_velocity, double timestamp, Publisher *publisher);
 
 };

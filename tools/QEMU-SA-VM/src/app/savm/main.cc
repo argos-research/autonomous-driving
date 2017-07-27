@@ -32,7 +32,7 @@ extern "C" {
 #include <cstdio>
 #include <cstring>
 
-float steer, brake, accel;
+float steer, brake, accel, autonomous;
 
 Publisher::Publisher(const char* id, const char* host, int port) : mosquittopp(id) {
 			/* init the library */
@@ -118,6 +118,12 @@ public:
 			{
 				payload.erase(0, payload.find(",")+2);
 				accel=atof(payload.c_str());
+				//pub->my_publish("accel", accel);
+			}
+			if(!strcmp(name,"3"))
+			{
+				payload.erase(0, payload.find(",")+2);
+				autonomous=atof(payload.c_str());
 				//pub->my_publish("accel", accel);
 			}
 		}
@@ -232,7 +238,11 @@ void Proto_client::serve(Publisher *publisher)
 			float width=state.specification().width();
 			publisher->my_publish("width",width);
 			float wheelRadius=state.specification().wheelradius();
-			publisher->my_publish("wheelRadius",wheelRadius);
+			publisher->my_publish("wheelRadius",wheelRadius);	
+			float steerlock=state.specification().steerlock();
+			publisher->my_publish("steerlock",steerlock);
+			float timestamp=state.specification().timestamp();
+			publisher->my_publish("timestamp",timestamp);
 			for(int i=0; i<state.sensor().size(); i++)
 			{
 				if(state.sensor(i).type()==protobuf::Sensor_SensorType_GPS)
