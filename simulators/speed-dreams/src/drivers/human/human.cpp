@@ -53,6 +53,8 @@
 #include <state.pb.h>
 #include <control.pb.h>
 
+#include <netinet/tcp.h>
+
 static ObstacleSensors *sens;
 static tTrack	*curTrack;
 
@@ -230,6 +232,11 @@ newrace(int index, tCarElt* car, tSituation *s)
     socklen_t clilen = sizeof(cli_addr);
 
     newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
+    /* since we need to be fast -> disable nagle's algorithm
+     * https://en.wikipedia.org/wiki/Nagle's_algorithm
+     */
+    int yes = 1;
+    int result = setsockopt(newsockfd, IPPROTO_TCP, TCP_NODELAY, (char *) &yes, sizeof(int));
 
     robot.new_race(index, car, s);
     /* add laser obstacle sensors */
