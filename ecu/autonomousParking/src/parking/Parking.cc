@@ -11,14 +11,16 @@
 Parking::Parking(CarInformation info) : _info(info), _traveled_distance(0), 
                                         _free_space(0),
                                         _state(SEARCHING), _direction(1),
-                                        _side(1), _timestamp(0),
-                                        _sampling_period(1)
+                                        _side(1), _old_timestamp(0),
+                                        _maneuver_timestamp(0),
+                                        _sampling_period(0),
+                                        _local_steer_max(_info.steer_max)
 { 
     _T_star = 3;    // TODO : find appropriate magic number
     _T = _T_star;   // first estimation of T
 }
 
-bool Parking::_findParkingLot(double sensor_right, double spin_velocity, double timestamp) {
+bool Parking::_findParkingLot(double sensor_right, double spin_velocity) {
     // check if sensor data indicates that the distance to the right is too narrow
     if(sensor_right < _info.parkingLotWidth) {
         // reset number of wheel rotations while enough space for parking and update displacements
@@ -27,12 +29,12 @@ bool Parking::_findParkingLot(double sensor_right, double spin_velocity, double 
         _map.setLateralDisplacement(0);
     } else {
         // add rotations and update displacements
-        _free_space += spin_velocity * timestamp * _info.wheelRadius;
+        _free_space += spin_velocity * _sampling_period * _info.wheelRadius;
         _map.setLongitudinalDisplacement(_free_space);
         _map.setLateralDisplacement(fmin(sensor_right, _old_sensor_right));
     }
     
-    _traveled_distance += spin_velocity * timestamp * _info.wheelRadius;
+    _traveled_distance += spin_velocity * _sampling_period * _info.wheelRadius;
     _map.setX(_traveled_distance);
 
     _old_sensor_right = sensor_right;
@@ -80,7 +82,7 @@ void Parking::_calculate_T() {
     _phi = _map.get_angle();
 
     do {
-        for(double ts = 0; ts <= _T; ts += _timestamp){
+        for(double ts = 0; ts <= _T; ts += _sampling_period){
             s_angle = _steering_angle(ts);
             velo = _velocity(ts);
 
@@ -96,10 +98,10 @@ void Parking::_calculate_T() {
                 _y = _y - ((_info.length_car / tan(s_angle)) * (cos(_phi) - cos(_phi_old)));;
             }
         }
-        _T += _timestamp;
+        _T += _sampling_period;
     } while(_longitudinalCondition(_map.getX(), _x, _map.getY(), _y, _phi));
 
-    _T -= _timestamp;
+    _T -= _sampling_period;
 }
 
 void Parking::_calculate_local_max_steer() {
@@ -115,7 +117,7 @@ void Parking::_calculate_local_max_steer() {
     do {
         _local_steer_max -= 0.0872665;
 
-        for(double ts = 0; ts <= _T; ts += _timestamp){
+        for(double ts = 0; ts <= _T; ts += _sampling_period){
             s_angle = _steering_angle(ts);
             velo = _velocity(ts);
 
@@ -145,11 +147,12 @@ bool Parking::_lateralCondition(double startX, double endX, double startY, doubl
 
 void Parking::receiveData(double sensor_front, double sensor_right, double sensor_back, double spin_velocity, double timestamp){
 
+        _sampling_period = timestamp - _old_timestamp;
         // TODO - process sensor data to determine potential collisions
 
         switch(_state){
 
-        case SEARCHING      : if(_findParkingLot(sensor_right, spin_velocity, timestamp)){
+        case SEARCHING      : if(_findParkingLot(sensor_right, spin_velocity)){
                                 _actuator_steering = 0;
                                 _actuator_velocity = 0;
                                 _direction = -1;
@@ -169,9 +172,9 @@ void Parking::receiveData(double sensor_front, double sensor_right, double senso
                                 _actuator_steering = 0;
                                 _actuator_velocity = 0;
                               } else {
-                                _actuator_steering = (_steering_angle(_timestamp) / _local_steer_max);
-                                _actuator_velocity = _velocity(_timestamp);
-                                _timestamp += _sampling_period;
+                                _actuator_steering = (_steering_angle(_maneuver_timestamp) / _local_steer_max);
+                                _actuator_velocity = _velocity(_maneuver_timestamp);
+                                _maneuver_timestamp += _sampling_period;
                               }
                               break;
 

@@ -33,8 +33,10 @@ private:
 	double _direction;				// forward = 1 ; backwards = -1
 	double _side;					// right = 1 ; left = 0 --- we only support parking to the parking lot on the right
 
-	double _timestamp;				// elapsed time since start of parking maneuver
+	double _old_timestamp;			// last timestamp of simulation
+	double _maneuver_timestamp;     // timestamp during parking meneuver
 	double _sampling_period;		// time of 1 sampling period
+
 	double _T_star;					// time for steering negative max to positive max
 	double _T;						// estimated time for iteration/parking maneuver as we inly support one iteration right now
 
@@ -60,7 +62,7 @@ private:
 	/*
 	 * findParkingLot - finds a parking lot wiht appropriate size and builds a map of the environment to the right of th car
 	 */
-	bool _findParkingLot(double sensor_right, double spin_velocity, double timestamp);
+	bool _findParkingLot(double sensor_right, double spin_velocity);
 
 	/*
 	 * _a and _b - helper functions for _steering_angle() and _veloctity
