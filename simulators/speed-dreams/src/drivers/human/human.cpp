@@ -305,6 +305,9 @@ drive_at(int index, tCarElt* car, tSituation *s)
 {
     /* update gps position */
     gps.update(car);
+    vec2 axlePos = { (car->_pos_X + car->priv.wheel[2].relPos.x + car->_pos_X + car->priv.wheel[3].relPos.x) / 2,
+                     (car->_pos_Y + car->priv.wheel[2].relPos.y + car->_pos_Y + car->priv.wheel[3].relPos.y) / 2
+                   };
     vec2 myPos = gps.getPosition();
     //printf("Players's position according to GPS is (%f, %f)\n", myPos.x, myPos.y);
 
@@ -341,8 +344,8 @@ drive_at(int index, tCarElt* car, tSituation *s)
     /* add single gps sensor */
     protobuf::Sensor* sensor = current_state.add_sensor();
     sensor->set_type(protobuf::Sensor_SensorType_GPS);
-    sensor->add_value(myPos.x);
-    sensor->add_value(myPos.y);
+    sensor->add_value(axlePos.x);
+    sensor->add_value(axlePos.y);
 
     /* prepare protobuf message (serialize, calculate length, ...) */
     uint32_t message_length = 0;
