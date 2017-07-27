@@ -316,6 +316,7 @@ drive_at(int index, tCarElt* car, tSituation *s)
     current_state.set_steer(car->_steerCmd);
     current_state.set_accelcmd(car->_accelCmd);
     current_state.set_brakecmd(car->_brakeCmd);
+    current_state.set_timestamp(car->_curTime);
     /* wheels */
     protobuf::Wheel* wheels[4];
     for(int i = 0; i < 4; i++) {
@@ -327,6 +328,7 @@ drive_at(int index, tCarElt* car, tSituation *s)
     spec->set_length(car->_dimension_y);
     spec->set_width(car->_dimension_x);
     spec->set_wheelradius(car->_wheelRadius(0));
+    spec->set_steerlock(car->_steerLock);
     /* sensors
      * add laser proximity sensors as specified in newrace
      */
