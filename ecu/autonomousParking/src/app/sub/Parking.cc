@@ -185,6 +185,10 @@ void Parking::receiveData(double sensor_front, double sensor_right, double senso
 	//PDBG("publish");
 	publisher->my_publish("0", _actuator_steering);
 	publisher->my_publish("1", _actuator_velocity);
+	if(_state==PARKED)
+	{
+		publisher->my_publish("3", 0);
+	}
 
         // TODO : send actuator data
 
