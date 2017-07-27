@@ -167,6 +167,9 @@ void Parking::receiveData(double sensor_front, double sensor_right, double senso
 	sprintf(buffer, "%f %f %f %f %f",sensor_front,sensor_right,sensor_back,spin_velocity,timestamp);
 	PDBG("%s",buffer);
 
+    char buffer1[1024] = { 0 };
+    char buffer2[1024] = { 0 };
+
         switch(_state){
 
         case SEARCHING      : if(_findParkingLot(sensor_right, spin_velocity)){
@@ -182,17 +185,16 @@ void Parking::receiveData(double sensor_front, double sensor_right, double senso
                               break;
         
         case CALCULATING    : _calculate_T();
-                              _calculate_local_max_steer();
+                             // _calculate_local_max_steer();
 
-                              char buffer1[1024] = { 0 };
+                             
                               sprintf(buffer1, "%f",_T);
                               PDBG("%s", buffer1);
-
-                              char buffer2[1024] = { 0 };
+                            /*
                               sprintf(buffer2, "%f",_local_steer_max);
                               PDBG("%s", buffer2);
-
-                              _state = PARKED;
+                            */
+                              _state = CONTROLLING;
                               PDBG("State changed to PARKED");
               
         case CONTROLLING    : _actuator_steering = (_steering_angle(_maneuver_timestamp) / _local_steer_max);
