@@ -66,6 +66,7 @@ protected:
 
 private:
 	double distance(point p1, point p2);
+	bool is_between(point p1, point p2, point p);
 	bool is_between(double xc1, double xc2, double xcross);
 	bool is_infront(point middle, point sensor, point intersection);
 	double normRand(double avg, double std);

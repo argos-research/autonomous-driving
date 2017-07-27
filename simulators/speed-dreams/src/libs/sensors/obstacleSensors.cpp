@@ -37,6 +37,11 @@ double ObstacleSensors::distance(point p1, point p2) {
 	return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
 }
 
+/* check if p is between p1 and p2 */
+bool ObstacleSensors::is_between(point p1, point p2, point p) {
+	return is_between(p1.x, p2.x, p.x) && is_between(p1.y, p2.y, p.y);
+}
+
 /* check if xcross is between xc1 and xc2 */
 bool ObstacleSensors::is_between(double xc1, double xc2, double xcross) {
 	if ((xc1 < xc2) && (xcross >= xc1) && (xcross <= xc2)) return true;
@@ -108,6 +113,9 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 		#endif
 
 		/* iterate over all cars */
+		#ifdef __DEBUG_OPP_SENS__
+		printf("-----------------------------------------> CARS\n");
+		#endif
 		for (int i = 0; i < situation->_ncars && situation->_ncars != 1; i++) {
 			tCarElt *obstacleCar = situation->cars[i];
 			if (myc == obstacleCar) continue; // ignore own car
@@ -148,13 +156,26 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 			point i_right = { (t_right - t) / (m - m_obst), m * i_right.x + t };
 			point i_back = { (t_back - t) / (m - m_obst_90), m * i_back.x + t };
 
+			#ifdef __DEBUG_OPP_SENS__
+			printf("g(x)=%f * x + %f\n", m_obst, t_left);
+			printf("h(x)=%f * x + %f\n", m_obst_90, t_front);
+			printf("i(x)=%f * x + %f\n", m_obst, t_right);
+			printf("j(x)=%f * x + %f\n", m_obst_90, t_back);
+			#endif
+
+			#ifdef __DEBUG_OPP_SENS__
+			printf("cross={(%f,%f),(%f,%f),(%f,%f),(%f,%f),(%f,%f)",
+						i_left.x, i_left.y, i_front.x, i_front.y, i_right.x, i_right.y, i_back.x, i_back.y);
+			#endif
+
 			/* find nearest intersection point in front of the sensor
 			* and check if the found intersection is in the domain
 			*/
 			double distanceCandidate = 9000;
 			/* left side of obstacle car */
 			if (is_between(obstacleCar->_corner_x(3), obstacleCar->_corner_x(1), i_left.x) &&
-			is_infront(point { myc->_pos_X, myc->_pos_Y }, sensorPosition, i_left)) {
+			 		is_between(obstacleCar->_corner_y(3), obstacleCar->_corner_y(1), i_left.y) &&
+					is_infront(point { myc->_pos_X, myc->_pos_Y }, sensorPosition, i_left)) {
 				distanceCandidate = distance(sensorPosition, i_left);
 				if (distanceCandidate < obstacleDistance) {
 					obstacleDistance = distanceCandidate;
@@ -163,7 +184,8 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 			}
 			/* front side of obstacle car */
 			if (is_between(obstacleCar->_corner_x(1), obstacleCar->_corner_x(0), i_front.x) &&
-			is_infront(point { myc->_pos_X, myc->_pos_Y }, sensorPosition, i_front)) {
+					is_between(obstacleCar->_corner_y(1), obstacleCar->_corner_y(0), i_front.y) &&
+					is_infront(point { myc->_pos_X, myc->_pos_Y }, sensorPosition, i_front)) {
 				distanceCandidate = distance(sensorPosition, i_front);
 				if (distanceCandidate < obstacleDistance) {
 					obstacleDistance = distanceCandidate;
@@ -172,7 +194,8 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 			}
 			/* right side of obstacle car */
 			if (is_between(obstacleCar->_corner_x(0), obstacleCar->_corner_x(2), i_right.x) &&
-			is_infront(point { myc->_pos_X, myc->_pos_Y }, sensorPosition, i_right)) {
+					is_between(obstacleCar->_corner_y(0), obstacleCar->_corner_y(2), i_right.y) &&
+					is_infront(point { myc->_pos_X, myc->_pos_Y }, sensorPosition, i_right)) {
 				distanceCandidate = distance(sensorPosition, i_right);
 				if (distanceCandidate < obstacleDistance) {
 					obstacleDistance = distanceCandidate;
@@ -181,20 +204,20 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 			}
 			/* back side of obstacle car */
 			if (is_between(obstacleCar->_corner_x(2), obstacleCar->_corner_x(3), i_back.x) &&
-			is_infront(point { myc->_pos_X, myc->_pos_Y }, sensorPosition, i_back)) {
+					is_between(obstacleCar->_corner_y(2), obstacleCar->_corner_y(3), i_back.y) &&
+					is_infront(point { myc->_pos_X, myc->_pos_Y }, sensorPosition, i_back)) {
 				distanceCandidate = distance(sensorPosition, i_back);
 				if (distanceCandidate < obstacleDistance) {
 					obstacleDistance = distanceCandidate;
 					obstacleIntersection = i_back;
 				}
 			}
-
-			obstacleDistance *= normRand(1, __OPP_NOISE_STD__); // add noise
-			(*it).setDistance(obstacleDistance);
-
-			#ifdef __DEBUG_OPP_SENS__
-			printf("sensor #%d: %f\n", std::distance(sensors.begin(), it), obstacleDistance);
-			#endif
 		}
+
+		//obstacleDistance *= normRand(1, __OPP_NOISE_STD__); // add noise
+		(*it).setDistance(obstacleDistance);
+		#ifdef __DEBUG_OPP_SENS__
+		printf("sensor #%d: %f\n", std::distance(sensors.begin(), it), obstacleDistance);
+		#endif
 	}
 }
