@@ -23,7 +23,7 @@ Parking::Parking(CarInformation info) : _info(info), _traveled_distance(0),
 { 
     _T_star = 10;    // TODO : find appropriate magic number
     _T = _T_star+2;   // first estimation of T
-    _local_steer_max = _info.steer_max * 0.7;
+    _local_steer_max = _info.steer_max * 0.75;
 }
 
 bool Parking::_findParkingLot(double sensor_right, double spin_velocity) {
@@ -159,7 +159,9 @@ void Parking::receiveData(double sensor_front, double sensor_right, double senso
 
     _sampling_period = timestamp;
 
-    if((sensor_front <= _info.safetyDistanceLength) || (sensor_right <= _info.safetyDistanceWidth) || (sensor_front <= _info.safetyDistanceLength)){
+    if((sensor_front <= (_info.safetyDistanceLength / 2)) || (sensor_right <= _info.safetyDistanceWidth) || (sensor_back <= (_info.safetyDistanceLength / 2))){
+        _actuator_steering = 0;
+        _actuator_velocity = 0;
         _state = PARKED;
     }
 
