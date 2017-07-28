@@ -21,7 +21,7 @@ Parking::Parking(CarInformation info) : _info(info), _traveled_distance(0),
                                         _maneuver_timestamp(0),
                                         _sampling_period(0)
 { 
-    _T_star = 5;    // TODO : find appropriate magic number
+    _T_star = 12;    // TODO : find appropriate magic number
     _T = _T_star;   // first estimation of T
     _local_steer_max = _info.steer_max;
 }
