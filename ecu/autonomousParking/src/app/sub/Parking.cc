@@ -17,12 +17,12 @@
 Parking::Parking(CarInformation info) : _info(info), _traveled_distance(0), 
                                         _free_space(0),
                                         _state(SEARCHING), _direction(1),
-                                        _side(1),
+                                        _side(-1),
                                         _maneuver_timestamp(0),
                                         _sampling_period(0),
                                         _local_steer_max(_info.steer_max)
 { 
-    _T_star = 3;    // TODO : find appropriate magic number
+    _T_star = 13;    // TODO : find appropriate magic number
     _T = _T_star;   // first estimation of T
 }
 
@@ -159,7 +159,7 @@ void Parking::receiveData(double sensor_front, double sensor_right, double senso
 
     _sampling_period = timestamp;
 
-    if((sensor_front <= _info.safetyDistanceLength) && (sensor_right <= _info.safetyDistanceWidth) && (sensor_front <= _info.safetyDistanceLength)){
+    if((sensor_front <= _info.safetyDistanceLength) || (sensor_right <= _info.safetyDistanceWidth) || (sensor_front <= _info.safetyDistanceLength)){
         _state = PARKED;
     }
 
