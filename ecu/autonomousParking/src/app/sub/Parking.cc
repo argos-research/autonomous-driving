@@ -22,7 +22,7 @@ Parking::Parking(CarInformation info) : _info(info), _traveled_distance(0),
                                         _sampling_period(0)
 { 
     _T_star = 10;    // TODO : find appropriate magic number
-    _T = _T_star+2;   // first estimation of T
+    _T = _T_star;   // first estimation of T
     _local_steer_max = _info.steer_max;
 }
 
@@ -109,13 +109,13 @@ void Parking::_calculate_T() {
             }
         }
         _T += _sampling_period;
-    } while(_longitudinalCondition(_map.getX(), _x, _map.getY(), _y, _phi));
+    } while(_longitudinalCondition(_map.getX(), _x, _map.getY(), _y, _map.get_angle()));
 
     _T -= _sampling_period;
 }
 
 void Parking::_calculate_local_max_steer() {
-    if(_lateralCondition(_map.getX(), _x, _map.getY(), _y, _phi)) return;
+    if(_lateralCondition(_map.getX(), _x, _map.getY(), _y, _map.get_angle())) return;
 
     double s_angle;
     double velo;
@@ -143,16 +143,16 @@ void Parking::_calculate_local_max_steer() {
                 _y = _y - ((_info.length_car / tan(s_angle)) * (cos(_phi) - cos(_phi_old)));;
             }
         }
-    } while(!_lateralCondition(_map.getX(), _x, _map.getY(), _y, _phi));
+    } while(!_lateralCondition(_map.getX(), _x, _map.getY(), _y, _map.get_angle()));
 
 }
 
-bool Parking::_longitudinalCondition(double startX, double endX, double startY, double endY, double end_angle){
-    return fabs(((endX - startX) * cos(_phi)) + ((endY - startY) * sin(_phi))) < _map.getLongitudinalDisplacement();
+bool Parking::_longitudinalCondition(double startX, double endX, double startY, double endY, double start_angle){
+    return fabs(((endX - startX) * cos(start_angle)) + ((endY - startY) * sin(start_angle))) < _map.getLongitudinalDisplacement();
 }
 
-bool Parking::_lateralCondition(double startX, double endX, double startY, double endY, double end_angle){
-    return fabs(((startX - endX) * sin(_phi)) + ((endY - startY) * cos(_phi))) < _map.getLateralDisplacement();
+bool Parking::_lateralCondition(double startX, double endX, double startY, double endY, double start_angle){
+    return fabs(((startX - endX) * sin(start_angle)) + ((endY - startY) * cos(start_angle))) < _map.getLateralDisplacement();
 }
 
 void Parking::receiveData(double sensor_front, double sensor_right, double sensor_back, double spin_velocity, double timestamp, Publisher *publisher){
@@ -186,8 +186,8 @@ void Parking::receiveData(double sensor_front, double sensor_right, double senso
                               }
                               break;
         
-        case CALCULATING    : //_calculate_T();
-                              //_calculate_local_max_steer();
+        case CALCULATING    : _calculate_T();
+                              _calculate_local_max_steer();
 
                              
                               sprintf(buffer1, "%f",_T);

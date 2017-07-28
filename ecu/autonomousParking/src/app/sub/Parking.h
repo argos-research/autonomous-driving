@@ -97,9 +97,9 @@ private:
 	/*
 	 *  condition methods are used to check the distance conditions
 	 */
-	bool _longitudinalCondition(double startX, double endX, double startY, double endY, double end_angle);
+	bool _longitudinalCondition(double startX, double endX, double startY, double endY, double start_angle);
 
-	bool _lateralCondition(double startX, double endX, double startY, double endY, double end_angle);
+	bool _lateralCondition(double startX, double endX, double startY, double endY, double start_angle);
 
 public:
 
