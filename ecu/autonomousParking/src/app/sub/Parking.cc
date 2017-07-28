@@ -23,7 +23,7 @@ Parking::Parking(CarInformation info) : _info(info), _traveled_distance(0),
 { 
     _T_star = 10;    // TODO : find appropriate magic number
     _T = _T_star+2;   // first estimation of T
-    _local_steer_max = _info.max_steer * 0.5;
+    _local_steer_max = _info.steer_max * 0.5;
 }
 
 bool Parking::_findParkingLot(double sensor_right, double spin_velocity) {
