@@ -17,3 +17,5 @@ make ports
 make vde
 
 make jenkins_run
+
+isohybrid is part of syslinux-utils
