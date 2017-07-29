@@ -11,6 +11,7 @@
 #define timeval timeval_linux
 
 #include "publisher.h"
+#include "subscriber.h"
 #include "proto_client.h"
 
 /* lwip includes */
@@ -34,141 +35,68 @@ extern "C" {
 
 float steer, brake, accel, speed;
 bool autonomous;
-Publisher::Publisher(const char* id, const char* host, int port) : mosquittopp(id) {
-			/* init the library */
-			mosqpp::lib_init();
-
-			int keepalive = 60;
-			Publisher::connect(host, port, keepalive);
-		}
-
-		/* connect callback */
-void Publisher::on_connect(int ret) {
-			PDBG("Connected with code %d!", ret);
-		}
-
-		/* publish callback */
-void Publisher::on_publish(int ret) {
-			//PDBG("Published with code %d!", ret);
-		}
-
-
-void Publisher::on_log(int ret) {
-			PDBG("Log with code %d!", ret);
-		}
-
-		/* disconnect callback */
-void Publisher::on_disconnect(int ret) {
-			PDBG("Disconnected with code %d!", ret);
-		}
-
-		/* error callback */
-void Publisher::on_error() {
-			PDBG("Error!");
-		}
 
 void Publisher::my_publish(const char* name, float value) {
 	char buffer[1024] = { 0 };
 	sprintf(buffer, "%s; %f;", name, value);
-	int ret = this->publish(NULL, "state", strlen(buffer), buffer);
+	/* int ret = */ publish(NULL, "state", strlen(buffer), buffer);
 	//PDBG("pub state '%s' successful: %d", buffer, MOSQ_ERR_SUCCESS == ret);
-	//i++;
 }
 
-class Sub : public mosqpp::mosquittopp {
-public:
-		Sub(const char* id, const char* host, int port) : mosquittopp(id) {
-			/* init the library */
-			mosqpp::lib_init();
-
-			int keepalive = 60;
-			Sub::connect(host, port, keepalive);
+void Subscriber::on_message(const struct mosquitto_message *message) {
+	//PDBG("%s %s", message->topic, message->payload);
+	std::string payload = (char*)message->payload;
+	const char* name = payload.substr(0, payload.find(",")).c_str();
+	//PDBG("name %s", name);
+	if(!strcmp(name,"0"))
+	{
+		payload.erase(0, payload.find(",")+1);
+		steer=atof(payload.c_str());
+		//pub->my_publish("steer", steer);
+	}
+	if(!strcmp(name,"1"))
+	{
+		payload.erase(0, payload.find(",")+1);
+		brake=atof(payload.c_str());
+		//pub->my_publish("brake", brake);
+	}
+	if(!strcmp(name,"2"))
+	{
+		payload.erase(0, payload.find(",")+1);
+		accel=atof(payload.c_str());
+		//pub->my_publish("accel", accel);
+	}
+	if(!strcmp(name,"3"))
+	{
+		//PDBG("SAVM got autonomous");
+		payload.erase(0, payload.find(",")+1);
+		float tmp=atof(payload.c_str());
+		if(tmp>0)
+		{
+			//PDBG("bigger 0");
+			autonomous=true;
 		}
-
-		/* connect callback */
-		void on_connect(int ret) {
-			PDBG("Connected with code %d!", ret);
-
-			Sub::my_subscribe();
+		else
+		{
+			//PDBG("smaller 0");
+			autonomous=false;
 		}
+		//pub->my_publish("accel", accel);
+	}
+	if(!strcmp(name,"4"))
+	{
+		payload.erase(0, payload.find(",")+1);
+		speed=atof(payload.c_str());
+		//pub->my_publish("accel", accel);
+	}
+}
 
-		/* publish callback */
-		void on_subscribe(int mid, int qos_count, const int* ret) {
-			PDBG("Subscribed with codes %d %d %d!", mid, qos_count, *ret);
-		}
-
-		void on_message(const struct mosquitto_message *message) {
-			//PDBG("%s %s", message->topic, message->payload);
-			std::string payload = (char*)message->payload;
-			const char* name = payload.substr(0, payload.find(",")).c_str();
-			//PDBG("name %s", name);
-			if(!strcmp(name,"0"))
-			{
-				payload.erase(0, payload.find(",")+1);
-				steer=atof(payload.c_str());
-				//pub->my_publish("steer", steer);
-			}
-			if(!strcmp(name,"1"))
-			{
-				payload.erase(0, payload.find(",")+1);
-				brake=atof(payload.c_str());
-				//pub->my_publish("brake", brake);
-			}
-			if(!strcmp(name,"2"))
-			{
-				payload.erase(0, payload.find(",")+1);
-				accel=atof(payload.c_str());
-				//pub->my_publish("accel", accel);
-			}
-			if(!strcmp(name,"3"))
-			{
-				//PDBG("SAVM got autonomous");
-				payload.erase(0, payload.find(",")+1);
-				float tmp=atof(payload.c_str());
-				if(tmp>0)
-				{
-					//PDBG("bigger 0");
-					autonomous=true;
-				}
-				else
-				{
-					//PDBG("smaller 0");
-					autonomous=false;
-				}
-				//pub->my_publish("accel", accel);
-			}
-			if(!strcmp(name,"4"))
-			{
-				payload.erase(0, payload.find(",")+1);
-				speed=atof(payload.c_str());
-				//pub->my_publish("accel", accel);
-			}
-		}
-
-		void on_log(int ret) {
-			PDBG("Log with code %d!", ret);
-		}
-
-		/* disconnect callback */
-		void on_disconnect(int ret) {
-			PDBG("Disconnected with code %d!", ret);
-		}
-
-		/* error callback */
-		void on_error() {
-			PDBG("Error!");
-		}
-
-
-private:
-		char topic[1024] = { 0 };
-		int ret = -1;
-
-		void my_subscribe() {
-			ret = Sub::subscribe(NULL, "car-control", 0);
-			PDBG("Subscribed '%s' successful: %d", "state", MOSQ_ERR_SUCCESS == ret);
-			//i++;
-		};
+void Subscriber::my_subscribe(const char* name) {
+	char buffer[1024] = { 0 };
+	int ret = -1;
+	sprintf(buffer, "%s", name);
+	ret = subscribe(NULL, buffer, 0);
+	PDBG("Subscribed '%s' successful: %d", buffer, MOSQ_ERR_SUCCESS == ret);
 };
 
 Proto_client::Proto_client() :
@@ -395,7 +323,7 @@ int main(int argc, char* argv[]) {
 	PDBG("done");
 
 	PDBG("savm sub init");
-	Sub *sub = new Sub("SAVMSub", ip_addr, atoi(port));
+	Subscriber *sub = new Subscriber("SAVMSub", ip_addr, atoi(port));
 	PDBG("done");
 
 	
