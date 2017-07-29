@@ -1,7 +1,7 @@
 TARGET = sub
 
 SRC_CC += main.cc
-SRC_CC += Parking.cc
+SRC_CC += Parking.cc $(REP_DIR)/../../tools/QEMU-SA-VM/src/app/savm/subscriber.cc $(REP_DIR)/../../tools/QEMU-SA-VM/src/app/savm/publisher.cc
           
 LIBS   = base libmosquitto stdcxx lwip pthread
 
