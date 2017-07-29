@@ -3,7 +3,7 @@
 * \date   2017-07-06
 */
 
-//#define __DEBUG_OPP_SENS__
+#define __DEBUG_OPP_SENS__
 #define __OPP_NOISE_STD__ 0.02
 
 #include "obstacleSensors.h"
@@ -51,7 +51,7 @@ bool ObstacleSensors::is_between(double xc1, double xc2, double xcross) {
 
 /* middle <-> sensor + sensor <-> intersection = middle <-> intersection */
 bool ObstacleSensors::is_infront(point middle, point sensor, point intersection) {
-	double eps = 0.1;
+	double eps = 0.01;
 	double dist1 = distance(middle, sensor) + distance(sensor, intersection);
 	double dist2 = distance(middle, intersection);
 	return (dist1 >= dist2 - eps && dist1 <= dist2 + eps);
@@ -93,6 +93,9 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 		sensorPosition = { myc->_pos_X + cos(myc->_yaw + phi) * dis,
 			myc->_pos_Y + sin(myc->_yaw + phi) * dis
 		}; // calculate distance for x and y coordinates and add it to middle point
+
+		point reference = { sensorPosition.x - 1 * cos(myc->_yaw + (*it).getAngle() * PI / 180), sensorPosition.y - 0.1 * sin(myc->_yaw + (*it).getAngle() * PI / 180) };
+		printf("reference={(%f,%f)}\n", reference.x, reference.y);
 
 		/* calculate slope of sensor */
 		m = tan(myc->_yaw + (*it).getAngle() * PI / 180); // add custom angle of sensor (in degree for convenience)
@@ -164,7 +167,7 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 			#endif
 
 			#ifdef __DEBUG_OPP_SENS__
-			printf("cross={(%f,%f),(%f,%f),(%f,%f),(%f,%f),(%f,%f)",
+			printf("cross={(%f,%f),(%f,%f),(%f,%f),(%f,%f),(%f,%f)}\n",
 						i_left.x, i_left.y, i_front.x, i_front.y, i_right.x, i_right.y, i_back.x, i_back.y);
 			#endif
 
@@ -175,7 +178,8 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 			/* left side of obstacle car */
 			if (is_between(obstacleCar->_corner_x(3), obstacleCar->_corner_x(1), i_left.x) &&
 			 		is_between(obstacleCar->_corner_y(3), obstacleCar->_corner_y(1), i_left.y) &&
-					is_infront(point { myc->_pos_X, myc->_pos_Y }, sensorPosition, i_left)) {
+					//is_infront(reference, sensorPosition, i_left)) {
+					is_between(i_left, reference, sensorPosition)) {
 				distanceCandidate = distance(sensorPosition, i_left);
 				if (distanceCandidate < obstacleDistance) {
 					obstacleDistance = distanceCandidate;
@@ -185,7 +189,8 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 			/* front side of obstacle car */
 			if (is_between(obstacleCar->_corner_x(1), obstacleCar->_corner_x(0), i_front.x) &&
 					is_between(obstacleCar->_corner_y(1), obstacleCar->_corner_y(0), i_front.y) &&
-					is_infront(point { myc->_pos_X, myc->_pos_Y }, sensorPosition, i_front)) {
+					//is_infront(reference, sensorPosition, i_front)) {
+					is_between(i_front, reference, sensorPosition)) {
 				distanceCandidate = distance(sensorPosition, i_front);
 				if (distanceCandidate < obstacleDistance) {
 					obstacleDistance = distanceCandidate;
@@ -195,7 +200,8 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 			/* right side of obstacle car */
 			if (is_between(obstacleCar->_corner_x(0), obstacleCar->_corner_x(2), i_right.x) &&
 					is_between(obstacleCar->_corner_y(0), obstacleCar->_corner_y(2), i_right.y) &&
-					is_infront(point { myc->_pos_X, myc->_pos_Y }, sensorPosition, i_right)) {
+					//is_infront(reference, sensorPosition, i_right)) {
+					is_between(i_right, reference, sensorPosition)) {
 				distanceCandidate = distance(sensorPosition, i_right);
 				if (distanceCandidate < obstacleDistance) {
 					obstacleDistance = distanceCandidate;
@@ -205,7 +211,8 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 			/* back side of obstacle car */
 			if (is_between(obstacleCar->_corner_x(2), obstacleCar->_corner_x(3), i_back.x) &&
 					is_between(obstacleCar->_corner_y(2), obstacleCar->_corner_y(3), i_back.y) &&
-					is_infront(point { myc->_pos_X, myc->_pos_Y }, sensorPosition, i_back)) {
+					//is_infront(reference, sensorPosition, i_back)) {
+					is_between(i_back, reference, sensorPosition)) {
 				distanceCandidate = distance(sensorPosition, i_back);
 				if (distanceCandidate < obstacleDistance) {
 					obstacleDistance = distanceCandidate;
