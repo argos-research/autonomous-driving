@@ -1,4 +1,4 @@
-TARGET = sub
+TARGET = ecu
 
 SRC_CC += main.cc
 SRC_CC += Parking.cc $(REP_DIR)/../../tools/QEMU-SA-VM/src/app/savm/subscriber.cc $(REP_DIR)/../../tools/QEMU-SA-VM/src/app/savm/publisher.cc
