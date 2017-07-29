@@ -47,47 +47,42 @@ void Subscriber::on_message(const struct mosquitto_message *message) {
 	//PDBG("%s %s", message->topic, message->payload);
 	std::string payload = (char*)message->payload;
 	const char* name = payload.substr(0, payload.find(",")).c_str();
-	//PDBG("name %s", name);
+
 	if(!strcmp(name,"0"))
 	{
 		payload.erase(0, payload.find(",")+1);
 		steer=atof(payload.c_str());
-		//pub->my_publish("steer", steer);
+
 	}
 	if(!strcmp(name,"1"))
 	{
 		payload.erase(0, payload.find(",")+1);
 		brake=atof(payload.c_str());
-		//pub->my_publish("brake", brake);
+
 	}
 	if(!strcmp(name,"2"))
 	{
 		payload.erase(0, payload.find(",")+1);
 		accel=atof(payload.c_str());
-		//pub->my_publish("accel", accel);
+
 	}
 	if(!strcmp(name,"3"))
 	{
-		//PDBG("SAVM got autonomous");
 		payload.erase(0, payload.find(",")+1);
 		float tmp=atof(payload.c_str());
 		if(tmp>0)
 		{
-			//PDBG("bigger 0");
 			autonomous=true;
 		}
 		else
 		{
-			//PDBG("smaller 0");
 			autonomous=false;
 		}
-		//pub->my_publish("accel", accel);
 	}
 	if(!strcmp(name,"4"))
 	{
 		payload.erase(0, payload.find(",")+1);
 		speed=atof(payload.c_str());
-		//pub->my_publish("accel", accel);
 	}
 }
 
@@ -108,28 +103,28 @@ Proto_client::Proto_client() :
 
 	Genode::Xml_node speedDreams = Genode::config()->xml_node().sub_node("speedDreams");
 
-		char ip_addr[16] = {0};
-		char port[16] = {0};
+	char ip_addr[16] = {0};
+	char port[16] = {0};
 
-		speedDreams.attribute("ip-address").value(ip_addr, sizeof(ip_addr));
-		speedDreams.attribute("port").value(port, sizeof(port));
+	speedDreams.attribute("ip-address").value(ip_addr, sizeof(ip_addr));
+	speedDreams.attribute("port").value(port, sizeof(port));
 
-		_in_addr.sin_addr.s_addr = inet_addr(ip_addr);
-		_in_addr.sin_family = AF_INET;
-		_in_addr.sin_port = htons(atoi(port));
+	_in_addr.sin_addr.s_addr = inet_addr(ip_addr);
+	_in_addr.sin_family = AF_INET;
+	_in_addr.sin_port = htons(atoi(port));
 
-		if ((_listen_socket = lwip_socket(AF_INET, SOCK_STREAM, 0)) < 0)
-		{
-			PERR("No socket available!");
-			return;
-		}
-		PDBG("listen socket\n");
+	if ((_listen_socket = lwip_socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	{
+		PERR("No socket available!");
+		return;
+	}
+	PDBG("listen socket\n");
 
-		if (lwip_connect(_listen_socket, (struct sockaddr*)&_in_addr, sizeof(_in_addr)))
-		{
-			PERR("Connection failed!");
-			PERR("Reconnecting!");
-		}
+	if (lwip_connect(_listen_socket, (struct sockaddr*)&_in_addr, sizeof(_in_addr)))
+	{
+		PERR("Connection failed!");
+		return;
+	}
 
 	PINF("Connected...\n");
 
@@ -143,16 +138,13 @@ Proto_client::~Proto_client()
 void Proto_client::serve(Publisher *publisher)
 {
 	Timer::Connection timer;
-	//timer.msleep(1000);
 	int size = 0;
-	//int id=0;
-	//float value=0;
 	Genode::Ram_dataspace_capability state_ds=Genode::env()->ram_session()->alloc(1024);
 	char* foo=Genode::env()->rm_session()->attach(state_ds);
 	while (true)
 	{
 		size=0;
-		PDBG("receive %lu\n",timer.elapsed_ms());
+		//PDBG("receive %lu\n",timer.elapsed_ms());
 		NETCHECK_LOOP(receiveInt32_t(size));
 		if (size>0)
 		{
@@ -209,39 +201,18 @@ void Proto_client::serve(Publisher *publisher)
 		{
 			PWRN("Unknown message: %d", size);
 		}
-		//timer.msleep(0.1);
 		std::string foo;
-		//PDBG("prepare proto");
 		protobuf::Control ctrl;
-		//PDBG("set proto");
 		ctrl.set_steer(steer);
-		char buffer[1024] = { 0 };
-		sprintf(buffer, "steer %f", steer);
-		PDBG("%s",buffer);
 		ctrl.set_accelcmd(accel);
-		buffer[0] = 0;
-		sprintf(buffer, "accel %f", accel);
-		//PDBG("%s",buffer);
 		ctrl.set_brakecmd(brake);
-		buffer[0] = 0;
-		sprintf(buffer, "brake %f", brake);
-		//PDBG("%s",buffer);
 		ctrl.set_speed(speed);
-		buffer[0] = 0;
-		sprintf(buffer, "speed %f", speed);
-		PDBG("%s",buffer);
 		ctrl.set_autonomous(autonomous);
-		buffer[0] = 0;
-		sprintf(buffer, "autonomous %d", autonomous);
-		//PDBG("%s",buffer);
-		//PDBG("start serialize");
 		ctrl.SerializeToString(&foo);
 		uint32_t length=htonl(foo.size());
-		//PDBG("control set\n");
 		send_data(&length,4);
 		send_data((void*)foo.c_str(),foo.size());
-		//PDBG("data sent to Alex\n");
-		PDBG("done %lu\n",timer.elapsed_ms());
+		//PDBG("done %lu\n",timer.elapsed_ms());
 	}
 	Genode::env()->ram_session()->free(state_ds);
 }
