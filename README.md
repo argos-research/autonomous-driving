@@ -44,6 +44,9 @@ make```
 *link directory*
 ...
 
+# Configuration
+- One can adapt the address and port SD2 listens on for the QEMU SA/VM connection in src/drivers/human/human.cpp
+
 # Run instructions
 - Start a mosquitto server
 - Start speed-dreams 2 by executing `./simulators/speed-dreams/build/games/speed-dreams-2`
