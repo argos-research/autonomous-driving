@@ -57,6 +57,7 @@
 
 static ObstacleSensors *sens;
 static tTrack	*curTrack;
+static bool autonomous;
 
 static HumanDriver robot("human");
 
@@ -389,7 +390,8 @@ drive_at(int index, tCarElt* car, tSituation *s)
     control.autonomous());
 
     if (control.autonomous()) {
-      printf("WE ARE AUTONOMOUS!\n");
+      autonomous = true;
+      printf("AUTONOMOUS!\n");
       car->_steerCmd = control.steer();
       if (control.speed() < 0) { // negative speed wanted
         car->_clutchCmd = 1;
@@ -417,6 +419,11 @@ drive_at(int index, tCarElt* car, tSituation *s)
     } else {
       printf("CONVENTIAL!\n");
       robot.drive_at(index, car, s);
+      if (car->_accelCmd != 0.0 || car->_brakeCmd != 0.0)
+        autonomous = false;
+
+      if (autonomous) // if user didn't overtake control after parking...
+        car->_brakeCmd = 1.0; //... full brakes (obv. for safety reasons)
     }
 }//drive_at
 
