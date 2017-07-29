@@ -86,14 +86,6 @@ void Subscriber::on_message(const struct mosquitto_message *message) {
 	}
 }
 
-void Subscriber::my_subscribe(const char* name) {
-	char buffer[1024] = { 0 };
-	int ret = -1;
-	sprintf(buffer, "%s", name);
-	ret = subscribe(NULL, buffer, 0);
-	PDBG("Subscribed '%s' successful: %d", buffer, MOSQ_ERR_SUCCESS == ret);
-};
-
 Proto_client::Proto_client() :
 	_listen_socket(0),
 	_in_addr{0},
@@ -104,7 +96,7 @@ Proto_client::Proto_client() :
 	Genode::Xml_node speedDreams = Genode::config()->xml_node().sub_node("speedDreams");
 
 	char ip_addr[16] = {0};
-	char port[16] = {0};
+	char port[5] = {0};
 
 	speedDreams.attribute("ip-address").value(ip_addr, sizeof(ip_addr));
 	speedDreams.attribute("port").value(port, sizeof(port));
@@ -248,7 +240,7 @@ int main(int argc, char* argv[]) {
 			PERR("lwip init failed!");
 			return 1;
 		}
-		PDBG("waiting 10s");
+		PDBG("waiting 10s for dhcp ip");
 		Timer::Connection timer;
 		timer.msleep(10000);
 		PDBG("done");

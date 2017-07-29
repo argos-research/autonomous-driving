@@ -2,6 +2,10 @@
 
 #include <base/printf.h>
 
+/* etc */
+#include <cstdio>
+#include <cstring>
+
 Subscriber::Subscriber(const char* id, const char* host, int port) : mosquittopp(id) {
 	/* init the library */
 	mosqpp::lib_init();
@@ -34,3 +38,11 @@ void Subscriber::on_disconnect(int ret) {
 void Subscriber::on_error() {
 	PDBG("Error!");
 }
+
+void Subscriber::my_subscribe(const char* name) {
+	char buffer[1024] = { 0 };
+	int ret = -1;
+	sprintf(buffer, "%s", name);
+	ret = subscribe(NULL, buffer, 0);
+	PDBG("Subscribed '%s' successful: %d", buffer, MOSQ_ERR_SUCCESS == ret);
+};
