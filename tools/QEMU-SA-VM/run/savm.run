@@ -86,8 +86,8 @@ set config {
 #
 
 append qemu_args "-net vde,sock=/tmp/switch1 "
-lappend_if [have_spec x86_64] append qemu_args "-net nic,model=e1000,macaddr=02:00:00:00:01:02 "
-lappend_if ![have_spec x86_64] append qemu_args "-net nic,model=lan9118,macaddr=02:00:00:00:01:02 "
+lappend_if [have_spec x86_64] qemu_args "-net nic,model=e1000,macaddr=02:00:00:00:01:02 "
+lappend_if [expr ![have_spec x86_64]] qemu_args "-net nic,model=lan9118,macaddr=02:00:00:00:01:02 "
 
 set boot_modules { core init savm ld.lib.so libc.lib.so stdcxx.lib.so libm.lib.so pthread.lib.so timer lwip.lib.so libmosquitto.lib.so libssl.lib.so libcrypto.lib.so libprotobuf.lib.so zlib.lib.so }
 
