@@ -249,8 +249,8 @@ newrace(int index, tCarElt* car, tSituation *s)
      *      +-----L-----+ (car->_cimension_x/2, car->dimension_y/2)
      */
     sens->addSensor(car, 0, car->_dimension_x/2, 0, 20); // front
-    //sens->addSensor(car, -90, car->priv.wheel[2].relPos.x, -car->_dimension_y/2, 20); // right
-    sens->addSensor(car, -90, 0, -car->_dimension_y/2, 20); // right
+    sens->addSensor(car, -90, car->priv.wheel[2].relPos.x, -car->_dimension_y/2, 20); // right
+    //sens->addSensor(car, -90, 0, -car->_dimension_y/2, 20); // right
     sens->addSensor(car, 180, -car->_dimension_x/2, 0, 20); // back
     //sens->addSensor(car, 90, 0, car->_dimension_y/2, 20); // left
 }//newrace
@@ -407,10 +407,10 @@ drive_at(int index, tCarElt* car, tSituation *s)
         car->_gearCmd = 1;
         car->_clutchCmd = 0;
         if (car->_speed_x > control.speed()) { // car too fast
-          car->_brakeCmd = 0.2;
+          car->_brakeCmd = 1.0;
           car->_accelCmd = 0.0;
         } else {
-          car->_accelCmd = 0.2;
+          car->_accelCmd = 1.0;
           car->_brakeCmd = 0.0;
         }
       }
