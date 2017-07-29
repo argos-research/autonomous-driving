@@ -38,7 +38,9 @@
  * Robot interface entry points are still here.
  */
 
-#define __DEBUG__PARKING
+//#define __DEBUG__PARKING
+#define listen_addr "0.0.0.0"
+#define listen_port 9002
 
 #include <humandriver.h>
 
@@ -217,12 +219,12 @@ newrace(int index, tCarElt* car, tSituation *s)
     bzero(&srv_addr, sizeof(srv_addr));
     srv_addr.sin_family = AF_INET;
     struct hostent *host;
-    host = gethostbyname("0.0.0.0"); // listen globally...
+    host = gethostbyname(listen_addr); // listen globally...
     if (host == NULL) {
       printf("Couldn't resolve hostname!\n");
     }
     bcopy((char *)host->h_addr, (char *)&srv_addr.sin_addr.s_addr, host->h_length);
-    srv_addr.sin_port = htons(9002); // ... on port 9002
+    srv_addr.sin_port = htons(listen_port); // ... on port 9002
 
     while (bind(sockfd, (struct sockaddr *)&srv_addr, sizeof(srv_addr)) < 0) {
       printf("bind failed!\n");
