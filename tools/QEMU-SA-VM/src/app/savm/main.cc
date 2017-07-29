@@ -104,22 +104,19 @@ Proto_client::Proto_client() :
 	_in_addr{0},
 	_target_addr{0}
 {
-	_in_addr.sin_family = AF_INET;
-	_in_addr.sin_port = htons(9002);
-
 	enum { BUF_SIZE = Nic::Packet_allocator::DEFAULT_PACKET_SIZE * 128 };
 
-	Genode::Xml_node network = Genode::config()->xml_node().sub_node("network");
+	Genode::Xml_node speedDreams = Genode::config()->xml_node().sub_node("speedDreams");
 
-		char ip_addr[16] = {"10.0.0.2"};
-		char subnet[16] = {0};
-		char gateway[16] = {0};
+		char ip_addr[16] = {0};
+		char port[16] = {0};
 
-		//network.attribute("ip-address").value(ip_addr, sizeof(ip_addr));
-		network.attribute("subnet-mask").value(subnet, sizeof(subnet));
-		network.attribute("default-gateway").value(gateway, sizeof(gateway));
+		speedDreams.attribute("ip-address").value(ip_addr, sizeof(ip_addr));
+		speedDreams.attribute("port").value(port, sizeof(port));
 
 		_in_addr.sin_addr.s_addr = inet_addr(ip_addr);
+		_in_addr.sin_family = AF_INET;
+		_in_addr.sin_port = htons(atoi(port));
 
 		if ((_listen_socket = lwip_socket(AF_INET, SOCK_STREAM, 0)) < 0)
 		{
