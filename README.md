@@ -32,7 +32,8 @@ In simulators/speed-dreams execute the following commands:
 mkdir -p build
 cd build
 cmake ../ -DCMAKE_CXX_FLAGS=-fpermissive -DOPTION_PARKING=ON
-make```
+make
+```
 
 ## SA/VM
 How to run SAVM
