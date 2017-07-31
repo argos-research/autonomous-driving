@@ -313,12 +313,18 @@ initStartingGrid(void)
   for (i = 0; i < ReInfo->s->_ncars; i++) {
     car = &(ReInfo->carList[i]);
     car->_speed_x = speedInit;
-		#ifdef PARKING
-		startpos = ReInfo->track->length - i * 6.0; // hard code distance between cars to 6m
-		#else
+    #ifdef PARKING
+    startpos = ReInfo->track->length - i * 8.0; // hard code distance between cars to 8m
+    #else
     startpos = ReInfo->track->length - (d1 + (i / rows) * d2 + (i % rows) * d3);
-		#endif
+    #endif
     tr = a + b * ((i % rows) + 1) / (rows + 1);
+    #ifdef PARKING
+    if (i == 1)
+        tr -= 3;
+    if (i == 3)
+        tr += 3;
+    #endif
     curseg = ReInfo->track->seg;  /* last segment */
     while (startpos < curseg->lgfromstart) {
       curseg = curseg->prev;

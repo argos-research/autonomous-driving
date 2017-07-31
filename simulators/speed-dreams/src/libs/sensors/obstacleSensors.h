@@ -27,6 +27,7 @@ protected:
 	double range;
 	double move_x;
 	double move_y;
+	double distance = -1;
 
 public:
 	double getMove_x() {
@@ -44,6 +45,14 @@ public:
 	double getRange() {
 		return range;
 	}
+
+	double getDistance() {
+		return distance;
+	}
+
+	void setDistance(double dist) {
+		distance = dist;
+	}
 };
 
 class ObstacleSensors {
@@ -57,13 +66,16 @@ protected:
 
 private:
 	double distance(point p1, point p2);
-	bool is_between(double xc1, double xc2, double xcross);
-	bool is_infront(point middle, point sensor, point intersection);
+	bool is_between(point p1, point p2, point p);
 	double normRand(double avg, double std);
 
 public:
 	void addSensor(tCarElt *car, double angle, double move_x, double move_y, double range);
 	void sensors_update(tSituation *situation);
+
+	std::list<SingleObstacleSensor> getSensorsList() {
+		return sensors;
+	}
 };
 
 #endif
