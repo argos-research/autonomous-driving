@@ -232,6 +232,7 @@ int main(int argc, char* argv[]) {
 	/* create new mosquitto peer */
 	PDBG("Ecu sub init");
 	Subscriber *sub = new Subscriber("EcuSub", ip_addr, atoi(port));
+	sub->my_subscribe("state");
 	PDBG("done");
 
 	PDBG("Ecu pub init");

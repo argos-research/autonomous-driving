@@ -44,9 +44,9 @@ bool Parking::_findParkingLot(double sensor_right, double spin_velocity) {
         _map.setLongitudinalDisplacement(_free_space);
         _map.setLateralDisplacement(fmin(sensor_right, _old_sensor_right));
     }
-    char buffer[1024] = { 0 };
+    /*char buffer[1024] = { 0 };
     sprintf(buffer, "%f",_free_space);
-    PDBG("%s", buffer);
+    PDBG("%s", buffer);*/
 
     _traveled_distance += spin_velocity * _sampling_period * _info.wheelRadius;
     _map.setX(_traveled_distance);
@@ -165,9 +165,9 @@ void Parking::receiveData(double sensor_front, double sensor_right, double senso
         _state = PARKED;
     }
 
-	char buffer[1024] = { 0 };
+	/*char buffer[1024] = { 0 };
 	sprintf(buffer, "%f %f %f %f %f",sensor_front,sensor_right,sensor_back,spin_velocity,timestamp);
-	PDBG("%s",buffer);
+	PDBG("%s",buffer);*/
 
     char buffer1[1024] = { 0 };
     char buffer2[1024] = { 0 };

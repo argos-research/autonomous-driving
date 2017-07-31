@@ -119,6 +119,10 @@ Proto_client::Proto_client() :
 	}
 
 	PINF("Connected...\n");
+	int yes = 1;
+    int result = lwip_setsockopt(_listen_socket, IPPROTO_TCP, TCP_NODELAY, (char *) &yes, sizeof(int));
+
+
 
 }
 
@@ -137,12 +141,12 @@ void Proto_client::serve(Publisher *publisher)
 	{
 		size=0;
 		//PDBG("receive %lu\n",timer.elapsed_ms());
-		NETCHECK_LOOP(receiveInt32_t(size));
+		receiveInt32_t(size);
 		if (size>0)
 		{
 			//PDBG("Ready to receive state.");
 			//PDBG("Got size %llu\n", ntohl(size));
-			NETCHECK_LOOP(receive_data(foo, ntohl(size)));
+			receive_data(foo, ntohl(size));
 			protobuf::State state;
 			state.ParseFromArray(foo,ntohl(size));			
 			float steer=state.steer();
@@ -187,11 +191,11 @@ void Proto_client::serve(Publisher *publisher)
 					publisher->my_publish(name,laser);
 				}
 			}
-			PDBG("send %lu\n",timer.elapsed_ms());
+			//PDBG("send %lu\n",timer.elapsed_ms());
 		}
 		else
 		{
-			PWRN("Unknown message: %d", size);
+			//PWRN("Unknown message: %d", size);
 		}
 		std::string foo;
 		protobuf::Control ctrl;
@@ -284,6 +288,7 @@ int main(int argc, char* argv[]) {
 
 	PDBG("savm sub init");
 	Subscriber *sub = new Subscriber("SAVMSub", ip_addr, atoi(port));
+	sub->my_subscribe("car-control");
 	PDBG("done");
 
 	
