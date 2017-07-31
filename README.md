@@ -70,7 +70,7 @@ make vde                                # starts up a vde_switch and tap device
 - Start up the QEMU ECU by executing `make -C genode/build/foc_x86_64/ run/ecu`
 
 # Execute parking scenario
-- In speed-dreams: press the *'enter'* key and reduce the simulation time to 0.25 by pressing *'-'* two times (this may be unnecessary, depending on your configuration - if you're unsure, just use 0.25 and slowly increase the simulation speed until it becomes unresponsive)
+- In speed-dreams: press the *'enter'* key and reduce the simulation time to 0.25 by pressing the *'-'* key two times (this may be unnecessary, depending on your configuration - if you're unsure, just use 0.25 and slowly increase the simulation speed with the *'+'* key until it becomes unresponsive)
 - Use the provided mosquitto_pub by mosquitto to publish the go command: `./mosquitto_pub -h <ip-address> -p <port> -t state -m 'go; 1'`
 - The bot will now autonomously park, the controls will be reactivated once the car is done parking
 - To abort the parking manoeuver, just publish go with value 0: `./mosquitto_pub -h <ip-address> -p <port> -t state -m 'go; 0'`
