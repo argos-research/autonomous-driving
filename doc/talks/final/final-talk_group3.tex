@@ -6,6 +6,7 @@
 \usepackage{hyperref}
 \usepackage{multicol}
 \usepackage{color}
+\usepackage{pifont}
 \usepackage{tikz}
 \usepackage{amsmath}
 \usetikzlibrary{arrows}
@@ -35,22 +36,23 @@ David Werner}
   \section{Introduction}
 
   \subsection{Trask Description}
-  \begin{frame}{Our Task}
+  \begin{frame}<1-7>[label=ourtask]{Our Task}
+    \frametitle<8>{Did we reach our goals?}
     \textbf{Autonomous Parking}
     \begin{itemize}
-      \item<2-> Start of the parking manoeuver by the user
-      \item<2-> Autonomously finding a parking spot
-      \item<2-> Autonomous execution of the parking manoeuver
-      \item<2-> Stopping the parking manoeuver (in case of failure, ...)
-      \item<2-> Parking manoeuver itself
+      \item<2-> Start of the parking manoeuver by the user \uncover<8>{\ding{51}}
+      \item<2-> Autonomously finding a parking spot \uncover<8>{\ding{51}}
+      \item<2-> Autonomous execution of the parking manoeuver \uncover<8>{\ding{51}}
+      \item<2-> Stopping the parking manoeuver (in case of failure, ...) \uncover<8>{\ding{51}}
+      \item<2-> Parking manoeuver itself \uncover<8>{\ding{51}}
     \end{itemize}
     \uncover<3->{\textbf{Restrictions}}
     \begin{itemize}
-      \item<4-> Everything starts with less than 1s of latency
-      \item<4-> Parking manoeuver in real-time...
-      \item<5-> ... on a Pandaboard... \uncover<6->{with Fiasco.OC / Genode OS}
-      \item<7-> Parking without crashing
-      \item<7-> Parking in less than 30s total
+      \item<4-> Everything starts with less than 1s of latency \uncover<8>{\ding{51}}
+      \item<4-> Parking manoeuver in real-time... \uncover<8>{\ding{51}}
+      \item<5-> ... on a Pandaboard... \uncover<6->{with Fiasco.OC / Genode OS} \uncover<8>{\ding{51}}
+      \item<7-> Parking without crashing \uncover<8>{\ding{51}}
+      \item<7-> Parking in less than 30s total \uncover<8>{\ding{51}}
     \end{itemize}
   \end{frame}
 
@@ -451,4 +453,8 @@ message State {
   		\item<3-> safety distance needs to be higher than necessary
   	\end{itemize}
   \end{frame}
-  \end{document}
+
+\section{Summary}
+\againframe<all:8>{ourtask}
+
+\end{document}
