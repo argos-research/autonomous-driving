@@ -1,0 +1,3 @@
+[submodule "protobuf-messages"]
+	path = protobuf-messages
+	url = https://github.com/argos-research/protobuf-messages.git

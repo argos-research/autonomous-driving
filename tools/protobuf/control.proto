@@ -1,0 +1,11 @@
+syntax = "proto3";
+package protobuf;
+
+message Control {
+  float steer = 1;
+  float brakeCmd = 2;
+  float accelCmd = 3;
+  int32 gear = 4;
+  float speed = 5;
+  bool autonomous = 6;
+}

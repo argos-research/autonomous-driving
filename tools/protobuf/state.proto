@@ -1,0 +1,16 @@
+syntax = "proto3";
+package protobuf;
+
+import "sensor.proto";
+import "wheel.proto";
+import "specification.proto";
+
+message State {
+  repeated Sensor sensor = 1;
+  repeated Wheel wheel = 2;
+  Specification specification = 3;
+  float steer = 4;
+  float brakeCmd = 5;
+  float accelCmd = 6;
+  float timestamp = 7;
+}

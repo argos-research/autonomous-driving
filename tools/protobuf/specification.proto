@@ -1,0 +1,9 @@
+syntax = "proto3";
+package protobuf;
+
+message Specification {
+  float length = 1;
+  float width = 2;
+  float wheelRadius = 3;
+  float steerlock = 4;
+}
