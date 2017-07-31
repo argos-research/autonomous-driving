@@ -52,7 +52,6 @@ void Subscriber::on_message(const struct mosquitto_message *message) {
 	{
 		payload.erase(0, payload.find(",")+1);
 		steer=atof(payload.c_str());
-
 	}
 	if(!strcmp(name,"1"))
 	{
@@ -149,8 +148,8 @@ void Proto_client::serve(Publisher *publisher)
 			receive_data(foo, ntohl(size));
 			protobuf::State state;
 			state.ParseFromArray(foo,ntohl(size));			
-			float steer=state.steer();
-			publisher->my_publish("steer",steer);
+			float steerCmd=state.steer();
+			publisher->my_publish("steer",steerCmd);
 			float brakeCmd=state.brakecmd();
 			publisher->my_publish("brake",brakeCmd);		
 			float accelCmd=state.accelcmd();
@@ -191,6 +190,11 @@ void Proto_client::serve(Publisher *publisher)
 					publisher->my_publish(name,laser);
 				}
 			}
+			/*if(autonomous) {
+				while(!got_steer||!got_speed){}
+			}
+			got_steer=false;
+			got_speed=false;*/
 			//timer.msleep(10);
 			//PDBG("send %lu\n",timer.elapsed_ms());
 			std::string foo;
@@ -291,8 +295,6 @@ int main(int argc, char* argv[]) {
 	Subscriber *sub = new Subscriber("SAVMSub", ip_addr, atoi(port));
 	sub->my_subscribe("car-control");
 	PDBG("done");
-
-	
 
 	/* endless loop with auto reconnect */
 	pub->loop_start();

@@ -45,7 +45,7 @@ set config {
 				<config>
             <network dhcp="yes" ip-address="192.168.178.3" subnet-mask="255.255.255.0" default-gateway="192.168.178.1" />
             <speedDreams ip-address="10.200.32.15" port="9002" />
-            <mosquitto ip-address="10.200.32.2" port="1883" />
+            <mosquitto ip-address="10.200.32.15" port="1883" />
         </config>
     </start>}
 
