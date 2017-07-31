@@ -132,10 +132,10 @@ David Werner}
           \draw (5,1) -- (7,1) -- (7,4) -- (5,4) -- (5,1);
           \fill (6, 2.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $Server$};
           %subscriber
-          \draw (10,0) -- (12,0) -- (12,3) -- (10,3) -- (10,0);
-          \fill (11, 1.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $Subsciber$};
+          \draw (14,0) -- (16,0) -- (16,3) -- (14,3) -- (14,0);
+          \fill (15, 1.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $Subsciber$};
           % line between server and subscriber
-          \draw [-triangle 60] (11, 1.5) -- (6, 2.5) node[black,midway,yshift=-0.5cm] {\footnotesize $subscibe$};
+          \draw [-triangle 60] (15, 1.5) -- (6, 2.5) node[black,midway,yshift=-0.5cm] {\footnotesize $subscibe\ on\ "topic"$};
         \end{tikzpicture}
         \caption{\tiny Subscriber}
       \end{figure}
@@ -157,6 +157,48 @@ David Werner}
           \draw [-triangle 60] (1, 1.5) -- (6, 2.5) node[black,midway,yshift=-0.5cm] {\footnotesize $publish$};
           % line between server and subscriber
           \draw [-triangle 60] (6, 2.5) -- (11, 1.5) node[black,midway,yshift=-0.5cm] {\footnotesize $on\_message$};
+        \end{tikzpicture}
+        \caption{\tiny Publisher}
+      \end{figure}
+  \end{frame}
+
+  \begin{frame}{Mosquitto}
+        \begin{figure}
+        \begin{tikzpicture}[scale=0.75]
+          % publisher
+          \draw (0,0) -- (2,0) -- (2,3) -- (0,3) -- (0,0);
+          \fill (1, 1.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $SAVM$};
+          % server
+          \draw (5,1) -- (7,1) -- (7,4) -- (5,4) -- (5,1);
+          \fill (6, 2.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $Server$};
+          %subscriber
+          \draw (10,0) -- (12,0) -- (12,3) -- (10,3) -- (10,0);
+          \fill (11, 1.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $ECU$};
+          % line between publisher and server
+          \draw [-triangle 60] (1, 1.5) -- (6, 2.5) node[black,midway,yshift=-0.5cm] {\footnotesize $publish$};
+          % line between server and subscriber
+          \draw [-triangle 60] (6, 2.5) -- (11, 1.5) node[black,midway,yshift=-0.5cm] {\footnotesize $on\_message$};
+        \end{tikzpicture}
+        \caption{\tiny Publisher}
+      \end{figure}
+  \end{frame}
+
+  \begin{frame}{Mosquitto}
+        \begin{figure}
+        \begin{tikzpicture}[scale=0.75]
+          % publisher
+          \draw (0,0) -- (2,0) -- (2,3) -- (0,3) -- (0,0);
+          \fill (1, 1.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $SAVM$};
+          % server
+          \draw (5,1) -- (7,1) -- (7,4) -- (5,4) -- (5,1);
+          \fill (6, 2.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $Server$};
+          %subscriber
+          \draw (10,0) -- (12,0) -- (12,3) -- (10,3) -- (10,0);
+          \fill (11, 1.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $ECU$};
+          % line between publisher and server
+          \draw [-triangle 60] (6, 2.5) -- (1, 1.5) node[black,midway,yshift=-0.5cm] {\footnotesize $on\_message$};
+          % line between server and subscriber
+          \draw [-triangle 60] (11, 1.5) -- (6, 2.5) node[black,midway,yshift=-0.5cm] {\footnotesize $publish$};
         \end{tikzpicture}
         \caption{\tiny Publisher}
       \end{figure}
