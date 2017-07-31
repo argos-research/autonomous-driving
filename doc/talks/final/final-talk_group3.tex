@@ -165,42 +165,102 @@ David Werner}
   \begin{frame}{Mosquitto}
         \begin{figure}
         \begin{tikzpicture}[scale=0.75]
-          % publisher
+          % SAVM
           \draw (0,0) -- (2,0) -- (2,3) -- (0,3) -- (0,0);
           \fill (1, 1.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $SAVM$};
           % server
           \draw (5,1) -- (7,1) -- (7,4) -- (5,4) -- (5,1);
           \fill (6, 2.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $Server$};
-          %subscriber
+          % ECU
           \draw (10,0) -- (12,0) -- (12,3) -- (10,3) -- (10,0);
           \fill (11, 1.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $ECU$};
-          % line between publisher and server
+          % line between SAVM and server
           \draw [-triangle 60] (1, 1.5) -- (6, 2.5) node[black,midway,yshift=-0.5cm] {\footnotesize $publish$};
-          % line between server and subscriber
+          % line between server and ECU
           \draw [-triangle 60] (6, 2.5) -- (11, 1.5) node[black,midway,yshift=-0.5cm] {\footnotesize $on\_message$};
         \end{tikzpicture}
-        \caption{\tiny Publisher}
+        \caption{\tiny SAVM/ECU}
       \end{figure}
   \end{frame}
 
   \begin{frame}{Mosquitto}
         \begin{figure}
         \begin{tikzpicture}[scale=0.75]
-          % publisher
+          % SAVM
           \draw (0,0) -- (2,0) -- (2,3) -- (0,3) -- (0,0);
           \fill (1, 1.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $SAVM$};
           % server
           \draw (5,1) -- (7,1) -- (7,4) -- (5,4) -- (5,1);
           \fill (6, 2.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $Server$};
-          %subscriber
+          % ECU
           \draw (10,0) -- (12,0) -- (12,3) -- (10,3) -- (10,0);
           \fill (11, 1.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $ECU$};
-          % line between publisher and server
+          % line between server and SAVM
           \draw [-triangle 60] (6, 2.5) -- (1, 1.5) node[black,midway,yshift=-0.5cm] {\footnotesize $on\_message$};
-          % line between server and subscriber
+          % line between ECU and server
           \draw [-triangle 60] (11, 1.5) -- (6, 2.5) node[black,midway,yshift=-0.5cm] {\footnotesize $publish$};
         \end{tikzpicture}
-        \caption{\tiny Publisher}
+        \caption{\tiny ECU/SAVM}
+      \end{figure}
+  \end{frame}
+
+  \begin{frame}{Full Szenario}
+        \begin{figure}
+        \begin{tikzpicture}[scale=0.65]
+          % SD2
+          \draw (0,0) -- (2,0) -- (2,3) -- (0,3) -- (0,0);
+          \fill (1, 1.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $SD2$};
+          % SAVM
+          \draw (5,1) -- (7,1) -- (7,4) -- (5,4) -- (5,1);
+          \fill (6, 2.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $SAVM$};
+          % Server
+          \draw (10,2) -- (12,2) -- (12,5) -- (10,5) -- (10,2);
+          \fill (11, 3.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $Server$};
+          % ECU
+          \draw (15,1) -- (17,1) -- (17,4) -- (15,4) -- (15,1);
+          \fill (16, 2.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $ECU$};
+          % Parking
+          \draw (20,0) -- (22,0) -- (22,3) -- (20,3) -- (20,0);
+          \fill (21, 1.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $Parking$};
+          % line between server and SAVM
+          \draw [-triangle 60] (1, 1.5) -- (6, 2.5) node[black,midway,yshift=-0.5cm] {\footnotesize $TCP/IP$};
+          % line between ECU and server
+          \draw [-triangle 60] (6, 2.5) -- (11, 3.5) node[black,midway,yshift=-0.5cm] {\footnotesize $publish$};
+          % line between ECU and server
+          \draw [-triangle 60] (11, 3.5) -- (16, 2.5) node[black,midway,yshift=-0.5cm] {\footnotesize $on\_message$};
+          % line between ECU and server
+          \draw [-triangle 60] (16, 2.5) -- (21, 1.5) node[black,midway,yshift=-0.5cm] {\footnotesize $receive\_Data$};
+        \end{tikzpicture}
+        \caption{\tiny Full Szenario Forward}
+      \end{figure}
+  \end{frame}
+
+  \begin{frame}{Full Szenario}
+        \begin{figure}
+        \begin{tikzpicture}[scale=0.65]
+          % SD2
+          \draw (0,0) -- (2,0) -- (2,3) -- (0,3) -- (0,0);
+          \fill (1, 1.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $SD2$};
+          % SAVM
+          \draw (5,1) -- (7,1) -- (7,4) -- (5,4) -- (5,1);
+          \fill (6, 2.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $SAVM$};
+          % Server
+          \draw (10,2) -- (12,2) -- (12,5) -- (10,5) -- (10,2);
+          \fill (11, 3.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $Server$};
+          % ECU
+          \draw (15,1) -- (17,1) -- (17,4) -- (15,4) -- (15,1);
+          \fill (16, 2.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $ECU$};
+          % Parking
+          \draw (20,0) -- (22,0) -- (22,3) -- (20,3) -- (20,0);
+          \fill (21, 1.5) circle [radius=0.05] node[yshift=0.5cm] {\footnotesize $Parking$};
+          % line between server and SAVM
+          \draw [-triangle 60] (6, 2.5) -- (1, 1.5) node[black,midway,yshift=-0.5cm] {\footnotesize $TCP/IP$};
+          % line between ECU and server
+          \draw [-triangle 60] (11, 3.5) -- (6, 2.5) node[black,midway,yshift=-0.5cm] {\footnotesize $on\_message$};
+          % line between Parking and server
+          \draw [-triangle 60] (21, 1.5) -- (11, 3.5) node[black,midway,yshift=-1.0cm,xshift=1.5cm] {\footnotesize $publish$};
+        \end{tikzpicture}
+        \caption{\tiny Full Szenario Backward}
       \end{figure}
   \end{frame}
 
