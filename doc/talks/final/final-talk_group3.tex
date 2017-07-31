@@ -6,6 +6,7 @@
 \usepackage{hyperref}
 \usepackage{color}
 \usepackage{tikz}
+\usepackage{amsmath}
 \usetikzlibrary{arrows}
 \usetikzlibrary{decorations.pathreplacing}
 
@@ -164,4 +165,84 @@ David Werner}
 
 
   \section{David Werner}
-\end{document}
+  
+  \subsection{Autonomous Parking}
+  \begin{frame}{Problem}
+  	\begin{figure} [ht]
+  		\centering
+  		\includegraphics[width=0.8\textwidth]{david_images/Problem.png}
+  		\caption{\tiny Car needs to autonomously pass by the parking lot, detect it and perform a parallel parking maneuver}
+	\end{figure}
+  \end{frame}
+  
+  \subsection{Algorithm}
+  \begin{frame}{Basics}
+  	\begin{itemize}
+  	\item<1-> calculation of actuator data
+  		\begin{itemize}
+  		 \item<2-> velocity v
+  		 \item<3-> steering angle $\phi$
+  		\end{itemize}
+  	\item<4-> no computation of an exact path
+  	\item<5-> actuator data is determined by the evaluation of our 3-phase algorithm
+  	\end{itemize}
+  \end{frame}
+   
+  \begin{frame}{Phase 1 - Searching phase (1)}
+  	\begin{figure} [ht]
+  		\centering
+  		\includegraphics[width=1.0\textwidth]{david_images/FindLot1.png}
+  		\caption{\tiny Car passes the potential parking lot and calculates its size}
+	\end{figure}
+  \end{frame}
+  
+  \begin{frame}{Phase 1 - Searching phase (2)}
+  	\begin{figure} [ht]
+  		\centering
+  		\includegraphics[width=0.9\textwidth]{david_images/FindLot2.png}
+  		\caption{\tiny Algorithm creates environment and position information}
+	\end{figure}
+  \end{frame}
+  
+  \begin{frame}{Phase 2 - Calculation phase (1)}
+    	\begin{itemize}
+  		\item<1-> equations of vehicle's motion:
+  			\begin{itemize}
+  				\item<2-> $\dot{x} = v * cos(\phi) * cos(\theta)$
+  				\item<3-> $\dot{y} = v * cos(\phi) * sin(\theta)$ 
+  				\item<4-> $\dot{\theta} = \frac{v}{L} * sin(\phi)$ 
+  			\end{itemize}
+  		\item<5-> time dependant formulas for v and $\phi$ needed
+  			\begin{itemize}
+  				\item<6-> $\phi(t)$ - steering angle (based on max $\phi$)
+  				\item<7-> $v(t)$ - velocity (based on max v)
+  			\end{itemize}
+  		\item<8-> time for whole menauever is estimated and optimized
+  	\end{itemize}
+  \end{frame}
+  
+  \begin{frame}{Phase 2 - Calculation phase (2)}
+  	\begin{figure} [ht]
+  		\centering
+  		\includegraphics[width=0.9\textwidth]{david_images/Calculating.png}
+  		\caption{\tiny Algorithm simulates parking maneuver to calculate duration and steering angle}
+	\end{figure}
+  \end{frame}
+  
+  \begin{frame}{Phase 3 - Parking phase}
+  	\begin{figure} [ht]
+  		\centering
+  		\includegraphics[width=0.9\textwidth]{david_images/Parked.png}
+  		\caption{\tiny Algorithm steers and accelerates the car according to calculation until parking position is reached}
+	\end{figure}
+  \end{frame}
+  
+  \subsection{Problems and Limitations}
+  \begin{frame}{Problems and Limitations}
+  	\begin{itemize}
+  		\item<1-> calculation of parking duration is based on magic number
+  		\item<2-> longitudinal and lateral distance conditions seem to work not properly
+  		\item<3-> safety distance needs to be higher than necessary
+  	\end{itemize}
+  \end{frame}
+  \end{document}
