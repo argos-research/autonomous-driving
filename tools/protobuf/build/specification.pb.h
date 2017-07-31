@@ -136,6 +136,12 @@ class Specification : public ::google::protobuf::Message /* @@protoc_insertion_p
   float wheelradius() const;
   void set_wheelradius(float value);
 
+  // float steerlock = 4;
+  void clear_steerlock();
+  static const int kSteerlockFieldNumber = 4;
+  float steerlock() const;
+  void set_steerlock(float value);
+
   // @@protoc_insertion_point(class_scope:protobuf.Specification)
  private:
 
@@ -143,6 +149,7 @@ class Specification : public ::google::protobuf::Message /* @@protoc_insertion_p
   float length_;
   float width_;
   float wheelradius_;
+  float steerlock_;
   mutable int _cached_size_;
   friend struct protobuf_specification_2eproto::TableStruct;
 };
@@ -194,6 +201,20 @@ inline void Specification::set_wheelradius(float value) {
   
   wheelradius_ = value;
   // @@protoc_insertion_point(field_set:protobuf.Specification.wheelRadius)
+}
+
+// float steerlock = 4;
+inline void Specification::clear_steerlock() {
+  steerlock_ = 0;
+}
+inline float Specification::steerlock() const {
+  // @@protoc_insertion_point(field_get:protobuf.Specification.steerlock)
+  return steerlock_;
+}
+inline void Specification::set_steerlock(float value) {
+  
+  steerlock_ = value;
+  // @@protoc_insertion_point(field_set:protobuf.Specification.steerlock)
 }
 
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS

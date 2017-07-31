@@ -1,10 +1,10 @@
 set use_usb_driver [expr [have_spec omap4] || [have_spec arndale] || [have_spec rpi]]
 set use_nic_driver [expr !$use_usb_driver && ![have_spec imx53] && ![have_spec hw_odroid_xu] && ![have_spec linux] && ![have_spec hw_wand_quad]]
 
-#if {[expr !$use_usb_driver && !$use_nic_driver]} {
-#	puts "\n Run script is not supported on this platform. \n"; exit 0 }
+if {[expr !$use_usb_driver && !$use_nic_driver]} {
+	puts "\n Run script is not supported on this platform. \n"; exit 0 }
 
-set build_components { core init app/savm drivers/timer drivers/nic }
+set build_components { core init ecu drivers/timer drivers/nic }
 
 lappend_if $use_usb_driver              build_components drivers/usb
 lappend_if [have_spec gpio]             build_components drivers/gpio
@@ -40,11 +40,10 @@ set config {
         <resource name="RAM" quantum="1M"/>
         <provides><service name="Timer"/></provides>
     </start>
-    <start name="savm">
+    <start name="ecu">
         <resource name="RAM" quantum="4M"/>
 				<config>
-            <network dhcp="yes" ip-address="192.168.178.3" subnet-mask="255.255.255.0" default-gateway="192.168.178.1" />
-            <speedDreams ip-address="10.200.32.15" port="9002" />
+            <network dhcp="yes" ip-address="192.168.178.2" subnet-mask="255.255.255.0" default-gateway="192.168.178.1" />
             <mosquitto ip-address="10.200.32.15" port="1883" />
         </config>
     </start>}
@@ -63,7 +62,7 @@ set config {
           <service name="Nic"/>
         </provides>
         <config uhci="yes" ehci="yes" xhci="yes">
-          <nic mac="02:00:00:00:01:03"/>
+          <nic mac="02:00:00:00:01:02"/>
         </config>
       </start>}
 
@@ -86,10 +85,10 @@ set config {
 #
 
 append qemu_args "-net vde,sock=/tmp/switch1 "
-append_if [expr [have_spec x86_64]] qemu_args "-net nic,model=e1000,macaddr=02:00:00:00:01:03 -enable-kvm -m 1024 "
-append_if [expr ![have_spec x86_64]] qemu_args "-net nic,model=lan9118,macaddr=02:00:00:00:01:03 "
+append_if [expr [have_spec x86_64]] qemu_args "-net nic,model=e1000,macaddr=02:00:00:00:01:02 -enable-kvm -m 1024 "
+append_if [expr ![have_spec x86_64]] qemu_args "-net nic,model=lan9118,macaddr=02:00:00:00:01:02 "
 
-set boot_modules { core init savm ld.lib.so libc.lib.so stdcxx.lib.so libm.lib.so pthread.lib.so timer lwip.lib.so libmosquitto.lib.so libssl.lib.so libcrypto.lib.so libprotobuf.lib.so zlib.lib.so }
+set boot_modules { core init ecu ld.lib.so libc.lib.so stdcxx.lib.so libm.lib.so pthread.lib.so timer lwip.lib.so libmosquitto.lib.so libssl.lib.so libcrypto.lib.so }
 
 # platform-specific modules
 lappend_if $use_usb_driver              boot_modules usb_drv

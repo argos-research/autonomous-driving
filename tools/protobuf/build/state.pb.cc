@@ -56,6 +56,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] = {
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(State, steer_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(State, brakecmd_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(State, accelcmd_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(State, timestamp_),
 };
 
 static const ::google::protobuf::internal::MigrationSchema schemas[] = {
@@ -114,15 +115,15 @@ void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] = {
       "\n\013state.proto\022\010protobuf\032\014sensor.proto\032\013w"
-      "heel.proto\032\023specification.proto\"\254\001\n\005Stat"
+      "heel.proto\032\023specification.proto\"\277\001\n\005Stat"
       "e\022 \n\006sensor\030\001 \003(\0132\020.protobuf.Sensor\022\036\n\005w"
       "heel\030\002 \003(\0132\017.protobuf.Wheel\022.\n\rspecifica"
       "tion\030\003 \001(\0132\027.protobuf.Specification\022\r\n\005s"
       "teer\030\004 \001(\002\022\020\n\010brakeCmd\030\005 \001(\002\022\020\n\010accelCmd"
-      "\030\006 \001(\002b\006proto3"
+      "\030\006 \001(\002\022\021\n\ttimestamp\030\007 \001(\002b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 254);
+      descriptor, 273);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "state.proto", &protobuf_RegisterTypes);
   ::protobuf::protobuf_sensor_2eproto::AddDescriptors();
@@ -154,6 +155,7 @@ const int State::kSpecificationFieldNumber;
 const int State::kSteerFieldNumber;
 const int State::kBrakeCmdFieldNumber;
 const int State::kAccelCmdFieldNumber;
+const int State::kTimestampFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 State::State()
@@ -177,15 +179,15 @@ State::State(const State& from)
     specification_ = NULL;
   }
   ::memcpy(&steer_, &from.steer_,
-    static_cast<size_t>(reinterpret_cast<char*>(&accelcmd_) -
-    reinterpret_cast<char*>(&steer_)) + sizeof(accelcmd_));
+    static_cast<size_t>(reinterpret_cast<char*>(&timestamp_) -
+    reinterpret_cast<char*>(&steer_)) + sizeof(timestamp_));
   // @@protoc_insertion_point(copy_constructor:protobuf.State)
 }
 
 void State::SharedCtor() {
   ::memset(&specification_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&accelcmd_) -
-      reinterpret_cast<char*>(&specification_)) + sizeof(accelcmd_));
+      reinterpret_cast<char*>(&timestamp_) -
+      reinterpret_cast<char*>(&specification_)) + sizeof(timestamp_));
   _cached_size_ = 0;
 }
 
@@ -232,8 +234,8 @@ void State::Clear() {
   }
   specification_ = NULL;
   ::memset(&steer_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&accelcmd_) -
-      reinterpret_cast<char*>(&steer_)) + sizeof(accelcmd_));
+      reinterpret_cast<char*>(&timestamp_) -
+      reinterpret_cast<char*>(&steer_)) + sizeof(timestamp_));
 }
 
 bool State::MergePartialFromCodedStream(
@@ -324,6 +326,20 @@ bool State::MergePartialFromCodedStream(
         break;
       }
 
+      // float timestamp = 7;
+      case 7: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(61u)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &timestamp_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
       default: {
       handle_unusual:
         if (tag == 0 ||
@@ -386,6 +402,11 @@ void State::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteFloat(6, this->accelcmd(), output);
   }
 
+  // float timestamp = 7;
+  if (this->timestamp() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(7, this->timestamp(), output);
+  }
+
   // @@protoc_insertion_point(serialize_end:protobuf.State)
 }
 
@@ -431,6 +452,11 @@ void State::SerializeWithCachedSizes(
   // float accelCmd = 6;
   if (this->accelcmd() != 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(6, this->accelcmd(), target);
+  }
+
+  // float timestamp = 7;
+  if (this->timestamp() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(7, this->timestamp(), target);
   }
 
   // @@protoc_insertion_point(serialize_to_array_end:protobuf.State)
@@ -485,6 +511,11 @@ size_t State::ByteSizeLong() const {
     total_size += 1 + 4;
   }
 
+  // float timestamp = 7;
+  if (this->timestamp() != 0) {
+    total_size += 1 + 4;
+  }
+
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = cached_size;
@@ -528,6 +559,9 @@ void State::MergeFrom(const State& from) {
   if (from.accelcmd() != 0) {
     set_accelcmd(from.accelcmd());
   }
+  if (from.timestamp() != 0) {
+    set_timestamp(from.timestamp());
+  }
 }
 
 void State::CopyFrom(const ::google::protobuf::Message& from) {
@@ -559,6 +593,7 @@ void State::InternalSwap(State* other) {
   std::swap(steer_, other->steer_);
   std::swap(brakecmd_, other->brakecmd_);
   std::swap(accelcmd_, other->accelcmd_);
+  std::swap(timestamp_, other->timestamp_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
@@ -709,6 +744,20 @@ void State::set_accelcmd(float value) {
   
   accelcmd_ = value;
   // @@protoc_insertion_point(field_set:protobuf.State.accelCmd)
+}
+
+// float timestamp = 7;
+void State::clear_timestamp() {
+  timestamp_ = 0;
+}
+float State::timestamp() const {
+  // @@protoc_insertion_point(field_get:protobuf.State.timestamp)
+  return timestamp_;
+}
+void State::set_timestamp(float value) {
+  
+  timestamp_ = value;
+  // @@protoc_insertion_point(field_set:protobuf.State.timestamp)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

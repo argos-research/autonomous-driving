@@ -53,6 +53,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] = {
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Specification, length_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Specification, width_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Specification, wheelradius_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Specification, steerlock_),
 };
 
 static const ::google::protobuf::internal::MigrationSchema schemas[] = {
@@ -105,12 +106,13 @@ void InitDefaults() {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] = {
-      "\n\023specification.proto\022\010protobuf\"C\n\rSpeci"
+      "\n\023specification.proto\022\010protobuf\"V\n\rSpeci"
       "fication\022\016\n\006length\030\001 \001(\002\022\r\n\005width\030\002 \001(\002\022"
-      "\023\n\013wheelRadius\030\003 \001(\002b\006proto3"
+      "\023\n\013wheelRadius\030\003 \001(\002\022\021\n\tsteerlock\030\004 \001(\002b"
+      "\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 108);
+      descriptor, 127);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "specification.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&TableStruct::Shutdown);
@@ -136,6 +138,7 @@ struct StaticDescriptorInitializer {
 const int Specification::kLengthFieldNumber;
 const int Specification::kWidthFieldNumber;
 const int Specification::kWheelRadiusFieldNumber;
+const int Specification::kSteerlockFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 Specification::Specification()
@@ -152,15 +155,15 @@ Specification::Specification(const Specification& from)
       _cached_size_(0) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::memcpy(&length_, &from.length_,
-    static_cast<size_t>(reinterpret_cast<char*>(&wheelradius_) -
-    reinterpret_cast<char*>(&length_)) + sizeof(wheelradius_));
+    static_cast<size_t>(reinterpret_cast<char*>(&steerlock_) -
+    reinterpret_cast<char*>(&length_)) + sizeof(steerlock_));
   // @@protoc_insertion_point(copy_constructor:protobuf.Specification)
 }
 
 void Specification::SharedCtor() {
   ::memset(&length_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&wheelradius_) -
-      reinterpret_cast<char*>(&length_)) + sizeof(wheelradius_));
+      reinterpret_cast<char*>(&steerlock_) -
+      reinterpret_cast<char*>(&length_)) + sizeof(steerlock_));
   _cached_size_ = 0;
 }
 
@@ -198,8 +201,8 @@ Specification* Specification::New(::google::protobuf::Arena* arena) const {
 void Specification::Clear() {
 // @@protoc_insertion_point(message_clear_start:protobuf.Specification)
   ::memset(&length_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&wheelradius_) -
-      reinterpret_cast<char*>(&length_)) + sizeof(wheelradius_));
+      reinterpret_cast<char*>(&steerlock_) -
+      reinterpret_cast<char*>(&length_)) + sizeof(steerlock_));
 }
 
 bool Specification::MergePartialFromCodedStream(
@@ -254,6 +257,20 @@ bool Specification::MergePartialFromCodedStream(
         break;
       }
 
+      // float steerlock = 4;
+      case 4: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(37u)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &steerlock_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
       default: {
       handle_unusual:
         if (tag == 0 ||
@@ -296,6 +313,11 @@ void Specification::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteFloat(3, this->wheelradius(), output);
   }
 
+  // float steerlock = 4;
+  if (this->steerlock() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(4, this->steerlock(), output);
+  }
+
   // @@protoc_insertion_point(serialize_end:protobuf.Specification)
 }
 
@@ -320,6 +342,11 @@ void Specification::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(3, this->wheelradius(), target);
   }
 
+  // float steerlock = 4;
+  if (this->steerlock() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(4, this->steerlock(), target);
+  }
+
   // @@protoc_insertion_point(serialize_to_array_end:protobuf.Specification)
   return target;
 }
@@ -340,6 +367,11 @@ size_t Specification::ByteSizeLong() const {
 
   // float wheelRadius = 3;
   if (this->wheelradius() != 0) {
+    total_size += 1 + 4;
+  }
+
+  // float steerlock = 4;
+  if (this->steerlock() != 0) {
     total_size += 1 + 4;
   }
 
@@ -381,6 +413,9 @@ void Specification::MergeFrom(const Specification& from) {
   if (from.wheelradius() != 0) {
     set_wheelradius(from.wheelradius());
   }
+  if (from.steerlock() != 0) {
+    set_steerlock(from.steerlock());
+  }
 }
 
 void Specification::CopyFrom(const ::google::protobuf::Message& from) {
@@ -409,6 +444,7 @@ void Specification::InternalSwap(Specification* other) {
   std::swap(length_, other->length_);
   std::swap(width_, other->width_);
   std::swap(wheelradius_, other->wheelradius_);
+  std::swap(steerlock_, other->steerlock_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
@@ -460,6 +496,20 @@ void Specification::set_wheelradius(float value) {
   
   wheelradius_ = value;
   // @@protoc_insertion_point(field_set:protobuf.Specification.wheelRadius)
+}
+
+// float steerlock = 4;
+void Specification::clear_steerlock() {
+  steerlock_ = 0;
+}
+float Specification::steerlock() const {
+  // @@protoc_insertion_point(field_get:protobuf.Specification.steerlock)
+  return steerlock_;
+}
+void Specification::set_steerlock(float value) {
+  
+  steerlock_ = value;
+  // @@protoc_insertion_point(field_set:protobuf.Specification.steerlock)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

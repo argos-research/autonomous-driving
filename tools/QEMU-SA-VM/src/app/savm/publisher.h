@@ -15,5 +15,5 @@ public:
 
 	void on_error();
 
-	void my_publish(int id, float value);
+	void my_publish(const char* name, float value);
 };
