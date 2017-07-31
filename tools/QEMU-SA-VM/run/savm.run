@@ -43,9 +43,9 @@ set config {
     <start name="savm">
         <resource name="RAM" quantum="4M"/>
 				<config>
-            <network dhcp="no" ip-address="192.168.178.3" subnet-mask="255.255.255.0" default-gateway="192.168.178.1" />
-            <speedDreams ip-address="10.0.0.2" port="9002" />
-            <mosquitto ip-address="10.0.0.2" port="1883" />
+            <network dhcp="yes" ip-address="192.168.178.3" subnet-mask="255.255.255.0" default-gateway="192.168.178.1" />
+            <speedDreams ip-address="10.200.32.15" port="9002" />
+            <mosquitto ip-address="10.200.32.2" port="1883" />
         </config>
     </start>}
 
@@ -86,7 +86,7 @@ set config {
 #
 
 append qemu_args "-net vde,sock=/tmp/switch1 "
-append_if [expr [have_spec x86_64]] qemu_args "-net nic,model=e1000,macaddr=02:00:00:00:01:03 "
+append_if [expr [have_spec x86_64]] qemu_args "-net nic,model=e1000,macaddr=02:00:00:00:01:03 -enable-kvm -m 1024 "
 append_if [expr ![have_spec x86_64]] qemu_args "-net nic,model=lan9118,macaddr=02:00:00:00:01:03 "
 
 set boot_modules { core init savm ld.lib.so libc.lib.so stdcxx.lib.so libm.lib.so pthread.lib.so timer lwip.lib.so libmosquitto.lib.so libssl.lib.so libcrypto.lib.so libprotobuf.lib.so zlib.lib.so }
@@ -100,6 +100,6 @@ append_platform_drv_boot_modules
 
 build_boot_image $boot_modules
 
-append qemu_args " -nographic -enable-kvm -m 1024"
+append qemu_args " -nographic "
 
 run_genode_until forever

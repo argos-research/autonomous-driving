@@ -191,24 +191,25 @@ void Proto_client::serve(Publisher *publisher)
 					publisher->my_publish(name,laser);
 				}
 			}
+			//timer.msleep(10);
 			//PDBG("send %lu\n",timer.elapsed_ms());
+			std::string foo;
+			protobuf::Control ctrl;
+			ctrl.set_steer(steer);
+			ctrl.set_accelcmd(accel);
+			ctrl.set_brakecmd(brake);
+			ctrl.set_speed(speed);
+			ctrl.set_autonomous(autonomous);
+			ctrl.SerializeToString(&foo);
+			uint32_t m_length=htonl(foo.size());
+			send_data(&m_length,4);
+			send_data((void*)foo.c_str(),foo.size());
+			//PDBG("done %lu\n",timer.elapsed_ms());
 		}
 		else
 		{
 			//PWRN("Unknown message: %d", size);
 		}
-		std::string foo;
-		protobuf::Control ctrl;
-		ctrl.set_steer(steer);
-		ctrl.set_accelcmd(accel);
-		ctrl.set_brakecmd(brake);
-		ctrl.set_speed(speed);
-		ctrl.set_autonomous(autonomous);
-		ctrl.SerializeToString(&foo);
-		uint32_t length=htonl(foo.size());
-		send_data(&length,4);
-		send_data((void*)foo.c_str(),foo.size());
-		//PDBG("done %lu\n",timer.elapsed_ms());
 	}
 	Genode::env()->ram_session()->free(state_ds);
 }
