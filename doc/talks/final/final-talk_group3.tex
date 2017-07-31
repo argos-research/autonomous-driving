@@ -1,0 +1,127 @@
+\documentclass{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{minted}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing}
+
+\usemintedstyle{emacs}
+
+%\usetheme[progressbar=head,block=fill]{metropolis}
+
+\title{Final Talk LiL4}
+\subtitle{Group3 - speedDreams}
+\date{July 11, 2017}
+\author{Alexander Reisner \and
+Alexander Weidinger \and
+David Werner}
+\institute{Technische Universität München}
+\begin{document}
+  \renewcommand{\figurename}{\tiny Fig.}
+  \maketitle
+
+  \begin{frame}{ToC}
+    \tableofcontents
+  \end{frame}
+
+  \section{Introduction}
+  \subsection{Overview}
+  \begin{frame}{Project Overview}
+    [ Complete Graphic of the Project ]
+  \end{frame}
+
+  \subsection{Trask Description}
+  \begin{frame}{Our Task}
+    [ List of our points in the specification book ]
+  \end{frame}
+
+  \subsection{Sub Projects}
+  \begin{frame}{Task allocation}
+    \begin{itemize}
+      \item Alexander Weidinger
+      \begin{itemize}
+        \item Extend SpeedDreams 2 (SD2) by a virtual proximity sensor
+        \item Build data exchange between SD2 and Simulation Coupler (SimCoupler)
+        \item Create data exchange between SimCoupler and QEMU S/A VM
+      \end{itemize}
+      \item Alexander Reisner
+      \begin{itemize}
+        \item Introduce the QEMU S/A VM
+        \item Exchange data between SimCoupler and QEMU S/A VM
+        \item Implement mosquitto client to forward data to the ECUs
+      \end{itemize}
+      \item David Werner
+      \begin{itemize}
+        \item Implement an autonomous parking algorithm
+        \item Implement mosquitto client to forward calculated control data
+      \end{itemize}
+    \end{itemize}
+  \end{frame}
+
+  \section{Alexander Weidinger}
+  \subsection{Proximity Sensor}
+  \begin{frame}{Related Work}
+    \begin{itemize}
+      \item<1-> Research Phase: Find implementations of such sensor for TORCS / SD2
+      \item<2-> Adapt the found sensor implementation for usage in SD2 and test it
+      \item<3-> Resignation: The sensor isn't appropriate for our use case
+      \item<4-> \textbf{Write our own proximity sensor}
+    \end{itemize}
+  \end{frame}
+
+  \subsection{Implementation Comparison}
+  \begin{frame}{Comparison of Implementations}
+    \begin{columns}
+      \begin{column}{0.5\textwidth}
+        \begin{figure}
+        \begin{tikzpicture}[scale=0.75]
+          % car 1
+          \draw (0,0) -- (2,0) -- (2,3) -- (0,3) -- (0,0);
+          \fill (1, 1.5) circle [radius=0.05];
+          % car 2
+          \draw (3,1) -- (5,1) -- (5,4) -- (3,4) -- (3,1);
+          \fill (4, 2.5) circle [radius=0.05];
+          % line between the two midpoints
+          \draw (1, 1.5) -- (4, 2.5);
+          % sensor lines
+          \foreach \x in {0, 30, ..., 330}
+          {
+          \draw[red, dashed] (1, 1.5) -- +(\x : 3);
+          }
+          % distance bracket
+          \draw[decoration={brace,mirror,raise=5pt},decorate] (1, 1.5) -- (4, 2.5) node[black,midway,yshift=-0.5cm] {\footnotesize $d_1$};
+        \end{tikzpicture}
+        \caption{\tiny Proximity sensors implemented by the Simulated Car Racing Championship 2015}
+      \end{figure}
+      \end{column}
+      \begin{column}{0.5\textwidth}
+        \begin{figure}
+        \begin{tikzpicture}[scale=0.75]
+          % car 1
+          \draw (0,0) -- (2,0) -- (2,3) -- (0,3) -- (0,0);
+          \fill (1, 1.5) circle [radius=0.05];
+          % car 2
+          \draw (3,1) -- (5,1) -- (5,4) -- (3,4) -- (3,1);
+          \fill (4, 2.5) circle [radius=0.05];
+          % sensor
+          \draw[blue, dashed] (2, 1.5) -- +(0 : 4); % line
+          \fill[blue] (2, 1.5) circle [radius=0.05]; % starting point
+          % intersections
+          \draw[blue] (3, 1.5) circle [radius=0.1];
+          \draw[blue]  (5, 1.5) circle [radius=0.1];
+          % distance bracket
+          \draw[decoration={brace,mirror,raise=5pt},decorate] (2, 1.5) -- (3, 1.5) node[black,midway,yshift=-0.5cm] {\footnotesize $d_2$};
+        \end{tikzpicture}
+        \caption{\tiny (Laser) proximity sensors implemented by us}
+      \end{figure}
+      \end{column}
+    \end{columns}
+  \end{frame}
+
+  \section{Alexander Reisner}
+
+  \section{David Werner}
+\end{document}
