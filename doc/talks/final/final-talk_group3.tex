@@ -33,14 +33,45 @@ David Werner}
   \end{frame}
 
   \section{Introduction}
-  \subsection{Overview}
-  \begin{frame}{Project Overview}
-    [ Complete Graphic of the Project ]
-  \end{frame}
 
   \subsection{Trask Description}
   \begin{frame}{Our Task}
-    [ List of our points in the specification book ]
+    \textbf{Autonomous Parking}
+    \begin{itemize}
+      \item<2-> Start of the parking manoeuver by the user
+      \item<2-> Autonomously finding a parking spot
+      \item<2-> Autonomous execution of the parking manoeuver
+      \item<2-> Stopping the parking manoeuver (in case of failure, ...)
+      \item<2-> Parking manoeuver itself
+    \end{itemize}
+    \uncover<3->{\textbf{Restrictions}}
+    \begin{itemize}
+      \item<4-> Everything starts with less than 1s of latency
+      \item<4-> Parking manoeuver in real-time...
+      \item<5-> ... on a Pandaboard... \uncover<6->{with Fiasco.OC / Genode OS}
+      \item<7-> Parking without crashing
+      \item<7-> Parking in less than 30s total
+    \end{itemize}
+  \end{frame}
+
+  \subsection{Overview}
+  \begin{frame}{Project Overview}
+    \begin{figure}
+      \begin{tikzpicture}
+        \node[draw] at (0,0) (a){SD 2};
+        \node[draw] at (5,0) (b){SimCoupler};
+        \node[draw] at (5,-4) (c){S/A VM};
+        \node[draw] at (0, -4) (d){ECU};
+        \draw[->, transform canvas={yshift=0.15cm}] (a) -- node[above] {\textit{\tiny Send sensor data}} (b);
+        \draw[->, transform canvas={yshift=-0.15cm}] (b) -- node[below] {\textit{\tiny Receive actuator data}} (a);
+        \draw[->, transform canvas={xshift=0.15cm}] (b) -- node[right] {\textit{\tiny Forward sensor data}} (c);
+        \draw[->, transform canvas={xshift=-0.15cm}] (c) -- node[left] {\textit{\tiny Forward actuator data}} (b);
+        \draw[->, transform canvas={yshift=0.15cm}] (c) -- node[above] {\textit{\tiny Forward sensor data}} (d);
+        \draw[->, transform canvas={yshift=-0.15cm}] (d) -- node[below] {\textit{\tiny Receive actuator data}} (c);
+        \draw[->] (d) to [out=180,in=270,looseness=8] node [above left,xshift=-0.25cm]{\textit{\tiny Calculate next step}} (d);
+      \end{tikzpicture}
+      \caption{\tiny Overview of components}
+    \end{figure}
   \end{frame}
 
   \subsection{Sub Projects}
