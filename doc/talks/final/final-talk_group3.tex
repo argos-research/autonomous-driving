@@ -4,6 +4,7 @@
 \usepackage[ngerman]{babel}
 \usepackage{minted}
 \usepackage{hyperref}
+\usepackage{multicol}
 \usepackage{color}
 \usepackage{tikz}
 \usepackage{amsmath}
@@ -15,7 +16,7 @@
 \usetheme[progressbar=head,block=fill]{metropolis}
 
 \title{Final Talk LiL4}
-\subtitle{Group3 - speedDreams}
+\subtitle{Group3 - Team speedDreams}
 \date{July 11, 2017}
 \author{Alexander Reisner \and
 Alexander Weidinger \and
@@ -26,7 +27,9 @@ David Werner}
   \maketitle
 
 \begin{frame}{Table Of Contents}
-    \tableofcontents
+  \begin{multicols}{2}
+  \tableofcontents
+\end{multicols}
   \end{frame}
 
   \section{Introduction}
@@ -74,7 +77,7 @@ David Werner}
     \end{itemize}
   \end{frame}
 
-\subsection{Implementation And Comparison}
+\subsection{Implementation}
 \begin{frame}{Implementation And Comparison}
     \begin{columns}
       \begin{column}{0.5\textwidth}
@@ -139,6 +142,7 @@ David Werner}
         \item Protocol: Google Protocol Buffers
         \item Messages: State, Control
         \item Simple TCP connection
+        \item Simple Protocol: 4 byte message header (length of message) + message itself
       \end{itemize}
     \end{column}
     \begin{column}{0.5\textwidth}
@@ -166,11 +170,24 @@ message State {
   \end{columns}
 \end{frame}
 
-\subsection{Problems \& Limitations}
-\begin{frame}{Limitations}
+\subsection{Limitations}
+\begin{frame}{Problems \& Limitations}
   \begin{itemize}
-    \item SimCoupler is currently not used (should be easily expendable)
-    \item
+    \item Protobuf doesn't allow multiple modules to be linked against protobuf
+    \item<2->[$\rightarrow$] E.g. share one protobuf ``module'' between all modules
+    \item<3-> SimCoupler is currently not used
+    \item<4->[$\rightarrow$] should be easily expendable
+    \item<5-> Proximity sensor tends to precision errors if obstacle is too close
+    \item<6->[$\rightarrow$] more or less only after directly crashing into the obstacle \tt :-)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Alex's 'Would Have Been Nice To Know Before' Corner}
+  \begin{itemize}
+    \item OSs make ``improvements''
+    \item \textbf{But:} Tend to interfere with our solutions
+    \item E.g. Nagle's algorithm (bandwidth efficiency vs. latency)
+    \item \textbf{Solution:} \mintinline{c}{TCP_NODELAY} to disable it
   \end{itemize}
 \end{frame}
 
