@@ -25,7 +25,7 @@ David Werner}
   \renewcommand{\figurename}{\tiny Fig.}
   \maketitle
 
-  \begin{frame}{ToC}
+\begin{frame}{Table Of Contents}
     \tableofcontents
   \end{frame}
 
@@ -74,8 +74,8 @@ David Werner}
     \end{itemize}
   \end{frame}
 
-  \subsection{Implementation Comparison}
-  \begin{frame}{Comparison of Implementations}
+\subsection{Implementation And Comparison}
+\begin{frame}{Implementation And Comparison}
     \begin{columns}
       \begin{column}{0.5\textwidth}
         \begin{figure}
@@ -89,14 +89,11 @@ David Werner}
           % line between the two midpoints
           \draw (1, 1.5) -- (4, 2.5);
           % sensor lines
-          \foreach \x in {0, 30, ..., 330}
-          {
-          \draw[red, dashed] (1, 1.5) -- +(\x : 3);
-          }
+          \foreach \x in {0, 30, ..., 330} \draw[red, dashed] (1, 1.5) -- +(\x : 3);
           % distance bracket
           \draw[decoration={brace,mirror,raise=5pt},decorate] (1, 1.5) -- (4, 2.5) node[black,midway,yshift=-0.5cm] {\footnotesize $d_1$};
         \end{tikzpicture}
-        \caption{\tiny Proximity sensors implemented by the Simulated Car Racing Championship 2015}
+        \caption{\tiny Proximity sensor implemented by the Simulated Car Racing Championship 2015}
       \end{figure}
       \end{column}
       \begin{column}{0.5\textwidth}
@@ -122,6 +119,60 @@ David Werner}
       \end{column}
     \end{columns}
   \end{frame}
+
+\begin{frame}{Data Exchange SD2 $\longleftrightarrow$ QEMU S/A VM}
+  \begin{figure}
+    \begin{tikzpicture}
+      \node[draw] at (0,0) (a){SpeedDreams 2};
+      \node[draw] at (5,0) (b){S/A VM};
+      \draw[->, transform canvas={yshift=0.15cm}] (a) -- node[above] {\textit{State}} (b);
+      \draw[->, transform canvas={yshift=-0.15cm}] (b) -- node[below] {\textit{Control}} (a);
+    \end{tikzpicture}
+    \caption{\tiny Message exchange between SD2 and QEMU S/A VM}
+  \end{figure}
+\end{frame}
+
+\begin{frame}[fragile]{Protocol}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item Protocol: Google Protocol Buffers
+        \item Messages: State, Control
+        \item Simple TCP connection
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \begin{minted}[fontsize=\tiny]{protobuf}
+syntax = "proto3";
+package protobuf;
+
+import "sensor.proto";
+import "wheel.proto";
+import "specification.proto";
+
+message State {
+  repeated Sensor sensor = 1;
+  repeated Wheel wheel = 2;
+  Specification specification = 3;
+  float steer = 4;
+  float brakeCmd = 5;
+  float accelCmd = 6;
+}
+        \end{minted}
+        \caption{\tiny state.proto}
+      \end{figure}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\subsection{Problems \& Limitations}
+\begin{frame}{Limitations}
+  \begin{itemize}
+    \item SimCoupler is currently not used (should be easily expendable)
+    \item
+  \end{itemize}
+\end{frame}
 
   \section{Alexander Reisner}
 
