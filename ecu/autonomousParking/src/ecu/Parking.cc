@@ -149,12 +149,12 @@ void Parking::_calculate_local_max_steer() {
             if(s_angle == 0){
                 _phi_old = _phi;
                 _phi = _phi;
-                _x = _x + (velo * _sampling_period * cos(s_angle));
+                //_x = _x + (velo * _sampling_period * cos(s_angle));                           // commented out for showcase
                 _y = _y + (velo * _sampling_period * sin(s_angle));
             } else {
                 _phi_old = _phi;
                 _phi = _phi + (((velo * _sampling_period) / _info.length_car) * sin(s_angle));
-                _x = _x + ((_info.length_car / tan(s_angle)) * (sin(_phi) - sin(_phi_old)));
+                //_x = _x + ((_info.length_car / tan(s_angle)) * (sin(_phi) - sin(_phi_old)));  // commented out for showcase
                 _y = _y - ((_info.length_car / tan(s_angle)) * (cos(_phi) - cos(_phi_old)));;
             }
         }
