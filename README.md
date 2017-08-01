@@ -29,6 +29,8 @@ abstract: This repository contains the source code of 'Team speedDreams', which 
 # Dependencies
 - [Mosquitto](https://mosquitto.org/) (https://mosquitto.org/), which is not provided by this repository
 - Run time dependencies, which can be looked up in the respective directories of the simulators and genode
+- libboost1.58
+- protobuf compiler 3
 
 # Build instructions
 - The repository consists of multiple submodules, which first need to be fetched via `git submodule update --init`.
