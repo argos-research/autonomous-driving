@@ -1,0 +1,76 @@
+\documentclass[paper=a4, fontsize=11pt]{scrartcl}
+
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman,english]{babel}
+\usepackage{hyperref}
+
+\title{Autonomous Parking Scenario}
+\author{Alexander Reisner \href{mailto:alexander.reisner@tum.de}{\texttt{alexander.reisner@tum.de}} \and
+Alexander Weidinger \href{mailto:alexander.weidinger@tum.de}{\texttt{alexander.weidinger@tum.de}} \and
+David Werner \href{mailto:david.werner@tum.de}{\texttt{david.werner@tum.de}}}
+\date{\today}
+
+\begin{document}
+
+% title page
+\maketitle
+\newpage
+
+% toc
+\tableofcontents
+\newpage
+
+\section{General}
+\begin{itemize}
+  \item Task description
+  \item Overview diagram
+  \item Dataflow diagram (sequence diagram?)
+\end{itemize}
+\section{SpeedDreams 2}
+\begin{itemize}
+  \item What is SpeedDreams 2?
+  \item Why do we need SpeedDreams 2?
+  \item What changes do we need to make?
+\end{itemize}
+\subsection{Proximity Sensor}
+\begin{itemize}
+  \item Related work (Sensor by the Simulated Car Racing Championship, ...)
+  \item Idea and approach
+  \item Implementation details and problems (+ solutions)
+\end{itemize}
+\subsection{Starting Grid}
+\begin{itemize}
+  \item We need it to get reproducible results each run
+  \item Idea and approach
+  \item Implementation details
+\end{itemize}
+\subsection{Driving bots}
+\subsubsection{human}
+\begin{itemize}
+  \item Data exchange between SD2 and S/A VM
+  \item Driving logic (brake and accel if needed to maintain given speed)
+\end{itemize}
+\subsubsection{usr}
+\begin{itemize}
+  \item Now a simple parked car (accel=0, brake=1, steer=0)
+  \item Should be moved to own bot
+\end{itemize}
+\subsection{Data exchange with S/A VM}
+\begin{itemize}
+  \item Protocol (protobuf, 4 byte message length header + message, tcp socket)
+  \item Problem Nagle's algorithm $\rightarrow$ disable it via TCP\_NODELAY
+\end{itemize}
+\section{SimCoupler}
+\begin{itemize}
+  \item Why did we drop SimCoupler
+  \item Where do we need to make changes to integrate it
+  \item Shared protobuf module problem and possible solution
+\end{itemize}
+\section{S/A VM}
+\section{ECU}
+\section{Misc}
+\begin{itemize}
+  \item Porting of the mosquitto library % FIXME do we really want to add the mosquitto port in our documentation?
+\end{itemize}
+
+\end{document}
