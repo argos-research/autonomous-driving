@@ -35,7 +35,7 @@ David Werner}
 
   \section{Introduction}
 
-  \subsection{Trask Description}
+  \subsection{Task Description}
   \begin{frame}<1-7>[label=ourtask]{Our Task}
     \frametitle<8>{Did we reach our goals?}
     \textbf{Autonomous Parking}
@@ -373,7 +373,7 @@ message State {
 
 
   \section{David Werner}
-  
+
   \subsection{Autonomous Parking}
   \begin{frame}{Problem}
   	\begin{figure} [ht]
@@ -382,7 +382,7 @@ message State {
   		\caption{\tiny Car needs to autonomously pass by the parking lot, detect it and perform a parallel parking maneuver}
 	\end{figure}
   \end{frame}
-  
+
   \subsection{Algorithm}
   \begin{frame}{Basics}
   	\begin{itemize}
@@ -395,7 +395,7 @@ message State {
   	\item<5-> actuator data is determined by the evaluation of our 3-phase algorithm
   	\end{itemize}
   \end{frame}
-   
+
   \begin{frame}{Phase 1 - Searching phase (1)}
   	\begin{figure} [ht]
   		\centering
@@ -403,7 +403,7 @@ message State {
   		\caption{\tiny Car passes the potential parking lot and calculates its size}
 	\end{figure}
   \end{frame}
-  
+
   \begin{frame}{Phase 1 - Searching phase (2)}
   	\begin{figure} [ht]
   		\centering
@@ -411,14 +411,14 @@ message State {
   		\caption{\tiny Algorithm creates environment and position information}
 	\end{figure}
   \end{frame}
-  
+
   \begin{frame}{Phase 2 - Calculation phase (1)}
     	\begin{itemize}
   		\item<1-> equations of vehicle's motion:
   			\begin{itemize}
   				\item<2-> $\dot{x} = v * cos(\phi) * cos(\theta)$
-  				\item<3-> $\dot{y} = v * cos(\phi) * sin(\theta)$ 
-  				\item<4-> $\dot{\theta} = \frac{v}{L} * sin(\phi)$ 
+  				\item<3-> $\dot{y} = v * cos(\phi) * sin(\theta)$
+  				\item<4-> $\dot{\theta} = \frac{v}{L} * sin(\phi)$
   			\end{itemize}
   		\item<5-> time dependant formulas for v and $\phi$ needed
   			\begin{itemize}
@@ -428,7 +428,7 @@ message State {
   		\item<8-> time for whole menauever is estimated and optimized
   	\end{itemize}
   \end{frame}
-  
+
   \begin{frame}{Phase 2 - Calculation phase (2)}
   	\begin{figure} [ht]
   		\centering
@@ -436,7 +436,7 @@ message State {
   		\caption{\tiny Algorithm simulates parking maneuver to calculate duration and steering angle}
 	\end{figure}
   \end{frame}
-  
+
   \begin{frame}{Phase 3 - Parking phase}
   	\begin{figure} [ht]
   		\centering
@@ -444,7 +444,7 @@ message State {
   		\caption{\tiny Algorithm steers and accelerates the car according to calculation until parking position is reached}
 	\end{figure}
   \end{frame}
-  
+
   \subsection{Problems and Limitations}
   \begin{frame}{Problems and Limitations}
   	\begin{itemize}
