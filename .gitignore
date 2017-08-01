@@ -1,2 +1,16 @@
 *.o
 *.d
+
+# LaTeX
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.nav
+*.out
+*.pdf
+*.snm
+*.toc
+*.vrb
+*.synctex.gz
+_minted-final-talk_group3
