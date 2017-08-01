@@ -11,5 +11,6 @@
 *.pdf
 *.snm
 *.toc
+*.vrb
+*.synctex.gz
 _minted-final-talk_group3
-final-talk_group3.synctex.gz

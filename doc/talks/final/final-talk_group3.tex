@@ -4,7 +4,9 @@
 \usepackage[ngerman]{babel}
 \usepackage{minted}
 \usepackage{hyperref}
+\usepackage{multicol}
 \usepackage{color}
+\usepackage{pifont}
 \usepackage{tikz}
 \usepackage{amsmath}
 \usetikzlibrary{arrows}
@@ -15,7 +17,7 @@
 \usetheme[progressbar=head,block=fill]{metropolis}
 
 \title{Final Talk LiL4}
-\subtitle{Group3 - speedDreams}
+\subtitle{Group3 - Team speedDreams}
 \date{July 11, 2017}
 \author{Alexander Reisner \and
 Alexander Weidinger \and
@@ -25,19 +27,53 @@ David Werner}
   \renewcommand{\figurename}{\tiny Fig.}
   \maketitle
 
-  \begin{frame}{ToC}
-    \tableofcontents
+\begin{frame}{Table Of Contents}
+  \begin{multicols}{2}
+  \tableofcontents
+\end{multicols}
   \end{frame}
 
   \section{Introduction}
-  \subsection{Overview}
-  \begin{frame}{Project Overview}
-    [ Complete Graphic of the Project ]
-  \end{frame}
 
   \subsection{Trask Description}
-  \begin{frame}{Our Task}
-    [ List of our points in the specification book ]
+  \begin{frame}<1-7>[label=ourtask]{Our Task}
+    \frametitle<8>{Did we reach our goals?}
+    \textbf{Autonomous Parking}
+    \begin{itemize}
+      \item<2-> Start of the parking manoeuver by the user \uncover<8>{\ding{51}}
+      \item<2-> Autonomously finding a parking spot \uncover<8>{\ding{51}}
+      \item<2-> Autonomous execution of the parking manoeuver \uncover<8>{\ding{51}}
+      \item<2-> Stopping the parking manoeuver (in case of failure, ...) \uncover<8>{\ding{51}}
+      \item<2-> Parking manoeuver itself \uncover<8>{\ding{51}}
+    \end{itemize}
+    \uncover<3->{\textbf{Restrictions}}
+    \begin{itemize}
+      \item<4-> Everything starts with less than 1s of latency \uncover<8>{\ding{51}}
+      \item<4-> Parking manoeuver in real-time... \uncover<8>{\ding{51}}
+      \item<5-> ... on a Pandaboard... \uncover<6->{with Fiasco.OC / Genode OS} \uncover<8>{\ding{51}}
+      \item<7-> Parking without crashing \uncover<8>{\ding{51}}
+      \item<7-> Parking in less than 30s total \uncover<8>{\ding{51}}
+    \end{itemize}
+  \end{frame}
+
+  \subsection{Overview}
+  \begin{frame}{Project Overview}
+    \begin{figure}
+      \begin{tikzpicture}
+        \node[draw] at (0,0) (a){SD 2};
+        \node[draw] at (5,0) (b){SimCoupler};
+        \node[draw] at (5,-4) (c){S/A VM};
+        \node[draw] at (0, -4) (d){ECU};
+        \draw[->, transform canvas={yshift=0.15cm}] (a) -- node[above] {\textit{\tiny Send sensor data}} (b);
+        \draw[->, transform canvas={yshift=-0.15cm}] (b) -- node[below] {\textit{\tiny Receive actuator data}} (a);
+        \draw[->, transform canvas={xshift=0.15cm}] (b) -- node[right] {\textit{\tiny Forward sensor data}} (c);
+        \draw[->, transform canvas={xshift=-0.15cm}] (c) -- node[left] {\textit{\tiny Forward actuator data}} (b);
+        \draw[->, transform canvas={yshift=0.15cm}] (c) -- node[above] {\textit{\tiny Forward sensor data}} (d);
+        \draw[->, transform canvas={yshift=-0.15cm}] (d) -- node[below] {\textit{\tiny Receive actuator data}} (c);
+        \draw[->] (d) to [out=180,in=270,looseness=8] node [above left,xshift=-0.25cm]{\textit{\tiny Calculate next step}} (d);
+      \end{tikzpicture}
+      \caption{\tiny Overview of components}
+    \end{figure}
   \end{frame}
 
   \subsection{Sub Projects}
@@ -74,8 +110,8 @@ David Werner}
     \end{itemize}
   \end{frame}
 
-  \subsection{Implementation Comparison}
-  \begin{frame}{Comparison of Implementations}
+\subsection{Implementation}
+\begin{frame}{Implementation And Comparison}
     \begin{columns}
       \begin{column}{0.5\textwidth}
         \begin{figure}
@@ -89,14 +125,11 @@ David Werner}
           % line between the two midpoints
           \draw (1, 1.5) -- (4, 2.5);
           % sensor lines
-          \foreach \x in {0, 30, ..., 330}
-          {
-          \draw[red, dashed] (1, 1.5) -- +(\x : 3);
-          }
+          \foreach \x in {0, 30, ..., 330} \draw[red, dashed] (1, 1.5) -- +(\x : 3);
           % distance bracket
           \draw[decoration={brace,mirror,raise=5pt},decorate] (1, 1.5) -- (4, 2.5) node[black,midway,yshift=-0.5cm] {\footnotesize $d_1$};
         \end{tikzpicture}
-        \caption{\tiny Proximity sensors implemented by the Simulated Car Racing Championship 2015}
+        \caption{\tiny Proximity sensor implemented by the Simulated Car Racing Championship 2015}
       \end{figure}
       \end{column}
       \begin{column}{0.5\textwidth}
@@ -122,6 +155,74 @@ David Werner}
       \end{column}
     \end{columns}
   \end{frame}
+
+\begin{frame}{Data Exchange SD2 $\longleftrightarrow$ QEMU S/A VM}
+  \begin{figure}
+    \begin{tikzpicture}
+      \node[draw] at (0,0) (a){SpeedDreams 2};
+      \node[draw] at (5,0) (b){S/A VM};
+      \draw[->, transform canvas={yshift=0.15cm}] (a) -- node[above] {\textit{State}} (b);
+      \draw[->, transform canvas={yshift=-0.15cm}] (b) -- node[below] {\textit{Control}} (a);
+    \end{tikzpicture}
+    \caption{\tiny Message exchange between SD2 and QEMU S/A VM}
+  \end{figure}
+\end{frame}
+
+\begin{frame}[fragile]{Protocol}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item Protocol: Google Protocol Buffers
+        \item Messages: State, Control
+        \item Simple TCP connection
+        \item Simple Protocol: 4 byte message header (length of message) + message itself
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \begin{minted}[fontsize=\tiny]{protobuf}
+syntax = "proto3";
+package protobuf;
+
+import "sensor.proto";
+import "wheel.proto";
+import "specification.proto";
+
+message State {
+  repeated Sensor sensor = 1;
+  repeated Wheel wheel = 2;
+  Specification specification = 3;
+  float steer = 4;
+  float brakeCmd = 5;
+  float accelCmd = 6;
+}
+        \end{minted}
+        \caption{\tiny state.proto}
+      \end{figure}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\subsection{Limitations}
+\begin{frame}{Problems \& Limitations}
+  \begin{itemize}
+    \item Protobuf doesn't allow multiple modules to be linked against protobuf
+    \item<2->[$\rightarrow$] E.g. share one protobuf ``module'' between all modules
+    \item<3-> SimCoupler is currently not used
+    \item<4->[$\rightarrow$] should be easily expendable
+    \item<5-> Proximity sensor tends to precision errors if obstacle is too close
+    \item<6->[$\rightarrow$] more or less only after directly crashing into the obstacle \tt :-)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Alex's 'Would Have Been Nice To Know Before' Corner}
+  \begin{itemize}
+    \item OSs make ``improvements''
+    \item \textbf{But:} Tend to interfere with our solutions
+    \item E.g. Nagle's algorithm (bandwidth efficiency vs. latency)
+    \item \textbf{Solution:} \mintinline{c}{TCP_NODELAY} to disable it
+  \end{itemize}
+\end{frame}
 
   \section{Alexander Reisner}
 
@@ -352,4 +453,8 @@ David Werner}
   		\item<3-> safety distance needs to be higher than necessary
   	\end{itemize}
   \end{frame}
-  \end{document}
+
+\section{Summary}
+\againframe<all:8>{ourtask}
+
+\end{document}
