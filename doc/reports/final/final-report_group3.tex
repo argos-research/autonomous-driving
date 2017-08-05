@@ -110,9 +110,13 @@ One of the protobuf files designed during this pratical course looks like this:
   \end{minipage}
     \caption{\tiny state.proto}
   \end{figure}
+  \subsubsection{TCP/IP}
+Before any network interaction can take place, the network has to be initialized. Therefore the library lwip is usually needed. But since the mosquitto library already initializes lwip, another initialization within the components code caused lwip and moquitto to freeze.\newline
+Furthermore dhcp and manuall ip configuration have to be seperated in the initialization, since dhcp ip assignement takes up to 10 seconds, however manuall ip assignement takes place instantly.
+  \subsection{Our protocol}
+To be able to change data, some preparation needs to be done beforehand. Since it is not usefull to send data without knowledge over its size, some kind of a protocol around the protobuf data exchange had to be designed. Therefore it was decided to send a 4 byte long value which contains the size of the following protobuf state, is sent to start the actual exchange. Any other messages are dropped.
   \subsubsection{deserialize}
   \subsubsection{serialize}
-  \subsubsection{protocol - size of file - actual file}
   \subsubsection{Nagel's algorithm}
   \subsubsection{Do not wait for answer of ECU}
 \subsection{Data exchange with ECU}
