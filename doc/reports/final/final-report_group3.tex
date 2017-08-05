@@ -2,6 +2,7 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage[ngerman,english]{babel}
+\usepackage{gensymb}
 
 \usepackage[yyyymmdd]{datetime}
 \renewcommand{\dateseparator}{-}
@@ -17,6 +18,8 @@
 
 \usepackage{minted}
 \usemintedstyle{rainbow_dash}
+
+\usepackage{mathtools}
 
 \title{Autonomous Parking Scenario}
 \subtitle{Linux und L4-Mikrokern, SS 2017}
@@ -137,15 +140,39 @@ indicated by the dashed blue line.
 \end{figure}
 
 \subsubsection{Implementation}
+
+\begin{listing}[ht]\label{aw_sensor_position}
+  \inputminted[firstline=91,linenos=true,lastline=96,gobble=2]{c++}{../../../simulators/speed-dreams/src/libs/sensors/obstacleSensors.cpp}
+  \caption{\texttt{src/libs/sensors/obstacleSensors.cpp}}
+\end{listing}
+
+\begin{equation}
+  m_1 * x + t_1 = m_2 * x + t_2 \equiv x = (t_2 - t_1) / (m_1 - m2)
+\end{equation}
+
+
 \begin{itemize}
   \item Show important parts of the code and explain
-  \item Explain trick with obstacle behind sensor
+  \item Explain trick with obstacle behind sensor (reference point)
 \end{itemize}
 
 \subsubsection{Usage}
-\begin{itemize}
-  \item Show usage of the sensor in the human driver
-\end{itemize}
+As an example on how to use the newly created obstacleSensors library,
+one can take a look at the human driver in listing \ref{aw_sensors}.
+
+\begin{listing}[ht]\label{aw_sensors}
+  \inputminted[firstline=245,linenos=true,lastline=256]{c++}{../../../simulators/speed-dreams/src/drivers/human/human.cpp}
+  \caption{\texttt{src/drivers/human/human.cpp}}
+\end{listing}
+
+The code adds three sensors, one in the front with 0\degree{} angle
+and one in the back with an angle of 180\degree{}.
+Both sensors are moved relative to the center point of the car,
+according to the schematics in the comment.
+The last sensor (second sensor in the example code) is directed in an 90\degree{} angle
+and moved to the right side of the rear axle.
+As a side note, all three sensors have a maximum range of 20 meters,
+which can be changed with the last parameter.
 
 \subsubsection{Evaluation}
 \begin{itemize}
@@ -153,10 +180,23 @@ indicated by the dashed blue line.
 \end{itemize}
 
 \subsubsection{Open points}
-\begin{itemize}
-  \item Sometimes wrong values
-  \item Could be improved by using vectors
-\end{itemize}
+Our main focus was getting the overall setup running,
+therefore a few open points are still left open
+and can be fixed in future versions.
+
+If one takes a look into the \texttt{sensors\_update} function,
+it is obvious that the sensor is moved to the correct position in each update.
+To optimize the code, this part could be easily moved into the constructor of each sensor
+and therefore improve the performance of this update function.
+
+The whole implementation is based on straight lines
+and therefore needs some hacks to deal with directions.
+To overcome this issue it would make sense to change the implementation to vectors.
+This could also fix some potential glitches with wrong distance values,
+which can occur on collisions.
+Lastly the implementation only represents a laser proximity sensor
+in contrast to the implementation by the SCRC,
+which can detect or more precisely assigns opponents in angle ranges.
 
 \section{Starting Grid}
 In order to test the successful execution of our parking algorithm,
