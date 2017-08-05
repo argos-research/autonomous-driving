@@ -246,16 +246,14 @@ newrace(int index, tCarElt* car, tSituation *s)
     sens = new ObstacleSensors(curTrack, car);
     /* car, angle, move_x, move_y, range */
 
-    /* (-car->_cimension_x/2, -car->dimension_y/2)
-     *      +-----R-----+
-     *      H     0     V
-     *      +-----L-----+ (car->_cimension_x/2, car->dimension_y/2)
+    /* (-car->_cimension_x/2, car->dimension_y/2)
+     *      +-----L-----+
+     *      B     0     F
+     *      +-----R-----+ (car->_cimension_x/2, -car->dimension_y/2)
      */
     sens->addSensor(car, 0, car->_dimension_x/2, 0, 20); // front
-    sens->addSensor(car, -90, car->priv.wheel[2].relPos.x, -car->_dimension_y/2, 20); // right
-    //sens->addSensor(car, -90, 0, -car->_dimension_y/2, 20); // right
+    sens->addSensor(car, 90, car->priv.wheel[2].relPos.x, -car->_dimension_y/2, 20); // right
     sens->addSensor(car, 180, -car->_dimension_x/2, 0, 20); // back
-    //sens->addSensor(car, 90, 0, car->_dimension_y/2, 20); // left
 }//newrace
 
 

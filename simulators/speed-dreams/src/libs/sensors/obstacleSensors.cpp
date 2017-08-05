@@ -95,7 +95,7 @@ void ObstacleSensors::sensors_update(tSituation *situation)
 			myc->_pos_Y + sin(myc->_yaw + phi) * dis
 		}; // calculate distance for x and y coordinates and add it to middle point
 
-		point reference = { sensorPosition.x - 1 * cos(myc->_yaw + (*it).getAngle() * PI / 180), sensorPosition.y - 1 * sin(myc->_yaw + (*it).getAngle() * PI / 180) };
+		point reference = { sensorPosition.x - 1 * cos(myc->_yaw - (*it).getAngle() * PI / 180), sensorPosition.y - 1 * sin(myc->_yaw - (*it).getAngle() * PI / 180) };
 		#ifdef __DEBUG_OPP_SENS__
 		printf("reference={(%f,%f)}\n", reference.x, reference.y);
 		#endif
