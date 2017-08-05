@@ -244,13 +244,13 @@ newrace(int index, tCarElt* car, tSituation *s)
     robot.new_race(index, car, s);
     /* add laser obstacle sensors */
     sens = new ObstacleSensors(curTrack, car);
-    /* car, angle, move_x, move_y, range */
 
     /* (-car->_cimension_x/2, car->dimension_y/2)
      *      +-----L-----+
      *      B     0     F
      *      +-----R-----+ (car->_cimension_x/2, -car->dimension_y/2)
      */
+    /* car, angle, move_x, move_y, range */
     sens->addSensor(car, 0, car->_dimension_x/2, 0, 20); // front
     sens->addSensor(car, 90, car->priv.wheel[2].relPos.x, -car->_dimension_y/2, 20); // right
     sens->addSensor(car, 180, -car->_dimension_x/2, 0, 20); // back
