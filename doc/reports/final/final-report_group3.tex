@@ -115,7 +115,8 @@ Before any network interaction can take place, the network has to be initialized
 Furthermore dhcp and manuall ip configuration have to be seperated in the initialization, since dhcp ip assignement takes up to 10 seconds, however manuall ip assignement takes place instantly.
   \subsection{Our protocol}
 To be able to change data, some preparation needs to be done beforehand. Since it is not usefull to send data without knowledge over its size, some kind of a protocol around the protobuf data exchange had to be designed. Therefore it was decided to send a 4 byte long value which contains the size of the following protobuf state, is sent to start the actual exchange. Any other messages are dropped.
-  \subsubsection{deserialize}
+  \subsubsection{Deserialization}
+Once a message of given size was received it needs to be deserialized. Fortunately the method "ParseFromArray" does the job. Afterwards all received information is stored within a protobuf state. This object has automatically generated getter and setter methods, which makes it easy to access the actual data.
   \subsubsection{serialize}
   \subsubsection{Nagel's algorithm}
   \subsubsection{Do not wait for answer of ECU}
