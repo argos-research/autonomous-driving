@@ -3,6 +3,13 @@
 \usepackage[utf8]{inputenc}
 \usepackage[ngerman,english]{babel}
 \usepackage{hyperref}
+\usepackage{wrapfig}
+\usepackage{minted}
+\usepackage{multicol}
+\usepackage{color}
+\usepackage{pifont}
+\usepackage{tikz}
+\usepackage{amsmath}
 
 \title{Autonomous Parking Scenario}
 \author{Alexander Reisner \href{mailto:alexander.reisner@tum.de}{\texttt{alexander.reisner@tum.de}} \and
@@ -68,20 +75,50 @@ David Werner \href{mailto:david.werner@tum.de}{\texttt{david.werner@tum.de}}}
 \end{itemize}
 \section{S/A VM}
 \subsection{Data exchange with speedDreams 2}
-\begin{itemize}
-  \item protobuf
-  \item deserialize
-  \item serialize
-  \item protocol - size of file - actual file
-  \item Nagel's algorithm
-  \item Do not wait for answer of ECU
-\end{itemize}
+  \subsubsection{Protobuf}
+Google Protobuf is a protocol for network data exchange.
+The newest version can be found \href{https://github.com/google/protobuf}{here}.
+To exchange data, protobuf files habe to be created beforehand.
+One of the protobuf files designed during this pratical course looks like this: 
+  \begin{figure}[!h]
+  \begin{minipage}{0.5\textwidth}
+  \centering
+    \begin{minted}[fontsize=\tiny]{protobuf}
+	syntax = "proto3";
+	package protobuf;
+	
+	import "sensor.proto";
+	import "wheel.proto";
+	import "specification.proto";
+	
+	message State {
+	  repeated Sensor sensor = 1;
+	  repeated Wheel wheel = 2;
+	  Specification specification = 3;
+	  float steer = 4;
+	  float brakeCmd = 5;
+	  float accelCmd = 6;
+	}
+    \end{minted}
+  \end{minipage}
+  \begin{minipage}{0.5\textwidth}
+    \begin{itemize}
+\item The version of the syntax is defined.
+\item All packages and imports are declared.
+\item The message is constructed. Attributes can be other Protobuf messages, simple datatypes, like int or float, or a list "repeated" of any attributes named.
+    \end{itemize}
+  \end{minipage}
+    \caption{\tiny state.proto}
+  \end{figure}
+  \subsubsection{deserialize}
+  \subsubsection{serialize}
+  \subsubsection{protocol - size of file - actual file}
+  \subsubsection{Nagel's algorithm}
+  \subsubsection{Do not wait for answer of ECU}
 \subsection{Data exchange with ECU}
-\begin{itemize}
-  \item MQTT/mosquitto/publish subscribe
-  \item callbacks
-  \item lwip mosquitto foo
-\end{itemize}
+  \subsubsection{MQTT/mosquitto/publish subscribe}
+  \subsubsection{callbacks}
+  \subsubsection{lwip mosquitto foo}
 \section{ECU}
 \section{Misc}
 \begin{itemize}
