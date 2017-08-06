@@ -488,7 +488,7 @@ as one can also see in a discussion on StackOverflow \cite{soprotobuf} with poss
 \section{Data exchange with speedDreams 2}
   \subsection{Protobuf}\label{ar_protobuf_subsection}
 Google Protobuf is a protocol for data exchange.
-The newest version can be found \href{https://github.com/google/protobuf}{here}.
+The newest version can be found here\footnote{\url{https://github.com/google/protobuf}}.
 To exchange data, protobuf files have to be created beforehand.
 One of the protobuf files designed during this pratical course looks like this:
 \begin{figure}[!h]
@@ -521,7 +521,7 @@ message State {
   \end{minipage}
     \caption{state.proto}
   \end{figure}
-  \subsection{TCP/IP} \label{tcpip}
+  \subsection{TCP/IP} \label{ar_tcpip}
 Before any network interaction can take place, the network has to be initialized. Therefore the library lwip is usually needed. But since the mosquitto library already initializes lwip, another initialization within the components code caused lwip and moquitto to freeze.\newline
 Furthermore dhcp and manuall ip configuration have to be seperated in the initialization, since dhcp ip assignement takes up to 10 seconds, however manuall ip assignement takes place instantly.
 The configuration takes place in the run file of the component.
@@ -538,27 +538,27 @@ The configuration takes place in the run file of the component.
 If dhcp is set to "yes" any following configuration is ignored.\newline
 If dhcp is set to "no" there is our address followed by the subnetmask and the default gateway of the VDE adapter or the connected ethernet network.\newline
 SpeedDreams2's address and port as well as mosquitto server's address and port can be configured.
-  \section{Our protocol} \label{ourprotocol}
+  \section{Our protocol} \label{ar_ourprotocol}
 To be able to exchange data, some preparation needs to be done beforehand. Since it is not usefull to send data without knowledge over its size, some kind of a protocol around the protobuf data exchange had to be designed. Therefore it was decided to send a 4 byte long value which contains the size of the following protobuf state, is sent to start the actual exchange. Any other messages are dropped.
   \subsection{Deserialization}
 Once a message of given size was received it needs to be deserialized. Fortunately the method "ParseFromArray" does the job. Afterwards all received information is stored within a protobuf state. This object has automatically generated getter and setter methods, which makes it easy to access the actual data. Finally the multiplexing of the S/A VM takes place. Any data within the state object is published via mosquitto within the topic "state".
   \subsection{Serialization}
-Right after the deserialization of the state message, a new message called control is created. Any information the S/A VM got from the ECU is now put into this protobuf object. Afterwards the object is serialized using SerializeToString. As mentioned in \ref{ourprotocol} before the actuall protobuf file can be sent over ethernet, its size in a seperate 4 byte message, initializes the data exchange. But finally the serialized protobuf message is sent back to speedDreams2 which can now continue with the next simualtion step.
+Right after the deserialization of the state message, a new message called control is created. Any information the S/A VM got from the ECU is now put into this protobuf object. Afterwards the object is serialized using SerializeToString. As mentioned in \ref{ar_ourprotocol} before the actuall protobuf file can be sent over ethernet, its size in a seperate 4 byte message, initializes the data exchange. But finally the serialized protobuf message is sent back to speedDreams2 which can now continue with the next simualtion step.
   \subsection{Nagle's algorithm}
-The goal of the \href{https://www.lifewire.com/nagle-algorithm-for-tcp-network-communication-817932}{nagle's algorithm} is to minimize the number of packets sent by the network stack. Therefore it piles up small messages. Unfortunately this approach brakes completely with the real time requirement of the S/A VM. Therefore this algorithm had to be disabled by activating the "TCP\_NODELAY" option of the lwip library.
+The goal of the nagle's algorithm\footnote{\url{https://www.lifewire.com/nagle-algorithm-for-tcp-network-communication-817932}} is to minimize the number of packets sent by the network stack. Therefore it piles up small messages. Unfortunately this approach brakes completely with the real time requirement of the S/A VM. Therefore this algorithm had to be disabled by activating the "TCP\_NODELAY" option of the lwip library.
   \subsection{Do not wait for answer of ECU}
 To keep latency as low as possible the S/A VM answeres immediately after it got a state message from speedDreams2. No matter whether the S/A VM already got an update for the next step of the ECU. If the S/A VM waited for the ECU's mosquitto messages, there would be so much latency that speedDreams had to run in 1/8 realtime. For the sake of realtime the S/A VM does not care if it misses a message from the ECU. This is not a problem since the ECU does not care about the past but only about the next step. Therefore the ECU is able to correct missing instructions in the next step.
 
 \section{Data exchange with ECU}
   \subsubsection{MQTT}
-\href{http://mqtt.org/}{MQTT} alias Message Queue Telemetry Transport is a protocol based on the publish-subscribe pattern.\newline
+MQTT\footnote{\url{http://mqtt.org/}} alias Message Queue Telemetry Transport is a protocol based on the publish-subscribe pattern.\newline
 The publish-subscribe pattern describes a client server communication, where the server acts as a message broker and the clients subscribe and publish on topcis. The broker knows the subscriptions of clients and sends them a message if a message is published under a certain topic. Therefore network load can be taken from the clients and put to the server, since the clients only gets messages it is interessted in.
   \subsection{Subscribe}
-The subscription is handled via "mosquittopp" which provides a method called "subscribe". This method needs the topic and the quality of message as input. Once a message on the given topic arrives at the server, the subscribed client is notified. This notification is handled by the callbacks \ref{callbacks} of mosquitto.
+The subscription is handled via "mosquittopp" which provides a method called "subscribe". This method needs the topic and the quality of message as input. Once a message on the given topic arrives at the server, the subscribed client is notified. This notification is handled by the callbacks \ref{ar_callbacks} of mosquitto.
   \subsection{Publish}
-The publishing is also handled via "mosquittopp" which provides another function called "publish". This method takes the topic, the message to be published and its size. The message finds its way to the server via the configuration done in the run file of the ECU. This configuration works the same way as described in TCP/IP \ref{tcpip} for the S/A VM.
+The publishing is also handled via "mosquittopp" which provides another function called "publish". This method takes the topic, the message to be published and its size. The message finds its way to the server via the configuration done in the run file of the ECU. This configuration works the same way as described in TCP/IP \ref{ar_tcpip} for the S/A VM.
 \newpage
-  \subsection{Callbacks} \label{callbacks}
+  \subsection{Callbacks} \label{ar_callbacks}
 Callbacks are invoked once a certain event occurs. In case of MQTT those events can be for example:\newline
 \begin{figure}[!h]
   \centering
