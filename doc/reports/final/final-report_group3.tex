@@ -197,7 +197,7 @@ the algorithm takes the following steps:
     \item Iterate over all intersections.
     \begin{enumerate}
       \item Test if point of intersection is within the domain of the respective side of the car.
-      \item\label{infront} Check if the intersection is 'in front' of the sensor.
+      \item\label{infront} Check if the intersection is "in front" of the sensor.
     \end{enumerate}
     \item Save the potentially shortest distance to an opponent, if not already a shorter distance was found.
   \end{enumerate}
@@ -283,7 +283,7 @@ After obtaining the intersections, the domain is checked by verifying,
 that the intersection is between the two points restricting the side of the car.
 Additional to that, we need to make sure the obstacle isn't behind the sensor.
 For that we reuse our \texttt{is\_between} function (which checks if a point is between two points) and adding a reference point,
-which basically is an additional point 'behind' the sensor (see listing \ref{aw_ref}).
+which basically is an additional point "behind" the sensor (see listing \ref{aw_ref}).
 
 \begin{listing}[ht]
   \inputminted[firstline=98,linenos=true,lastline=99,gobble=2]{c++}{../../../simulators/speed-dreams/src/libs/sensors/obstacleSensors.cpp}
@@ -474,10 +474,7 @@ and doesn't introduce any additional logic.
 The only problem with such an integration could be an foible of the Protobuf library,
 that multiple instances of a protobuf library are tricky to integrate in a single project.
 Also see a discussion of this topic on StackOverflow \cite{soprotobuf} with possible solutions.
-\begin{itemize}
-  \item Where do we need to make changes to integrate it
-\end{itemize}
-\newpage
+
 \chapter{S/A VM}
 \section{Data exchange with speedDreams 2}
   \subsection{Protobuf}
