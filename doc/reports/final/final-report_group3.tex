@@ -29,7 +29,7 @@
 
 \title{Autonomous Parking Scenario}
 \subtitle{Linux und L4-Mikrokern, SS 2017, Group 03}
-\author{Alexander Reisner \href{mailto:reisner@tum.de}{\texttt{alexander.reisner@tum.de}} \and
+\author{Alexander Reisner \href{mailto:reisner@tum.de}{\texttt{reisner@tum.de}} \and
 Alexander Weidinger \href{mailto:alexander.weidinger@tum.de}{\texttt{alexander.weidinger@tum.de}} \and
 David Werner \href{mailto:david.werner@tum.de}{\texttt{david.werner@tum.de}}}
 \date{\today}
@@ -512,7 +512,7 @@ message State {
   \end{minipage}
     \caption{state.proto}
   \end{figure}
-  \subsection{TCP/IP} \label{tcpip}
+  \subsection{TCP/IP} \label{ar_tcpip}
 Before any network interaction can take place, the network has to be initialized. Therefore the library lwip is usually needed. But since the mosquitto library already initializes lwip, another initialization within the components code caused lwip and moquitto to freeze.\newline
 Furthermore dhcp and manuall ip configuration have to be seperated in the initialization, since dhcp ip assignement takes up to 10 seconds, however manuall ip assignement takes place instantly.
 The configuration takes place in the run file of the component.
@@ -529,7 +529,7 @@ The configuration takes place in the run file of the component.
 If dhcp is set to "yes" any following configuration is ignored.\newline
 If dhcp is set to "no" there is our address followed by the subnetmask and the default gateway of the VDE adapter or the connected ethernet network.\newline
 SpeedDreams2's address and port as well as mosquitto server's address and port can be configured.
-  \section{Our protocol} \label{ourprotocol}
+  \section{Our protocol} \label{ar_ourprotocol}
 To be able to exchange data, some preparation needs to be done beforehand. Since it is not usefull to send data without knowledge over its size, some kind of a protocol around the protobuf data exchange had to be designed. Therefore it was decided to send a 4 byte long value which contains the size of the following protobuf state, is sent to start the actual exchange. Any other messages are dropped.
   \subsection{Deserialization}
 Once a message of given size was received it needs to be deserialized. Fortunately the method "ParseFromArray" does the job. Afterwards all received information is stored within a protobuf state. This object has automatically generated getter and setter methods, which makes it easy to access the actual data. Finally the multiplexing of the S/A VM takes place. Any data within the state object is published via mosquitto within the topic "state".
@@ -545,11 +545,11 @@ To keep latency as low as possible the S/A VM answeres immediately after it got 
 MQTT\footnote{\url{http://mqtt.org/}} alias Message Queue Telemetry Transport is a protocol based on the publish-subscribe pattern.\newline
 The publish-subscribe pattern describes a client server communication, where the server acts as a message broker and the clients subscribe and publish on topcis. The broker knows the subscriptions of clients and sends them a message if a message is published under a certain topic. Therefore network load can be taken from the clients and put to the server, since the clients only gets messages it is interessted in.
   \subsection{Subscribe}
-The subscription is handled via "mosquittopp" which provides a method called "subscribe". This method needs the topic and the quality of message as input. Once a message on the given topic arrives at the server, the subscribed client is notified. This notification is handled by the callbacks \ref{callbacks} of mosquitto.
+The subscription is handled via "mosquittopp" which provides a method called "subscribe". This method needs the topic and the quality of message as input. Once a message on the given topic arrives at the server, the subscribed client is notified. This notification is handled by the callbacks \ref{ar_callbacks} of mosquitto.
   \subsection{Publish}
 The publishing is also handled via "mosquittopp" which provides another function called "publish". This method takes the topic, the message to be published and its size. The message finds its way to the server via the configuration done in the run file of the ECU. This configuration works the same way as described in TCP/IP \ref{tcpip} for the S/A VM.
 \newpage
-  \subsection{Callbacks} \label{callbacks}
+  \subsection{Callbacks} \label{ar_callbacks}
 Callbacks are invoked once a certain event occurs. In case of MQTT those events can be for example:\newline
 \begin{figure}[!h]
   \centering
