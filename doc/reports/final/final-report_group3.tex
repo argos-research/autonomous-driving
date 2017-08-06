@@ -161,7 +161,7 @@ As an example on how to use the newly created obstacleSensors library,
 one can take a look at the human driver in listing \ref{aw_sensors}.
 
 \begin{listing}[ht]\label{aw_sensors}
-  \inputminted[firstline=245,linenos=true,lastline=256]{c++}{../../../simulators/speed-dreams/src/drivers/human/human.cpp}
+  \inputminted[firstline=245,linenos=true,lastline=256,gobble=4]{c++}{../../../simulators/speed-dreams/src/drivers/human/human.cpp}
   \caption{\texttt{src/drivers/human/human.cpp}}
 \end{listing}
 
@@ -215,7 +215,7 @@ taking in mind the overall width of the track, the course of the road, etc.
 
 For the purpose of the parking scenario we hard coded the row value to one:
 \begin{listing}[ht]
-  \inputminted[firstline=309,linenos=true,lastline=311]{c++}{../../../simulators/speed-dreams/src/modules/racing/standardgame/raceinit.cpp}
+  \inputminted[firstline=309,linenos=true,lastline=311,gobble=1]{c++}{../../../simulators/speed-dreams/src/modules/racing/standardgame/raceinit.cpp}
   \caption{\texttt{src/modules/racing/standardgame/raceinit.cpp}}
 \end{listing}
 
@@ -223,7 +223,7 @@ We also made sure to place each car 8 meters further away from the start line by
 Additionally to get the second and last car to either be 3 meters to the left or right,
 we adapted the position change to the right accordingly in the code:
 \begin{listing}[ht]
-  \inputminted[firstline=316,linenos=true,lastline=327]{c++}{../../../simulators/speed-dreams/src/modules/racing/standardgame/raceinit.cpp}
+  \inputminted[firstline=316,linenos=true,lastline=327,gobble=4]{c++}{../../../simulators/speed-dreams/src/modules/racing/standardgame/raceinit.cpp}
   \caption{\texttt{src/modules/racing/standardgame/raceinit.cpp}}
 \end{listing}
 
@@ -231,31 +231,100 @@ In order to ensure, that the changes don't interfere with future development,
 the changes only get used, if the code is compiled with the \texttt{PARKING} option enabled.
 
 \section{Driving bots}
-\begin{itemize}
-  \item We still want to be able to drive ourselves $\rightarrow$ reuse human driver
-  \item We need a parked car bot
-\end{itemize}
+Also changes were needed for two of the bots in SD2,
+since although we still want to be able to drive for ourselves,
+we need to make sure the car can move autonomously.
+Additionally we need parked cars for our proximity sensor to detect.
+We chose to make use of the \textit{human} driver and extend it by the autonomous driving
+and the \textit{usr} driver to act as the parked car.
 
 \subsubsection{human}
-\begin{itemize}
-  \item Data exchange between SD2 and S/A VM
-  \item Driving logic (brake and accel if needed to maintain given speed)
-\end{itemize}
+The changes to the \textit{human} bot consitsts of two parts.
+First add the data exchange between SD2 and the S/A VM
+and second include an autonomous driving logic.
+
+The code for the data exchange is relatively trivial,
+since its a simple socket based connection,
+where SD2 acts as the server and globally listens for connections on port 9002.
+The message flow between the S/A VM and SD2 is always the same
+and based on an exchange between both applications.
+First SD2 collects all sensor information (proximity sensors, spin velocity of the wheels, etc.)
+and packs this data into a Protobuf \textit{State} message.
+(For an explanation of the Protobuf message see bla) %TODO reference to AR
+
+The Protobuf message is then serialized to a String,
+the length of this message gets extracted
+and both information are transmitted over the socket connection,
+as can be seen in listing \ref{aw_send}.
+
+\begin{listing}[ht]
+  \inputminted[firstline=352,linenos=true,lastline=363,gobble=4]{c++}{../../../simulators/speed-dreams/src/drivers/human/human.cpp}
+  \caption{\texttt{src/drivers/human/human.cpp}}\label{aw_send}
+\end{listing}
+
+For the back channel, SD2 receives a Protobuf \textit{Control} message from the S/A VM,
+following the same protocol (message length, message content).
+This message is parsed and information about the desired speed,
+if the car will drive autonomously and the intended steering angle are interpreted.
+
+The autonomous driving logic is simplified to accelerate with a maximum force,
+if the desired speed is higher than the current speed
+and to brake with maximum force if the desired speed is lower than the current speed.
+This is necessary,
+since the autonomous parking algorithm only is capable of providing a desired velocity
+and no acceleration or deceleration commands.
+The autonomous driving logic gets activated,
+as soon as the \textit{Control} message sends an \texttt{autonomous=true} value.
+We integrated a safety feature to always brake with full force,
+if the car was driving autonomously but isn't anymore
+and the driver didn't take back control until now, see listing \ref{aw_safety}.
+
+\begin{listing}[ht]
+  \inputminted[firstline=422,linenos=true,lastline=426,gobble=6]{c++}{../../../simulators/speed-dreams/src/drivers/human/human.cpp}
+  \caption{\texttt{src/drivers/human/human.cpp}}\label{aw_safety}
+\end{listing}
+
+This of course only makes sense for the parking scenario
+and a different approach should be taken for autonomous driving, e.g. on the highway.
+A failure of an ECU while driving on the highway obviously shouldn't lead to a full brake.
+
 \subsubsection{usr}
-\begin{itemize}
-  \item Now a simple parked car (accel=0, brake=1, steer=0)
-  \item Should be moved to own bot
-\end{itemize}
+The \textit{usr} bot should be extended to just stay at the current position
+and don't move in any way to represent a parked car.
+We can achieve this behavior by forcing the \texttt{accelCmd} to a value of zero,
+the \texttt{brakeCmd} to a value of 1 and the \texttt{steerCmd} to a value of zero,
+as seen in listing \ref{aw_parked}.
+
+\begin{listing}[ht]
+  \inputminted[firstline=751,linenos=true,lastline=755,gobble=4]{c++}{../../../simulators/speed-dreams/src/drivers/usr/src/usr.cpp}
+  \caption{\texttt{src/drivers/usr/src/usr.cpp}}\label{aw_parked}
+\end{listing}
+
+This solution does work quite well in our setup,
+but the code should be moved to a completely new driving bot with an expressive name for the future,
+to still be able to use the \textit{usr} bot in its normal programming.
+
 \subsection{Data exchange with S/A VM}
 \begin{itemize}
   \item Protocol (protobuf, 4 byte message length header + message, tcp socket)
   \item Problem Nagle's algorithm $\rightarrow$ disable it via TCP\_NODELAY
 \end{itemize}
 \section{SimCoupler}
+In the beginning of the practical course,
+it was planned to interpose the Simulation Coupler (SimCoupler) between SD2 and the S/A VM.
+To ease up the development process, reduce latency and
+prevent additional sources of errors we decided to exclude the SimCoupler for now.
+Until the end of the practical course we had to cope with latency problems,
+optimization issues of the parking algorithm and other unforeseeable obstacles.
+In the end we didn't have enough time to reintroduce the SimCoupler
+but for the future it should be easily expendable,
+since for this use case the SimCoupler more or less acts as a proxy
+and doesn't introduce any additional logic.
+The only problem with such an integration could be an foible of the Protobuf library,
+that multiple instances of a protobuf library are tricky to integrate in a single project.
+Also see a discussion of this topic on StackOverflow \cite{soprotobuf} with possible solutions.
 \begin{itemize}
-  \item Why did we drop SimCoupler
   \item Where do we need to make changes to integrate it
-  \item Shared protobuf module problem and possible solution
 \end{itemize}
 \section{S/A VM}
 \section{ECU}
