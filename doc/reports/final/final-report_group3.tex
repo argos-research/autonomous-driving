@@ -8,13 +8,6 @@
 \renewcommand{\dateseparator}{-}
 
 \usepackage{hyperref}
-\usepackage{wrapfig}
-\usepackage{minted}
-\usepackage{multicol}
-\usepackage{color}
-\usepackage{pifont}
-\usepackage{tikz}
-\usepackage{amsmath}
 
 \usepackage{tikz}
 \usetikzlibrary{arrows}
@@ -26,10 +19,16 @@
 \usepackage{minted}
 \usemintedstyle{rainbow_dash}
 
+\usepackage{amsmath}
 \usepackage{mathtools}
 
+\usepackage{wrapfig}
+\usepackage{multicol}
+\usepackage{color}
+\usepackage{pifont}
+
 \title{Autonomous Parking Scenario}
-\subtitle{Linux und L4-Mikrokern, SS 2017}
+\subtitle{Linux und L4-Mikrokern, SS 2017, Group 03}
 \author{Alexander Reisner \href{mailto:alexander.reisner@tum.de}{\texttt{alexander.reisner@tum.de}} \and
 Alexander Weidinger \href{mailto:alexander.weidinger@tum.de}{\texttt{alexander.weidinger@tum.de}} \and
 David Werner \href{mailto:david.werner@tum.de}{\texttt{david.werner@tum.de}}}
@@ -48,15 +47,15 @@ David Werner \href{mailto:david.werner@tum.de}{\texttt{david.werner@tum.de}}}
 % introduction
 \chapter{Introduction}
 This document is the final report, written by the students Alexander Reisner,
-Alexander Weidinger and David Werner, for the 'Linux und L4-Mikrokern' SS 2017 practical course at the Technical University of Munich.
+Alexander Weidinger and David Werner, for the "Linux und L4-Mikrokern" SS 2017 practical course at the Technical University of Munich.
 
 The overall given task for the practical course was to implement an autonomous parking algorithm.
 
 This parking algorithm is implemented as an user space application for a Pandaboard,
-running the Genode OS Framework in version 16.08 with the Fiasco.OC (r56) as kernel.
+running the Genode OS Framework in version 16.08 with the Fiasco.OC version r56 as kernel.
 We will refer to this compound as \textit{ECU} from now on.
 
-Our ECU is integrated in the hybrid simulator framework given by the KIA4SM project.
+Our ECU is integrated in the hybrid simulator framework preexisting by the KIA4SM project.
 This hybrid simulator consists of a car racing simulator, Speed Dreams 2 (SD2),
 a Simulation Coupler (SimCoupler), a so called \textit{S/A VM} which basically represents a multiplexing entity for each car in the simulation
 and a model car representing the main car in the simulation.
@@ -64,6 +63,31 @@ and a model car representing the main car in the simulation.
 Operating the model car is not part of this group's task but rather a task of the second team in this practical course.
 But due to the agreed on structure of the data exchange at the Level of the ECU and S/A VM,
 calculated actuator data is also received by the other team's software and can be used to control the model car.
+
+\section{Project Overview}
+Figure \ref{aw_overview} shows the overview of the project and the information flow between all involved components.
+SD2 produces sensor information and sends them to the S/A VM.
+The S/A VM multiplexes the data and publishes all information to the ECUs.
+They are now able to compute control commands and publish them back to the S/A VM.
+The S/A VM now itself receives all control commands, bundles them in a single messages
+and sends them back to SD2.
+This behavior runs endlessly in a loop and gets executed each simulation step.
+
+\begin{figure}[ht]
+  \begin{center}
+    \begin{tikzpicture}[scale=1]
+      \node[draw] at (5,0) (a){SD 2};
+      \node[draw] at (5,-4) (c){S/A VM};
+      \node[draw] at (0, -4) (d){ECU};
+      \draw[->] (a) -- node[right] {\textit{\tiny Send sensor data}} (c);
+      \draw[->, transform canvas={xshift=-0.15cm}] (c) -- node[left] {\textit{\tiny Forward actuator data}} (a);
+      \draw[->, transform canvas={yshift=0.15cm}] (c) -- node[above] {\textit{\tiny Forward sensor data}} (d);
+      \draw[->, transform canvas={yshift=-0.15cm}] (d) -- node[below] {\textit{\tiny Receive actuator data}} (c);
+      \draw[->] (d) to [out=180,in=270,looseness=8] node [above left,xshift=-0.25cm,align=right]{\tiny\textit{Calculate next step}\\ \tiny\textit{in parking algorithm}} (d);
+    \end{tikzpicture}
+  \end{center}
+  \caption{Overview of components}\label{aw_overview}
+\end{figure}
 
 \section{Sub Tasks}
 The project was split into sub tasks, assigned to each member of the group
@@ -75,7 +99,7 @@ and also represents the parts written by each one in this report:
     \item Design and Implementation of the S/A VM
     \item Data exchange between S/A VM and SD2
     \item Data exchange between S/A VM and ECU
-    \item Implementation of connection interface (Mosquitto client) in the ECU
+    \item Implementation of the connection interface (Mosquitto client) in the ECU
     \item Final port of the Mosquitto library to the Genode OS Framework
   \end{itemize}
   \item \textbf{Alexander Weidinger}
@@ -94,21 +118,18 @@ and also represents the parts written by each one in this report:
   \end{itemize}
 \end{itemize}
 
-\begin{itemize}
-  \item Overview diagram
-  \item Dataflow diagram (sequence diagram?)
-\end{itemize}
-
+% -------------------------
 % changes to speed dreams 2
 % -------------------------
 \chapter{Speed Dreams 2}
-Speed Dreams 2 (SD2) is a fork of the open racing car simulator (TORCS)
+Speed Dreams 2 is a fork of The Open Racing Car Simulator (TORCS)
 and was used as our main car simulation.
 Since the simulator was merely intended as a racing simulator,
 it only provides limited functionality in case of virtual sensors.
 Fortunately it can be easily expanded since the project itself is open source
 and more or less sufficiently documented for such tasks.
-Additionally there is a mailing list and a online forum,
+Additionally there is a mailing list\footnote{\url{https://sourceforge.net/p/speed-dreams/mailman/}}
+and an online forum\footnote{\url{https://community.speed-dreams.org/}},
 where other people are willing to help in case of questions.
 
 For our autonomous parking use case we needed to make some changes to SD2,
@@ -119,19 +140,43 @@ and finally changes to the driving bots.
 \section{Proximity Sensor}
 Since SD2 itself doesn't provide virtual proximity sensors,
 we either need to implement one ourselves or we make use of related projects.
-Luckily the 'Simulated Car Racing Championship 2015' (SCRC) \cite{scrc2015} extends the TORCS simulator by two new sensors,
-one being an 'opponent' sensor, which measures the distance between the driving car and an opponent.
-Furthermore there is a 'focus' sensor, which measures the distance between the car and the track edge.
+Luckily the "Simulated Car Racing Championship 2015" (SCRC) \cite{scrc2015} extends the TORCS simulator by two new sensors,
+one being an "opponent" sensor, which measures the distance between the driving car and an opponent.
+Furthermore there is a "focus" sensor, which measures the distance between the car and the track edge.
 
 % reference implementation by the SCRC
 \subsection{SCRC Implementation}
 The problem with the given implementation is,
-that the 'opponent' sensor just measures the distance between two cars given the middle point of both cars.
-This means, that given two cars with a width of 4 meters,
-if they are both touching while standing directly next to each other,
-the sensor would still report a distance of 4 meters between them.
-This distance given by this sensor can be used to get a basic idea on where other cars are
-and how far they are distant to itself but are completely useless for our parking scenario.
+that the opponent sensor just measures the distance between two cars given the middle point of both cars.
+For example in figure \ref{aw_scrc_impl} the distance between both cars should be relatively small,
+since they are more or less next to each other.
+But due to the implementation, the distance $d_1$ is over 2 meters and if they were directly next to each other,
+the distance between both cars would be exactly 2 meters (given that each car has a width of 2 meters).
+Therefore the distance given by this sensor can be used to get a basic idea on where other cars are
+and how far they are away to oneself but are completely useless for our parking scenario.
+The red dashed lines in the figure additionally shows the way how distances to objects are sorted into different sensors,
+by calculating the angle between both cars and mapping it into a sensor,
+since the implementation gives a 360\degree{} view by splitting in intervals of 30\degree{}.
+
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}[scale=1]
+  % car 1
+  \draw (0,0) -- (2,0) -- (2,3) -- (0,3) -- (0,0);
+  \fill (1, 1.5) circle [radius=0.05];
+  % car 2
+  \draw (3,1) -- (5,1) -- (5,4) -- (3,4) -- (3,1);
+  \fill (4, 2.5) circle [radius=0.05];
+  % line between the two midpoints
+  \draw (1, 1.5) -- (4, 2.5);
+  % sensor lines
+  \foreach \x in {0, 30, ..., 330} \draw[red, dashed] (1, 1.5) -- +(\x : 3);
+  % distance bracket
+  \draw[decoration={brace,mirror,raise=5pt},decorate] (1, 1.5) -- (4, 2.5) node[black,midway,yshift=-0.5cm] {\footnotesize $d_1$};
+\end{tikzpicture}
+\end{center}
+\caption{Proximity sensor implemented by the Simulated Car Racing Championship 2015}\label{aw_scrc_impl}
+\end{figure}
 
 % our own implementation
 \subsection{Our Implementation}
@@ -267,25 +312,44 @@ As a side note, all three sensors have a maximum range of 20 meters,
 which can be changed with the last parameter.
 
 \subsubsection{Evaluation}
+\begin{figure}
+  \begin{center}
+  \includegraphics[scale=0.5]{aw_imgs/parked.png}
+\end{center}
+\caption{test}\label{aw_parked_img}
+\end{figure}
+
+Given the situation in figure \ref{aw_parked_img}
+(we are the white car) and having one sensor in the front,
+one in the back and one to the right,
+we receive the following values for the sensors:
 \begin{itemize}
-  \item Show some example pictures and sensor values
+  \item \textbf{Front:} 3.306382
+  \item \textbf{Back:} 3.400575
+  \item \textbf{Right:} 1.010126
 \end{itemize}
+
+While with the implementation by the SCRC project,
+we receive different values:
+\begin{itemize}
+  \item \textbf{Front:} 8.086382
+  \item \textbf{Back:} 8.180575
+  \item \textbf{Right:} 3.010126
+\end{itemize}
+
+This means, that our sensor implementation is much more precise
+and usable for the parking scenario.
 
 \subsubsection{Open points}
 Our main focus was getting the overall setup running,
 therefore a few open points are still left open
 and can be fixed in future versions.
 
-If one takes a look into the \texttt{sensors\_update} function,
-it is obvious that the sensor is moved to the correct position in each update.
-To optimize the code, this part could be easily moved into the constructor of each sensor
-and therefore improve the performance of this update function.
-
 The whole implementation is based on straight lines
-and therefore needs some hacks to deal with directions.
+and therefore needs some workarounds to deal with directions.
 To overcome this issue it would make sense to change the implementation to vectors.
 This could also fix some potential glitches with wrong distance values,
-which can occur on collisions.
+which can occur on collisions due to precision errors.
 Lastly the implementation only represents a laser proximity sensor
 in contrast to the implementation by the SCRC,
 which can detect or more precisely assigns opponents in angle ranges.
@@ -330,7 +394,7 @@ Additionally we need parked cars for our proximity sensor to detect.
 We chose to make use of the \textit{human} driver and extend it by the autonomous driving
 and the \textit{usr} driver to act as the parked car.
 
-\subsubsection{human}
+\subsection{human}
 The changes to the \textit{human} bot consitsts of two parts.
 First add the data exchange between SD2 and the S/A VM
 and second include an autonomous driving logic.
@@ -380,7 +444,7 @@ This of course only makes sense for the parking scenario
 and a different approach should be taken for autonomous driving, e.g. on the highway.
 A failure of an ECU while driving on the highway obviously shouldn't lead to a full brake.
 
-\subsubsection{usr}
+\subsection{usr}
 The \textit{usr} bot should be extended to just stay at the current position
 and don't move in any way to represent a parked car.
 We can achieve this behavior by forcing the \texttt{accelCmd} to a value of zero,
@@ -396,11 +460,6 @@ This solution does work quite well in our setup,
 but the code should be moved to a completely new driving bot with an expressive name for the future,
 to still be able to use the \textit{usr} bot in its normal programming.
 
-\subsection{Data exchange with S/A VM}
-\begin{itemize}
-  \item Protocol (protobuf, 4 byte message length header + message, tcp socket)
-  \item Problem Nagle's algorithm $\rightarrow$ disable it via TCP\_NODELAY
-\end{itemize}
 \section{SimCoupler}
 In the beginning of the practical course,
 it was planned to interpose the Simulation Coupler (SimCoupler) between SD2 and the S/A VM.
@@ -419,24 +478,24 @@ Also see a discussion of this topic on StackOverflow \cite{soprotobuf} with poss
   \item Where do we need to make changes to integrate it
 \end{itemize}
 \newpage
-\section{S/A VM}
-\subsection{Data exchange with speedDreams 2}
-  \subsubsection{Protobuf}
+\chapter{S/A VM}
+\section{Data exchange with speedDreams 2}
+  \subsection{Protobuf}
 Google Protobuf is a protocol for network data exchange.
 The newest version can be found \href{https://github.com/google/protobuf}{here}.
 To exchange data, protobuf files habe to be created beforehand.
-One of the protobuf files designed during this pratical course looks like this: 
+One of the protobuf files designed during this pratical course looks like this:
   \begin{figure}[!h]
   \begin{minipage}{0.5\textwidth}
   \centering
     \begin{minted}[fontsize=\tiny]{protobuf}
 	syntax = "proto3";
 	package protobuf;
-	
+
 	import "sensor.proto";
 	import "wheel.proto";
 	import "specification.proto";
-	
+
 	message State {
 	  repeated Sensor sensor = 1;
 	  repeated Wheel wheel = 2;
@@ -456,7 +515,7 @@ One of the protobuf files designed during this pratical course looks like this:
   \end{minipage}
     \caption{\tiny state.proto}
   \end{figure}
-  \subsubsection{TCP/IP} \label{tcpip}
+  \subsection{TCP/IP} \label{tcpip}
 Before any network interaction can take place, the network has to be initialized. Therefore the library lwip is usually needed. But since the mosquitto library already initializes lwip, another initialization within the components code caused lwip and moquitto to freeze.\newline
 Furthermore dhcp and manuall ip configuration have to be seperated in the initialization, since dhcp ip assignement takes up to 10 seconds, however manuall ip assignement takes place instantly.
 The configuration takes place in the run file of the component.\newline
@@ -472,35 +531,35 @@ The configuration takes place in the run file of the component.\newline
 If dhcp is set to "yes" any following configuration is ignored.\newline
 If dhcp is set to "no" there is our address followed by the subnetmask and the default gateway of the VDE adapter or the connected ethernet network.\newline
 SpeedDreams2's address and port as well as mosquitto server's address and port can be configured.
-  \subsection{Our protocol} \label{ourprotocol}
+  \section{Our protocol} \label{ourprotocol}
 To be able to change data, some preparation needs to be done beforehand. Since it is not usefull to send data without knowledge over its size, some kind of a protocol around the protobuf data exchange had to be designed. Therefore it was decided to send a 4 byte long value which contains the size of the following protobuf state, is sent to start the actual exchange. Any other messages are dropped.
-  \subsubsection{Deserialization}
+  \subsection{Deserialization}
 Once a message of given size was received it needs to be deserialized. Fortunately the method "ParseFromArray" does the job. Afterwards all received information is stored within a protobuf state. This object has automatically generated getter and setter methods, which makes it easy to access the actual data. Finally the multiplexing of the S/A VM takes place. Any data within the state object is published via mosquitto within the topic "state".
-  \subsubsection{Serialization}
+  \subsection{Serialization}
 Right after the deserialization of the state message, a new message called control is created. Any information the S/A VM got from the ECU is now put into this protobuf object. Afterwards the object is serialized using SerializeToString. As mentioned in \ref{ourprotocol} before the actuall protobuf file can be sent over ethernet, its size in a seperate 4 byte message, initializes the data exchange. But finally the serialized protobuf message is sent back to speedDreams2 which can now continue with the next simualtion step.
-  \subsubsection{Nagle's algorithm}
+  \subsection{Nagle's algorithm}
 The goal of the \href{https://www.lifewire.com/nagle-algorithm-for-tcp-network-communication-817932}{nagle's algorithm} is to minimize the number of packets sent by the network stack. Therefore it piles up small messages. Unfortunately this approach brakes completely with the real time requirement of the S/A VM. Therefore this algorithm had to be disabled by activating the "TCP\_NODELAY" option of the lwip library.
-  \subsubsection{Do not wait for answer of ECU}
+  \subsection{Do not wait for answer of ECU}
 To keep latency as low as possible the S/A VM answeres immediately after it got a state message from speedDreams2. No matter whether the S/A VM already got an update for the next step of the ECU. If the S/A VM waited for the ECU's mosquitto messages, there would be so much latency that speedDreams had to run in 1/8 realtime. For the sake of realtime the S/A VM does not care if it misses a message from the ECU. This is not a problem since the ECU does not care about the past but only about the next step. Therefore the ECU is able to correct missing instructions in the next step.
 \newpage
-\subsection{Data exchange with ECU}
+\section{Data exchange with ECU}
   \subsubsection{MQTT}
 \href{http://mqtt.org/}{MQTT} alias Message Queue Telemetry Transport is a protocol based on the publish-subscribe pattern.\newline
 The publish-subscribe pattern describes a client server communication, where the server acts as a message broker and the clients subscribe and publish on topcis. The broker knows the subscriptions of clients and sends them a message if a message is published under a certain topic. Therefore network load can be taken from the clients and put to the server, since the clients only gets messages it is interessted in.
-  \subsubsection{Subscribe}
+  \subsection{Subscribe}
 The subscription is handled via "mosquittopp" which provides a method called "subscribe". This method needs the topic and the quality of message as input. Once a message on the given topic arrives at the server, the subscribed client is notified. This notification is handled by the callbacks \ref{callbacks} of mosquitto.
-  \subsubsection{Publish}
+  \subsection{Publish}
 The publishing is also handled via "mosquittopp" which provides another function called "publish". This method takes the topic, the message to be published and its size. The message finds its way to the server via the configuration done in the run file of the ECU. This configuration works the same way as described in TCP/IP \ref{tcpip} for the S/A VM.
-  \subsubsection{Callbacks} \label{callbacks}
-  \subsection{Starting the algorithm}
-  \subsubsection{Car information}
+  \subsection{Callbacks} \label{callbacks}
+  \section{Starting the algorithm}
+  \subsection{Car information}
 Once the car length, the car width, the wheel radius and the maximum steering angle arrived at the ECU via pub/sub from the S/A VM, a new car information object is created. This needs to be done only once per ECU, since this static information does not change over time.
 To be sure that the needed information arrived at the ECU boolean values were created that are set to true if a value arrived.
-  \subsubsection{Compute next step}
+  \subsection{Compute next step}
 The linker between pub/sub and the parking algorithm is the "receiveData" method. It is called once new values for the front, side and back laser, as well as the spin velocity, since the last timestamp, and the actual timestamp arrived. The topicality is handeld via boolean values, which are set to true, if a value arrived and set to false if a values was true and sent to the parking algorithm. Only full sets of data are used, for the sake of real time.
-  \subsubsection{lwip mosquitto foo}
-\section{ECU}
-\section{Misc}
+  \subsection{lwip mosquitto foo}
+\chapter{ECU}
+\chapter{Misc}
 \begin{itemize}
   \item Porting of the mosquitto library % FIXME do we really want to add the mosquitto port in our documentation?
 \end{itemize}
