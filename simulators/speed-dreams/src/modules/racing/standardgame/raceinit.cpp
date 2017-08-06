@@ -307,23 +307,23 @@ initStartingGrid(void)
   }
 	// LL4
 	#ifdef PARKING
-	rows = 1; // hard code to one row
+	rows = 1; // only use one row
 	#endif
 	// ---
   for (i = 0; i < ReInfo->s->_ncars; i++) {
     car = &(ReInfo->carList[i]);
     car->_speed_x = speedInit;
     #ifdef PARKING
-    startpos = ReInfo->track->length - i * 8.0; // hard code distance between cars to 8m
+    startpos = ReInfo->track->length - i * 8.0; // change distance between cars to 8m
     #else
     startpos = ReInfo->track->length - (d1 + (i / rows) * d2 + (i % rows) * d3);
     #endif
     tr = a + b * ((i % rows) + 1) / (rows + 1);
     #ifdef PARKING
     if (i == 1)
-        tr -= 3;
+        tr -= 3; // move car 3 meters to the right
     if (i == 3)
-        tr += 3;
+        tr += 3; // move car 3 meters to the left
     #endif
     curseg = ReInfo->track->seg;  /* last segment */
     while (startpos < curseg->lgfromstart) {
