@@ -160,7 +160,7 @@ A mockup of our idea can be seen in figure \ref{aw_mockup}.
 The distance $d_2$ would be the correct value for the proximity sensor,
 indicated by the dashed blue line.
 
-\begin{figure}[ht]\label{aw_mockup}
+\begin{figure}[ht]
   \begin{center}
     \begin{tikzpicture}[scale=1]
       % car 1
@@ -178,26 +178,68 @@ indicated by the dashed blue line.
       % distance bracket
       \draw[decoration={brace,mirror,raise=5pt},decorate] (2, 1.5) -- (3, 1.5) node[black,midway,yshift=-0.5cm] {\footnotesize $d_2$};
     \end{tikzpicture}
-    \caption{Mockup of our (laser) proximity sensor implementation}
+    \caption{Mockup of our (laser) proximity sensor implementation}\label{aw_mockup}
   \end{center}
 \end{figure}
 
 \subsubsection{Implementation}
 
-\begin{listing}[ht]\label{aw_sensor_position}
+Since a sensor position is described relative to the center point of a car,
+we need to move the starting point of the sensor to the correct absolute position.
+The distance from the center point to the sensor is calculated
+and the x and y coordinates added to the absolute position of the car,
+in regard to the yaw of the car (see listing \ref{aw_sensor_position}).
+
+\begin{listing}[ht]
   \inputminted[firstline=91,linenos=true,lastline=96,gobble=2]{c++}{../../../simulators/speed-dreams/src/libs/sensors/obstacleSensors.cpp}
-  \caption{\texttt{src/libs/sensors/obstacleSensors.cpp}}
+  \caption{\texttt{src/libs/sensors/obstacleSensors.cpp}}\label{aw_sensor_position}
 \end{listing}
 
-\begin{equation}
-  m_1 * x + t_1 = m_2 * x + t_2 \equiv x = (t_2 - t_1) / (m_1 - m2)
-\end{equation}
+To calculate the straigt line equation $m*x+t=y$ of the sensor,
+$m$ must be calculated by adding the custom angle to the current yaw of the car
+and using $tan$. $t$ can be then obtained by simple inserting the x and y coordinates of the sensor.
+The associated code can be seen in listing \ref{aw_mt}.
 
+\begin{listing}[ht]
+  \inputminted[firstline=105,linenos=true,lastline=104,gobble=2]{c++}{../../../simulators/speed-dreams/src/libs/sensors/obstacleSensors.cpp}
+  \inputminted[firstline=110,linenos=true,lastline=109,gobble=2]{c++}{../../../simulators/speed-dreams/src/libs/sensors/obstacleSensors.cpp}
+  \caption{\texttt{src/libs/sensors/obstacleSensors.cpp}}\label{aw_mt}
+\end{listing}
 
-\begin{itemize}
-  \item Show important parts of the code and explain
-  \item Explain trick with obstacle behind sensor (reference point)
-\end{itemize}
+After calculating the straight line equation for the sensor,
+we need to create four additional ones, representing the four sides of the car.
+We calculate the slope $m$ by using the yaw of the car, to get the left and right sides
+and for the front and back sides we use the yaw + 90\degree{}.
+These four straight lines are moved to the correct position,
+again relative to the center of the obstacle car (compare listing \ref{aw_mt_obst}).
+
+\begin{listing}[ht]
+  \inputminted[firstline=130,linenos=true,lastline=152,gobble=3]{c++}{../../../simulators/speed-dreams/src/libs/sensors/obstacleSensors.cpp}
+  \caption{\texttt{src/libs/sensors/obstacleSensors.cpp}}\label{aw_mt_obst}
+\end{listing}
+
+Now that all five straight lines are calculated,
+only left is the computation of the intersections between the straight line of the sensor
+and the four straight lines, representing the sides of the obstalce car (see listing \ref{aw_intersect}).
+
+\begin{listing}[ht]
+  \inputminted[firstline=154,linenos=true,lastline=164,gobble=3]{c++}{../../../simulators/speed-dreams/src/libs/sensors/obstacleSensors.cpp}
+  \caption{\texttt{src/libs/sensors/obstacleSensors.cpp}}\label{aw_intersect}
+\end{listing}
+
+After obtaining the intersections, the domain is checked by verifying,
+that the intersection is between the two points restricting the side of the car.
+Additional to that, we need to make sure the obstacle isn't behind the sensor.
+For that we reuse our \texttt{is\_between} function (which checks if a point is between two points) and adding a reference point,
+which basically is an additional point 'behind' the sensor (see listing \ref{aw_ref}).
+
+\begin{listing}[ht]
+  \inputminted[firstline=98,linenos=true,lastline=99,gobble=2]{c++}{../../../simulators/speed-dreams/src/libs/sensors/obstacleSensors.cpp}
+  \caption{\texttt{src/libs/sensors/obstacleSensors.cpp}}\label{aw_ref}
+\end{listing}
+
+Now that we can find the nearest intersection between a sensor and an obstacle car,
+we do this in a loop for all sensors and all cars and therefore receive the correct distance value for each sensor.
 
 \subsubsection{Usage}
 As an example on how to use the newly created obstacleSensors library,
