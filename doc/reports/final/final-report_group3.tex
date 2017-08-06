@@ -45,7 +45,7 @@ David Werner \href{mailto:david.werner@tum.de}{\texttt{david.werner@tum.de}}}
 \newpage
 
 % introduction
-\chapter{Introduction}
+\chapter{Introduction (Alexander Weidinger)}
 This document is the final report, written by the students Alexander Reisner,
 Alexander Weidinger and David Werner, for the "Linux und L4-Mikrokern" SS 2017 practical course at the Technical University of Munich.
 
@@ -61,7 +61,7 @@ a Simulation Coupler (SimCoupler), a so called \textit{S/A VM} which basically r
 and a model car representing the main car in the simulation.
 
 Operating the model car is not part of this group's task but rather a task of the second team in this practical course.
-But due to the agreed on structure of the data exchange at the Level of the ECU and S/A VM,
+Due to the structure of the data exchange that was agreed on at the Level of the ECU and S/A VM,
 calculated actuator data is also received by the other team's software and can be used to control the model car.
 
 \section{Project Overview}
@@ -121,7 +121,7 @@ and also represents the parts written by each one in this report:
 % -------------------------
 % changes to speed dreams 2
 % -------------------------
-\chapter{Speed Dreams 2}
+\chapter{Speed Dreams 2 (Alexander Weidinger)}
 Speed Dreams 2 is a fork of The Open Racing Car Simulator (TORCS)
 and was used as our main car simulation.
 Since the simulator was merely intended as a racing simulator,
@@ -180,6 +180,7 @@ since the implementation gives a 360\degree{} view by splitting in intervals of 
 
 % our own implementation
 \subsection{Our Implementation}
+\subsubsection{Idea}
 We simplify the virtual proximity sensor to a mere straight line,
 with a given angle and position relative to the center of the car.
 
@@ -261,7 +262,7 @@ The associated code can be seen in listing \ref{aw_mt}.
 After calculating the straight line equation for the sensor,
 we need to create four additional ones, representing the four sides of the car.
 We calculate the slope $m$ by using the yaw of the car, to get the left and right sides
-and for the front and back sides we use the yaw + 90\degree{}.
+and for the front and back sides we use the yaw $+$90\degree{}.
 These four straight lines are moved to the correct position,
 again relative to the center of the obstacle car (compare listing \ref{aw_mt_obst}).
 
@@ -297,9 +298,9 @@ we do this in a loop for all sensors and all cars and therefore receive the corr
 As an example on how to use the newly created obstacleSensors library,
 one can take a look at the human driver in listing \ref{aw_sensors}.
 
-\begin{listing}[ht]\label{aw_sensors}
+\begin{listing}[ht]
   \inputminted[firstline=245,linenos=true,lastline=256,gobble=4]{c++}{../../../simulators/speed-dreams/src/drivers/human/human.cpp}
-  \caption{\texttt{src/drivers/human/human.cpp}}
+  \caption{\texttt{src/drivers/human/human.cpp}}\label{aw_sensors}
 \end{listing}
 
 The code adds three sensors, one in the front with 0\degree{} angle
@@ -401,7 +402,7 @@ and second include an autonomous driving logic.
 
 The code for the data exchange is relatively trivial,
 since its a simple socket based connection,
-where SD2 acts as the server and globally listens for connections on port 9002.
+where SD2 acts as the server and globally listens for connections on port 9002\footnote{The listen address and port can be changed at the top of the \texttt{human.cpp} file}.
 The message flow between the S/A VM and SD2 is always the same
 and based on an exchange between both applications.
 First SD2 collects all sensor information (proximity sensors, spin velocity of the wheels, etc.)
@@ -475,7 +476,7 @@ The only problem with such an integration could be an foible of the Protobuf lib
 that multiple instances of a protobuf library are tricky to integrate in a single project.
 Also see a discussion of this topic on StackOverflow \cite{soprotobuf} with possible solutions.
 
-\chapter{S/A VM}
+\chapter{S/A VM (Alexander Reisner)}
 \section{Data exchange with speedDreams 2}
   \subsection{Protobuf}
 Google Protobuf is a protocol for data exchange.
@@ -579,11 +580,7 @@ To be sure that the needed information arrived at the ECU boolean values were cr
 The linker between pub/sub and the parking algorithm is the "receiveData" method. It is called once new values for the front, side and back laser, as well as the spin velocity, since the last timestamp, and the actual timestamp arrived. The topicality is handeld via boolean values, which are set to true, if a value arrived and set to false if a values was true and sent to the parking algorithm. Only full sets of data are used, for the sake of real time.
   \subsection{Publish next step}
 After the computation of the parking step, the resulting actuator data is published on topic "car-control". The S/A VM and the team responsible for the actuator movement in the model car, subscribed to this topic. Consequently speedDreams2 and the model car execute the commands of the parking algorithm.
-\chapter{ECU}
-\chapter{Misc}
-\begin{itemize}
-  \item Porting of the mosquitto library % FIXME do we really want to add the mosquitto port in our documentation?
-\end{itemize}
+\chapter{ECU (David Werner)}
 
 \bibliography{final-report_group3}
 
