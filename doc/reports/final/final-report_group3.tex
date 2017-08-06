@@ -587,7 +587,7 @@ The goal of the algorithm is to find a parking lot and performing a parallel par
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.35]{images_ecu/parking_lot.png}
-\caption{\tiny Parking lot bounded by three cars}
+\caption{Parking lot bounded by three cars}
 \label{parking_lot}
 \end{figure}
 \section{Concept of the Algorithm}
@@ -638,7 +638,7 @@ After the algrotihm successfully finished the searching phase, i.e. a parking ba
 	\item Evaluation of equations using T as duration to get end position of the car
 	\item Check $C_{long}$
 	\item If $C_{long}$ still holds increase T by a small amount and start at step 1
-	\item If $C_{long}$ is harmed T is set to the last valid value and the optimzationof T is finished
+	\item If $C_{long}$ is harmed T is set to the last valid value and the optimzation of T is finished
 \end{enumerate}
 After we found the optimal value for T we search for the optimal value for $\phi_{max}$. Therefore we check $C_{lat}$. If it holds we know that we already have the optimal value. If $C_{lat}$ does not hold we reduce $\phi_{max}$ by a small amount and evaluate our euqations again before checking $C_{lat}$ again with the new end postion. If $C_{lat}$ is still not fullfilled we iteratively keep reducing $\phi_{max}$ until its optimal value is found. The reduction of $\phi_{max}$ decreases the slope of the car's steering curve which increases the distance of the car to the obstacle to its right after the parking maneuver.
 \subsection{Controlling phase}
@@ -706,7 +706,7 @@ for(double ts = 0; ts <= _T; ts += _sampling_period){
 	}
 }
 \end{minted}
-\caption{\tiny Discrete integration performed in \textit{\_calculate\_T()} and \textit{\_calculate\_local\_max\_steer()} - Parking.cc (101-116 and 145-160); comments removed}
+\caption{Discrete integration performed in \textit{\_calculate\_T()} and \textit{\_calculate\_local\_max\_steer()} - Parking.cc (101-116 and 145-160); comments removed}
 \label{lst:discrete_integration}
 \end{listing}
 The evaluation returns the coordinates of the end position of the car. These coordinates are given to the \textit{\_longitudinal\_condition} method which checks the $C_{long}$ condition. If it is fullfilled T is increased by the value of \textit{\_sampling\_period} (value of current timestamp) and another discrete integration is performed. This procedure continues iteratively until $C_{long}$ is no longer satisfied. At this point the last valid value is assigned to T. After T was determined \textit{\_calculate\_local\_max\_steer() is called}. This method checks wether $C_{lat}$ is satisfied. If not $\phi_{max}$ is reduced and the discrete integration is performed again. This is repeated iteratively until $C_{lat}$ is fullfilled and therefore a valid value for $\phi_{max}$ was found. After finishing all calculations the algorithm immediately transitions into the Controlling state.\\
@@ -723,7 +723,7 @@ During the process of controlling the vehicle's motion the algorithm has some pr
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.35]{images_ecu/emergency_stop.png}
-\caption{\tiny Emergency stop due to unnecessary large safety distances}
+\caption{Emergency stop due to unnecessary large safety distances}
 \label{false_emergency}
 \end{figure}
 \subsection{Dependance on unrealistic time estimations} \label{dependance}
