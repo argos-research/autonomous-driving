@@ -481,9 +481,9 @@ Also see a discussion of this topic on StackOverflow \cite{soprotobuf} with poss
 \chapter{S/A VM}
 \section{Data exchange with speedDreams 2}
   \subsection{Protobuf}
-Google Protobuf is a protocol for network data exchange.
+Google Protobuf is a protocol for data exchange.
 The newest version can be found \href{https://github.com/google/protobuf}{here}.
-To exchange data, protobuf files habe to be created beforehand.
+To exchange data, protobuf files have to be created beforehand.
 One of the protobuf files designed during this pratical course looks like this:
   \begin{figure}[!h]
   \begin{minipage}{0.5\textwidth}
@@ -532,7 +532,7 @@ If dhcp is set to "yes" any following configuration is ignored.\newline
 If dhcp is set to "no" there is our address followed by the subnetmask and the default gateway of the VDE adapter or the connected ethernet network.\newline
 SpeedDreams2's address and port as well as mosquitto server's address and port can be configured.
   \section{Our protocol} \label{ourprotocol}
-To be able to change data, some preparation needs to be done beforehand. Since it is not usefull to send data without knowledge over its size, some kind of a protocol around the protobuf data exchange had to be designed. Therefore it was decided to send a 4 byte long value which contains the size of the following protobuf state, is sent to start the actual exchange. Any other messages are dropped.
+To be able to exchange data, some preparation needs to be done beforehand. Since it is not usefull to send data without knowledge over its size, some kind of a protocol around the protobuf data exchange had to be designed. Therefore it was decided to send a 4 byte long value which contains the size of the following protobuf state, is sent to start the actual exchange. Any other messages are dropped.
   \subsection{Deserialization}
 Once a message of given size was received it needs to be deserialized. Fortunately the method "ParseFromArray" does the job. Afterwards all received information is stored within a protobuf state. This object has automatically generated getter and setter methods, which makes it easy to access the actual data. Finally the multiplexing of the S/A VM takes place. Any data within the state object is published via mosquitto within the topic "state".
   \subsection{Serialization}
