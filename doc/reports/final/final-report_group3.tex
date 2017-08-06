@@ -137,8 +137,13 @@ Right after the deserialization of the state message, a new message called contr
 The goal of the \href{https://www.lifewire.com/nagle-algorithm-for-tcp-network-communication-817932}{nagle's algorithm} is to minimize the number of packets sent by the network stack. Therefore it piles up small messages. Unfortunately this approach brakes completely with the real time requirement of the S/A VM. Therefore this algorithm had to be disabled by activating the "TCP\_NODELAY" option of the lwip library.
   \subsubsection{Do not wait for answer of ECU}
 To keep latency as low as possible the S/A VM answeres immediately after it got a state message from speedDreams2. No matter whether the S/A VM already got an update for the next step of the ECU. If the S/A VM waited for the ECU's mosquitto messages, there would be so much latency that speedDreams had to run in 1/8 realtime. For the sake of realtime the S/A VM does not care if it misses a message from the ECU. This is not a problem since the ECU does not care about the past but only about the next step. Therefore the ECU is able to correct missing instructions in the next step.
+\newpage
 \subsection{Data exchange with ECU}
-  \subsubsection{MQTT/mosquitto/publish subscribe}
+  \subsubsection{MQTT}
+\href{http://mqtt.org/}{MQTT} alias Message Queue Telemetry Transport is a protocol based on the publish-subscribe pattern.\newline
+The publish-subscribe pattern describes a client server communication, where the server acts as a message broker and the clients subscribe and publish on topcis. The broker knows the subscriptions of clients and sends them a message if a message is published under a certain topic. Therefore network load can be taken from the clients and put to the server, since the clients only gets messages it is interessted in.
+  \subsubsection{Subscribe}
+  \subsubsection{Publish}
   \subsubsection{callbacks}
   \subsubsection{lwip mosquitto foo}
 \section{ECU}
