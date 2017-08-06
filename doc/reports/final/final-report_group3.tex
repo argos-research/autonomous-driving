@@ -557,7 +557,8 @@ Once the car length, the car width, the wheel radius and the maximum steering an
 To be sure that the needed information arrived at the ECU boolean values were created that are set to true if a value arrived.
   \subsection{Compute next step}
 The linker between pub/sub and the parking algorithm is the "receiveData" method. It is called once new values for the front, side and back laser, as well as the spin velocity, since the last timestamp, and the actual timestamp arrived. The topicality is handeld via boolean values, which are set to true, if a value arrived and set to false if a values was true and sent to the parking algorithm. Only full sets of data are used, for the sake of real time.
-  \subsection{lwip mosquitto foo}
+  \subsection{Publish next step}
+After the computation of the parking step, the resulting actuator data is published on topic "car-control". The S/A VM and the team responsible for the actuator movement in the model car, subscribed to this topic. Consequently speedDreams2 and the model car execute the commands of the parking algorithm.
 \chapter{ECU}
 \chapter{Misc}
 \begin{itemize}
