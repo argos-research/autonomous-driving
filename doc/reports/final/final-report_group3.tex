@@ -73,6 +73,7 @@ David Werner \href{mailto:david.werner@tum.de}{\texttt{david.werner@tum.de}}}
   \item Where do we need to make changes to integrate it
   \item Shared protobuf module problem and possible solution
 \end{itemize}
+\newpage
 \section{S/A VM}
 \subsection{Data exchange with speedDreams 2}
   \subsubsection{Protobuf}
@@ -113,6 +114,19 @@ One of the protobuf files designed during this pratical course looks like this:
   \subsubsection{TCP/IP}
 Before any network interaction can take place, the network has to be initialized. Therefore the library lwip is usually needed. But since the mosquitto library already initializes lwip, another initialization within the components code caused lwip and moquitto to freeze.\newline
 Furthermore dhcp and manuall ip configuration have to be seperated in the initialization, since dhcp ip assignement takes up to 10 seconds, however manuall ip assignement takes place instantly.
+The configuration takes place in the run file of the component.\newline
+\begin{figure}[!h]
+  \centering
+    \begin{minted}[fontsize=\tiny]{cpp}
+<network dhcp="yes" ip-address="192.168.178.3" subnet-mask="255.255.255.0" default-gateway="192.168.178.1" />
+<speedDreams ip-address="10.200.32.15" port="9002" />
+<mosquitto ip-address="10.200.32.15" port="1883" />
+    \end{minted}
+    \caption{\tiny S/A VM run file}
+  \end{figure}
+If dhcp is set to "yes" any following configuration is ignored.\newline
+If dhcp is set to "no" there is our address followed by the subnetmask and the default gateway of the VDE adapter or the connected ethernet network.\newline
+SpeedDreams2's address and port as well as mosquitto server's address and port can be configured.
   \subsection{Our protocol} \label{ourprotocol}
 To be able to change data, some preparation needs to be done beforehand. Since it is not usefull to send data without knowledge over its size, some kind of a protocol around the protobuf data exchange had to be designed. Therefore it was decided to send a 4 byte long value which contains the size of the following protobuf state, is sent to start the actual exchange. Any other messages are dropped.
   \subsubsection{Deserialization}
