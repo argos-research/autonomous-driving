@@ -581,7 +581,179 @@ The linker between pub/sub and the parking algorithm is the "receiveData" method
   \subsection{Publish next step}
 After the computation of the parking step, the resulting actuator data is published on topic "car-control". The S/A VM and the team responsible for the actuator movement in the model car, subscribed to this topic. Consequently speedDreams2 and the model car execute the commands of the parking algorithm.
 \chapter{ECU (David Werner)}
+\subsection{Autonomous Parking}
+As part of our project we had the task of implementing an autonomous parking algorithm which is capable of controlling a car in the SpeedDreams simulation. 
+The goal of the algorithm is to find a parking lot and performing a parallel parking maneuver afterwards. Thereby it uses three range sensors (front/back/right) the car is equipped with to monitor distances to obstacles around the car. As these sensors are only able to detect other cars, parking bays need to be bounded by three cars as seen in figure \ref{parking_lot}.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{images_ecu/parking_lot.png}
+\caption{\tiny Parking lot bounded by three cars}
+\label{parking_lot}
+\end{figure}
+\subsection{Concept of the Algorithm}
+The autonomous parking algortihm presented by us is entriely based on the description of motion generation and control for parking an autonomous vehicle in \cite{mgcpav}. The algorithm in the paper consists of three steps: 
+\begin{enumerate}
+	\item Localization of a parking bay
+	\item Adjustment of the vehicle postion to a starting location
+	\item Exection of an iterative parking maneuver
+\end{enumerate}
+Steps one and two are not discussed in detail. The third step is described as iterative task which comprises four steps:
+\begin{enumerate}
+	\item Obtaining longitudinal and lateral displacement by processing range data
+	\item Calculate maneuver duration T and maximum steering angle $\phi_{max}$
+	\item Steer the car into the parking bay by controling its velocity and steering angle
+	\item Check if parking postion is reached and start with step 1 if not
+\end{enumerate}
+During all four steps the range data from the sensors is processed. The goal of algorithm is to control the car only by influencing its velocity and steering angle. It is not desired that the car precisely follows a pre-calculated path.\\
+For our purposes we modified the algortihm in two ways and thereby simplified it to a non-iterative 3-phase algorithm. We combined step one and two into one phase called searching phase in which the algorithm finds a parking lot and assumes the car to be positioned correctly for the following maneuver as soon as the lot is found. The third step of the algorithm is split up into two phases. The calculation of the parking parameters T and $\phi_{max}$ takes place in the calculation phase. Performing the actual parking maneuver is done in the controlling phase. Phase 2 and 3 are only carried out once. Therefore our algorithm is no longer iterative.
+\subsubsection{Motion of a vehicle}
+In order to be able to move a car using an algortihm one needs to have knowledge about how to mathematically describe its motion. 
+Maneuvering a car into a parking lot is a two-dimensional problem. Therefore the car has three degrees of freedom: two coordinates, x and y, and an orientation angle $\theta$. For the algorihtm the coordinates refer to middle of the rear wheel axle. With the help of these the motion can be described by the following equations:
+\begin{itemize}
+	\item $\dot{x} = v * cos(\phi) * cos(\theta)$
+	\item $\dot{y} = v * cos(\phi) * sin(\theta)$
+	\item $\dot{\theta} = \frac{v}{L} * sin(\phi)$
+\end{itemize}
+The change of the coordinate is dependant on the velocity v and the steering angle [phi]. Both of those can be described by formulas which are dependant on a timstamp $t$:
+\begin{itemize}
+	\item $\phi(t) = \phi_{max} * k_{\phi} * A(t)$ - $k_{\phi}$ indicates the direction of the steering
+	\item $v(t) = v_{max} * k_{v} * B(t)$ - $k_{v}$ indicates algebraic sign of the velocity
+\end{itemize}
+They are used by the algorithm to claculate the actuator data during the parking maneuver. Besides the time dependancy, the forumulas rely on T and $\phi_{max}$. These parameters are calculated within the calculation phase. Both formulas also use the following equations to calculate the ratio of velocity/steering at the timestamp t:
+\begin{itemize}
+	\item $A(t) = \begin{cases}
+					1, \hspace*{3,2cm} 0 \leq t < t'\\
+					cos(\frac{\pi(t-t')}{T^*}), \hspace*{1,6cm} t' \leq t \leq T-t'\\
+					-1, \hspace*{2,9cm} T-t' < t \leq T\\
+				  \end{cases}$
+	\item $B(t) = 0.5 * (1 - cos(\frac{4\pi t}{T})), \hspace*{0,5cm} 0 \leq t \leq T$ 
+\end{itemize}
+where $t' = \frac{T-T^*}{2}$. Using all these equations the motion of a car in a two-dimensional environment can be described.
+\subsubsection{Searching phase} \label{seraching_phase}
+In the beginning of the parking procedure the control over the car is handed to the algorithm. The algorithm starts with its first phase: the searching phase. Its goal is to find a suitable parking lot.\\
+For our algorithm a suitable parking lot has two main characteristics. On the one hand it offers enough space to park and on the other hand it is bounded by two cars, one in front and one in the back. Empty spaces which are not between two cars or are too small will not be considered. The measurements which qualify a parking bay as suitable are dependant on the measurements of the car as well as predefined safety distances. An adequate parking lot therefore has a minimum length $l_{min}$ and a minimum width $w_{min}$. In order to find such a parking lot the algorithm makes the car move along the traffic lane with constant, slow  speed.  While the controlled car passes parallel parked cars, the algorithm monitors the range data received from the right sensor looking for a potential parking lot. A potential parking lot starts if the range data implies that there is at least $w_{min}$ empty space. As long as this condition is satisfied the algithm sums up the distance the car traveled since the start of the parking lot. As soon as the range data returns to a value smaller than $w_{min}$ the algortihm checks wether the sumed up distance is as least $l_{min}$ or not. If the parking lot was long enough the algorithm stops the car and transitions into the next phase. If the potential parking lot was too short its length is discarded and the searching phase continues.
+\subsubsection{Calculation phase} \label{calculating}
+After the algrotihm successfully finished the searching phase, i.e. a parking bay was found, it continues with the calculation phase. The tasks of the whole phase are carried out while the car is standing still. The purpose of the calculation step is to determine two important parameters for the parking maneuver: the duration T and the maximum steering angle $\phi_{max}$. Both calculations are based on estimations which are then optimized.The duration of the parking maneuver is lower bounded by $T^*$ the time it takes the car to steer from the negative maximum steer angle to the postive maximum steer angle. Therefore we use $T^*$ as an estimation for T. The first estimation for $\phi_{max}$ is the maximum steering angle the controlled car offers. The optimzation of both values relies on the evaluation of the equations for $\dot{x}$, $\dot{y}$ and $\dot{\theta}$ with the helpt of $\phi(t)$ and $v(t)$. The evaluation returns the coordinates of the final postion of the car. On top of that the calculation phase needs a longitudinal condition $C_{long}$ and a lateral condition $C_{lat}$ which indicate wheter the car can still move backwards ($C_{long}$) or to the right ($C_{lat})$. The optimization for T then works as follows:
+\begin{enumerate}
+	\item Evaluation of equations using T as duration to get end position of the car
+	\item Check $C_{long}$
+	\item If $C_{long}$ still holds increase T by a small amount and start at step 1
+	\item If $C_{long}$ is harmed T is set to the last valid value and the optimzationof T is finished
+\end{enumerate}
+After we found the optimal value for T we search for the optimal value for $\phi_{max}$. Therefore we check $C_{lat}$. If it holds we know that we already have the optimal value. If $C_{lat}$ does not hold we reduce $\phi_{max}$ by a small amount and evaluate our euqations again before checking $C_{lat}$ again with the new end postion. If $C_{lat}$ is still not fullfilled we iteratively keep reducing $\phi_{max}$ until its optimal value is found. The reduction of $\phi_{max}$ decreases the slope of the car's steering curve which increases the distance of the car to the obstacle to its right after the parking maneuver.
+\subsubsection{Controlling phase}
+With all necessary parameters calculated, the algorithm is able to transition into the controlling phase. During this phase the actual parking maneuver is performed. Utilizing the formulas for velocity and steering the algortihm calculates the actuator data for the next simulation step and hands it to the simulation.  For these calculations the optimized parameters from the calculation phase are used. While maneuvering the car, the algorithm always monitors all sensor data in order to prevent crashes. As soon as an upcoming collision is detected the algorithm triggers an emergency stop. After the car is steered into the parking bay the algorithm drives the car backwards until a safety distance contraint is violated. At this point the car is in the parking postion and gets stopped by the algorithm which finished its execution by then.
+\subsection{Implementation}
+The implementation of the algorithm is based on three C++ classes/structs. While the \textit{Parking} class implements the actual algorithm, \textit{CarInformation} and \textit{Map} serve as helper classes storing important information which are needed for the algorithm's calculations.
+\subsubsection{CarInformation}
+CarInfromation is implemented as struct. Its purpose is being a container for car specific data which characterizes the car. As the parking algorithm is working for cars of any sizes CarInformation structs need to be constructed specifically for each car which should be controlled by the algorithm. This happens in the beginning of a Parking scenario. The CarInformation is filled with data by subscribing to the S/A-VM which provides necessary information. It contains the following data:
+\begin{itemize}
+	\item length and width of the car
+	\item wheel radius
+	\item safety distances (as they depend on car measurements)
+	\item max. velocity of the car during the whole parking scenario
+	\item max. steering angle the car offers
+	\item min. measurements of a suitable parking lot
+\end{itemize}
+\subsubsection{Map}
+The Map class stores information about the parking lot and the car's starting postion for the parking maneuver. When calling the constructor of a Parking object an empty Map is created. During the process of finding a parking lot the parking lot's measurements and the position of the car are calculated and put into it. The information in a Map plays an important role in the calculation of T and $\phi_{max}$ which is described in \ref{calculating} conceptionally  and in \ref{parking} from the implementaion's point of view.\\
+A Map object contains the following information:
+\begin{itemize}
+	\item coordinates (middle of rear axle) and orientation angle of the car at the beginning of the park maneuver
+	\item longitudinal and lateral displacements (length and width of parking lot)
+\end{itemize}
+Additionally, Map is equipped with getter/setter-methods in oder to access and modify the data.
+\subsubsection{Parking} \label{parking}
+The Parking class implements the algorithm. On code-level the algorihtm has 4 different states:
+\begin{itemize}
+	\item Searching
+	\item Calculating
+	\item Controlling
+	\item Parked
+\end{itemize}
+Each of the first three states represents one conecptional phase of the algorithm. The fourth state is entered if the car is in its final parking postion or if an emergency stop is performed. A Parking object maintains a state variable which indicates the current state of the algorithm. The main method of Parking is \textit{receiveData}. It is the only public method and needs six parameters which are all received from the simulation:
+\begin{itemize}
+	\item sensor\_front - range data from sensor in the front
+	\item sensor\_right - range data from sensor to the right
+	\item sensor\_back - range data from sensor in the back
+	\item spin\_velocity - spin velocity of the car's wheels
+	\item timestamp - duration of the current simulation step 
+	\item publisher - pointer to the publisher object ehich is called to send acutator data
+\end{itemize}
+Each time \textit{receiveData} is called the method starts by checking the range data for an upcoming collision which would trigger an emergency stop. Afterwards actuator data for the velocity and the steering angle is calculated and then published. How the actuator data is determined and which values it has depends on the state:\\
+\\
+\underline{Searching}\\
+The initial state of a Parking object is the Searching state. I this state the value of the actuator data is determined based on the return value of the helper function \textit{\_findParkingLot}. The values of \textit{sensor\_right} and \textit{spin\_velocity} are handed to this method as parameters. It uses them to determine whether a suitable parking lot was found or not. If \textit{\_findParkingLot} returns true the car passed a parking lot of reasonable size and all actuator data is set to zero which means the car needs to stop. The algorithm then transitions into the Calculating state. If \textit{\_findParkingLot} return false the velocity actuator value is set to the maximum speed value from the CarInformation struct. In this case the car keeps moving with constant speed as the algorithm keeps searching a parking bay. In order to determine its return value \textit{\_findParkingLot} uses the data of the right sensor and the spin velocity to find a parking lot according to the procdedure described in \ref{seraching_phase}. The total traveled distance is calculated by summing up the traveled distances in each simulation step. The distance covered in the current simulation step can be determined by multiplying the spin velocity with the current timestamp and the wheelRadius from CarInformation. Additionally the Map object gets updated.\\
+\\
+\underline{Calculating}\\
+When \textit{receiveData} is called while the algorihtm is in Calculating state the optimzed values of T and $\phi_{max}$ are calculated according to \ref{calculating}. When the constructor of Parking was called both of them were set to their first estimation value. The final value of T is determined by calling the \textit{\_calculate\_T()} method. Within this method the motion equations of the car are evaluated using discrete integration. This procedure is depicted in listing \ref{lst:discrete_integration}. In order to have current values of the velocity and the steering angle the algorithm evaluates \textit{\_velocity} and \textit{\_steering\_angle} in each step of the integration.
+\begin{listing}[H]
+\begin{minted}[fontsize=\tiny]{c++}
+for(double ts = 0; ts <= _T; ts += _sampling_period){
+	s_angle = _steering_angle(ts);
+    velo = _velocity(ts);
 
+    if(s_angle == 0){
+		_phi_old = _phi;
+		_phi = _phi;
+		_x = _x + (velo * _sampling_period * cos(s_angle));
+		_y = _y + (velo * _sampling_period * sin(s_angle));
+	} else {
+		_phi_old = _phi;
+		_phi = _phi + (((velo * _sampling_period) / _info.length_car) * sin(s_angle));
+		_x = _x + ((_info.length_car / tan(s_angle)) * (sin(_phi) - sin(_phi_old)));
+		_y = _y - ((_info.length_car / tan(s_angle)) * (cos(_phi) - cos(_phi_old)));;
+	}
+}
+\end{minted}
+\caption{\tiny Discrete integration performed in \textit{\_calculate\_T()} and \textit{\_calculate\_local\_max\_steer()} - Parking.cc (101-116 and 145-160); comments removed}
+\label{lst:discrete_integration}
+\end{listing}
+The evaluation returns the coordinates of the end position of the car. These coordinates are given to the \textit{\_longitudinal\_condition} method which checks the $C_{long}$ condition. If it is fullfilled T is increased by the value of \textit{timestamp} and another discrete integration os performed. This procedure coninues iteratively until $C_{long}$ is no longer satisfied. At this point the last valid value is assigned to T. After T was determined \textit{\_calculate\_local\_max\_steer() is called}. This method checks wether $C_{lat}$ is satisfied. If not $\phi_{max}$ is reduced and the discrete integration is performed again. This is repeated iteratively until $C_{lat}$ is fullfilled and therefore a valid value for $\phi_{max}$ was found. After finishing all calculations the algorithm immediately transitions into the Controlling state.\\
+\\
+\underline{Controlling}\\
+While in Controlling state the actuator data is determined by simply evaluating \textit{\_sterring\_angle} and \textit{\_velocity} with an own timestamp value \textit{\_maneuver\_timestamp}. This value is needed as the parking maneuver needs to start at timestamp 0. After claculating actuator values \textit{\_maneuver\_timestamp} is increased by the current timestamp.\\
+\\
+\underline{Parked}\\
+The Parked state is entered in one of two cases: either the car needed to perform an emergency stop or it reached the parking postion. Regardless of which is the case this state was transitioned to as some range data indicated an collision in the near future. If parked is the current state \textit{receiveData} keeps publishing 0 as actuator data for both, the velocity and the steering angle as the car needs to stand still.
+\subsection{Problems}
+Although the algorithm is able to perform all three phases of the algorithm without any disturbances in most of its executions there are still some issues which need to be fixed in order to make it work deterministically for any parking scenario.
+\subsubsection{Safety distances} \label{distances}
+During the process of controlling the vehicle's motion the algorithm has some problems in the interplay with SpeedDreams. As SpeedDreams is not capable of explicitly setting the velocity of a car, it instead accelerates and breaks in order to reach the velocity which was transmitted as actuator data. Furthermore the controlled SpeedDreams-car tends to slide when the algorithm breaks it even at low speed. These issues cause that the car is not stopped instantly if zero is sent as velocity value. As a result of this, crashes occur in the simulation if reasonable safety distances are chosen. Therefore these safety ranges (especially the one in the back of the car) need to be set bigger than necessary. This enlargement has two consequences: the size of suitable parking lots grows considerably and unneeded emergency stops occasionally happen. While larger parking lots are not too much of a problem in a simulation environment, the second problem is more severe. The algorithm stops the car as soon as some sensor's data implies an upcoming collision. With overly large safety distances this behaviour leads to unwanted situations where the algorihtm unnecessarily stops the car. The worst case of this phenomenon occurs during the parking maneuver while the car is being steered into the parking lot as seen in figure \ref{false_emergency}. At this point of time the parking maneuver fails for no actual reason as there is enough space to perform the rest of the maneuver.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{images_ecu/emergency_stop.png}
+\caption{\tiny Emergency stop due to unnecessary large safety distances}
+\label{false_emergency}
+\end{figure}
+\subsubsection{Dependance on unrealistic time estimations} \label{dependance}
+In the current state of the implementation, the algorithm seems to calculate wrong values for the duration of the parking maneuver T. The problem is that in the calculation phase where T is optimized, only one optimization step is done. This is shown by some sample data in table \ref{table:TandTstar}.
+\begin{center}
+\label{table:TandTstar}
+  \begin{tabular}{  l | r }
+    T* & T (optimized) \\
+    \hline
+    \hline
+    5 & 5,0022 \\
+    \hline
+    10 & 10,0023 \\
+    \hline
+  \end{tabular}
+\end{center}
+Conceptionally the number of optimization steps should only depend on the length of the parking lot (longitudinal displacement) as well as the maximum velocity and the maximum steering angle of the car. This means that for any value chosen for T* the optimization should return the same value for T as long as the initial estimation for T* is below the optimized value. Unfortunately this is not the case. As shown by the sample data T* = 5 gets optimized to 5,0022 although it should at least be optimzed to 10,0023.\\
+The consequence is that a successful execution of the parking maneuver is entirely reliable on an unrealistic estimation of T* (in our case: 12). The closer the value for T* is chosen to a reasonable value for T which should be calculated automatically, the better the algorithm performs.
+\subsection{Improvements}
+\subsubsection{Rework of calculation phase} \label{rework}
+As the value for T do not seem to be calculated correctly as described in \ref{dependance} a possible improvement of the algorithm would be a rework of the calculation phase. In order to do that one would at first need to test the current implementation extensively to find out what the exact problem is. We suspect the calculation of the longitudinal and the lateral conditions to not work as they are intended although it might also be that our implementation of the discrete integration might be buggy.
+\subsubsection{Expanding the parked condition}
+The current implementation of the algorithm determines whether the car is parked or not solely on range data received from the sensors. After the algorithm steered the car into the parking bay, the car is forced to drive backwards until a safety distance is violated. This causes the algorihtm to stop the car and go into the PARKED state.
+Because of the problem discussed in chapter \ref{distances} this behaviour is justifiable. We need to have overly large parking lots and it therefore makes sense to exceed T in order to drive backwards until a reasonable distance to the obstacle in the back is reached.
+Nevertheless it could be necessary to modify this approach. Even though the processing of sensor data will always be necessary in order to support emergency stops this mechanism does not have to be the only way to stop the car after the parking maneuver is finished. The algorithm could be altered in order to stop the car after the time bound T for the parking maneuver is reached. 
+Unless the calculation phase is fixed as described in \ref{rework} this modification can possibly lead to scenarios where the car parks fairly far away from the car behind of it.
+\subsubsection{Implementing the original algorihtm}
+As we decided to simplify the original algorithm by reducing the interative step to only one step there is the possiblity to expand our algorithm to an iterative algorithm. Such an modification would mean that our calculation and control phases are performed within each iterative step and are therefore performed multiple times. This might increase the precision of the algorithm regarding the positioning of the car. With multiple maneuvering iterations the car is more likely to end up at the optimal parking position. Additionally an algorithm supporting iterative steps should be able to park the car in smaller parking lots. 
+\subsection{Conclusion}
+Based on \cite{mgcpav} we implemented an algorithm that is capable of finding a parking lot and perform a parking maneuver autonomously. Due to issues caused by the interplay with SpeedDreams and the calculation of  parking parameters the algorithm does not perform deterministically. Although it parks the car correctly most of the time the algorithm still needs some more optimization. In order to motivate the reader of our paper to do such an optimization, we offered multiple suggestions for improvements.
 \bibliography{final-report_group3}
 
 \end{document}
