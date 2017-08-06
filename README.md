@@ -11,6 +11,12 @@ abstract: This repository contains the source code of 'Team speedDreams', which 
 # Repository structure
 ```
 .
++-- doc
+|   +-- reports            // (contains all reports taken during the practical course)
+|   |   +-- final          // (our final report)
+|   +-- talks              // (contains all talks held during the pracitcal course)
+|   |   +-- final          // (our final presentation)
+|   |   +-- lightning      // (contains subfolders with the initials for each group member)
 +-- ecu                    // (contains code for the ecus)
 |   +-- autonomousParking  // (our autonomous parking ecu)
 +-- genode                 // (the official genode 16.08)
@@ -23,14 +29,14 @@ abstract: This repository contains the source code of 'Team speedDreams', which 
 |   +-- QEMU-SA-VM         // (contains code for the S/A VM)
 |   +-- SimCoupler         // (was planned to be used as module between SD2 and S/A VM but was omitted for this pracitcal course)
 +-- Makefile               // (used in SA/VM)
-+-- README.md              // (Readme of this project)
++-- README.md              // (readme of this project)
 ```
 
 # Dependencies
 - [Mosquitto](https://mosquitto.org/) (https://mosquitto.org/), which is not provided by this repository
 - Run time dependencies, which can be looked up in the respective directories of the simulators and genode
-- libboost1.58
-- protobuf compiler 3
+- Libboost (vers. 1.58 or higher)
+- Protobuf (library and compiler in vers. 3)
 
 # Build instructions
 - The repository consists of multiple submodules, which first need to be fetched via `git submodule update --init`.
