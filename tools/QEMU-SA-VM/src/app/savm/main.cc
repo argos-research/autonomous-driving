@@ -157,11 +157,11 @@ void Proto_client::serve(Publisher *publisher)
 		/* Set size to 0 are every loop */
 		size=0;
 		/* Get size of message from SD2 */
-		receiveInt32_t(size);
+		lwip_read(_listen_socket, &size, ntohl(4));
 		if (size>0)
 		{
 			/* Receive message of told size from SD2 */
-			receive_data(bar, ntohl(size));
+			lwip_read(_listen_socket, bar, ntohl(size));
 			protobuf::State state;
 			/* Deserialize from char* to state */
 			state.ParseFromArray(bar,ntohl(size));
@@ -223,11 +223,11 @@ void Proto_client::serve(Publisher *publisher)
 			/* Serialize control to String */
 			ctrl.SerializeToString(&foo);
 			/* Get size of serialized String */
-			uint32_t m_length=htonl(foo.size());
+			int32_t m_length=foo.size();
 			/* Send size of serialized String to SD2 */
-			send_data(&m_length,4);
+			lwip_write(_listen_socket,&m_length,4);
 			/* Send serialized String to SD2 */
-			send_data((void*)foo.c_str(),foo.size());
+			lwip_write(_listen_socket,(void*)foo.c_str(),foo.size());
 		}
 		else
 		{
@@ -244,8 +244,6 @@ int Proto_client::connect()
 
 void Proto_client::disconnect()
 {
-	lwip_close(_target_socket);
-	PERR("Target socket closed.");
 	lwip_close(_listen_socket);
 	PERR("Server socket closed.");
 }	
