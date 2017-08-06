@@ -699,7 +699,7 @@ The initial state of a Parking object is the Searching state. In this state the 
 \underline{Calculating}\\
 When \textit{receiveData} is called while the algorithm is in Calculating state the optimized values of T and $\phi_{max}$ are calculated according to \ref{calculating}. When the constructor of Parking was called both of them were set to their first estimation value. The final value of T is determined by calling the \textit{\_calculate\_T()} method. Within this method the motion equations of the car are evaluated using discrete integration. This procedure is depicted in listing \ref{lst:discrete_integration}. In order to have current values of the velocity and the steering angle the algorithm evaluates \textit{\_velocity} and \textit{\_steering\_angle} in each step of the integration.
 \begin{listing}[H]
-\begin{minted}[fontsize=\tiny]{c++}
+\begin{minted}[fontsize=\small]{c++}
 for(double ts = 0; ts <= _T; ts += _sampling_period){
 	s_angle = _steering_angle(ts);
     velo = _velocity(ts);
