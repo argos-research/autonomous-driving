@@ -1,6 +1,10 @@
-#include "tcp_socket.h"
+#pragma once
 
-class Proto_client : public Tcp_socket
+extern "C" {
+#include <lwip/sockets.h>
+}
+
+class Proto_client
 {
 public:
 	Proto_client();
