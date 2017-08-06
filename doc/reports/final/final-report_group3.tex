@@ -43,8 +43,51 @@ David Werner \href{mailto:david.werner@tum.de}{\texttt{david.werner@tum.de}}}
 This document is the final report, written by the students Alexander Reisner,
 Alexander Weidinger and David Werner, for the 'Linux und L4-Mikrokern' SS 2017 practical course at the Technical University of Munich.
 
+The overall given task for the practical course was to implement an autonomous parking algorithm.
+
+This parking algorithm is implemented as an user space application for a Pandaboard,
+running the Genode OS Framework in version 16.08 with the Fiasco.OC (r56) as kernel.
+We will refer to this compound as \textit{ECU} from now on.
+
+Our ECU is integrated in the hybrid simulator framework given by the KIA4SM project.
+This hybrid simulator consists of a car racing simulator, Speed Dreams 2 (SD2),
+a Simulation Coupler (SimCoupler), a so called \textit{S/A VM} which basically represents a multiplexing entity for each car in the simulation
+and a model car representing the main car in the simulation.
+
+Operating the model car is not part of this group's task but rather a task of the second team in this practical course.
+But due to the agreed on structure of the data exchange at the Level of the ECU and S/A VM,
+calculated actuator data is also received by the other team's software and can be used to control the model car.
+
+\section{Sub Tasks}
+The project was split into sub tasks, assigned to each member of the group
+and also represents the parts written by each one in this report:
+
 \begin{itemize}
-  \item Task description
+  \item \textbf{Alexander Reisner}
+  \begin{itemize}
+    \item Design and Implementation of the S/A VM
+    \item Data exchange between S/A VM and SD2
+    \item Data exchange between S/A VM and ECU
+    \item Implementation of connection interface (Mosquitto client) in the ECU
+    \item Final port of the Mosquitto library to the Genode OS Framework
+  \end{itemize}
+  \item \textbf{Alexander Weidinger}
+  \begin{itemize}
+    \item Extension of SD2 by a proximity sensor
+    \item Data exchange between SD2 and S/A VM
+    \item Extension of the human driver bot to enable autonomous driving
+    \item Extend SD2 by a parked car driver bot
+    \item Change starting grid of cars to allow reproducible testing results
+    \item Final port of the Mosquitto library to the Genode OS Framework
+  \end{itemize}
+  \item \textbf{David Werner}
+  \begin{itemize}
+    \item Implement the autonomous parking algorithm
+    \item Optimize the algorithm and adapt it for usage in our scenario
+  \end{itemize}
+\end{itemize}
+
+\begin{itemize}
   \item Overview diagram
   \item Dataflow diagram (sequence diagram?)
 \end{itemize}
