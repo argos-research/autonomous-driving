@@ -8,6 +8,11 @@ institute: Technical University of Munich (TUM)
 abstract: This repository contains the source code of 'Team speedDreams', which implements an autonomous parking scenario for the lil4 practical course.
 ---
 
+# Final Result
+The result of our work can be seen in this short video:
+
+[![youtube-video](https://img.youtube.com/vi/atgfwcSAM_s/0.jpg)](https://www.youtube.com/watch?v=atgfwcSAM_s)
+
 # Repository structure
 ```
 .
