@@ -145,8 +145,8 @@ packages:
 vde: vde-stop
 	@vde_switch -d -s /tmp/switch1
 	@sudo vde_tunctl -u $(USER) -t tap0
-	@sudo ifconfig tap0 192.168.178.1 up
-	@sudo route add -host 192.168.178.1 dev tap0
+	@sudo ip addr add 10.0.2.1/24 dev tap0
+	@sudo ip link set up dev tap0
 	@vde_plug2tap --daemon -s /tmp/switch1 tap0
 
 vde-stop:
@@ -159,6 +159,14 @@ dhcp: dhcp-stop
 
 dhcp-stop:
 	@-pkill slirpvde
+
+qemu:
+	wget https://download.qemu.org/qemu-4.0.0.tar.xz
+	tar xJf qemu-4.0.0.tar.xz
+	cd qemu-4.0.0/ && ./configure --enable-vde --target-list=arm-softmmu,x86_64-softmmu
+	make -C qemu-4.0.0/ -j4
+	sudo make -C qemu-4.0.0/ install
+	
 
 # Cleanup network shenanigans.
 clean-network: dhcp-stop vde-stop

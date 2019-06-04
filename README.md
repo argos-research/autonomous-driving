@@ -79,8 +79,8 @@ make vde                                # starts up a vde_switch and tap device
 - Start a mosquitto server
 - Start speed-dreams 2 by executing `./simulators/speed-dreams/build/games/speed-dreams-2`
 - Configure a race in speed-dreams to consist of **3 usr** bots and **1 human** player (use the espie track) and start it
-- Start up the QEMU SA/VM by executing `make -C genode/build/foc_x86_64/ run/savm` (it will connect to speed-dreams)
-- Start up the QEMU ECU by executing `make -C genode/build/foc_x86_64/ run/ecu`
+- Start up the QEMU SA/VM by executing `make -C build/genode-foc_x86_64/ run/savm` (it will connect to speed-dreams)
+- Start up the QEMU ECU by executing `make -C build/genode-foc_x86_64/ run/ecu`
 
 # Execute parking scenario
 - In speed-dreams: press the *'enter'* key and reduce the simulation time to 0.25 by pressing the *'-'* key two times (this may be unnecessary, depending on your configuration - if you're unsure, just use 0.25 and slowly increase the simulation speed with the *'+'* key until it becomes unresponsive)
